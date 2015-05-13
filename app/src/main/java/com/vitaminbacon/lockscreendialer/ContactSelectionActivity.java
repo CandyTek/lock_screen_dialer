@@ -1,5 +1,6 @@
 package com.vitaminbacon.lockscreendialer;
 
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -13,7 +14,8 @@ import android.os.Build;
 
 
 public class ContactSelectionActivity extends ActionBarActivity
-        implements ContactSelectionFragment.OnContactSelectedListener {
+        implements ContactSelectionFragment.OnContactSelectedListener,
+        ContactDialogFragment.OnPhoneNumSelectionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +74,28 @@ public class ContactSelectionActivity extends ActionBarActivity
     /**
      * Implementing the fragment interface
      */
-    public void onContactSelected(int phonenum){
+    public void onContactSelected(String lookupKey){
+
+        ContactDialogFragment dialog = new ContactDialogFragment();
+        dialog.show( getSupportFragmentManager(), "fragment_contact_dialog" );
+    }
+
+    public void onContactSelected(String lookupKey, String displayName, String thumbnailUriString) {
+
+        // Instantiate a ContactDialogFragment with variables that can be restored onResume()!
+        ContactDialogFragment dialog = ContactDialogFragment.
+                newInstance(lookupKey, displayName, thumbnailUriString);
+        dialog.show(getSupportFragmentManager(), "fragment_contact_dialog");
+
 
     }
+    /**
+     * Implementing the contact dialog fragment interface
+     */
+    public void onPhoneNumSelected(Uri uri){
+
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */

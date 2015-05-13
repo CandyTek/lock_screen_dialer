@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 //import android.app.LoaderManager;
 //import android.content.Loader;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -21,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.provider.ContactsContract;
@@ -31,45 +33,22 @@ public class ContactSelectionFragment extends Fragment implements
         AdapterView.OnItemClickListener {
 
     /**
-     * Defines an array that contains column names to move from the Cursor to the ListView
+     * Defines a constant to identify the columns to be returned from a query
      */
+    // TODO Do we need to account for old versions in using PHOTO_THUMBNAIL_URI??
     @SuppressLint("InlinedApi")
-    private final static String[] FROM_COLUMNS = {
-            ContactsContract.Contacts.PHOTO_ID,  // Thumbnail-sized photo
+    private static final String[] PROJECTION = {
+            ContactsContract.Contacts._ID,
+            ContactsContract.Contacts.LOOKUP_KEY,
+            ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
                     ContactsContract.Contacts.DISPLAY_NAME_PRIMARY :
                     ContactsContract.Contacts.DISPLAY_NAME
     };
 
     /**
-     * Defines an array that contains resource ids for the layout views
-     * that get the Cursor column contents.  The id is pre-defined in the
-     * Android framework, so it is prefaced with "android.R.id"
-     */
-    private final static int[] TO_IDS = { R.id.contact_selector_list_item_pic,
-            R.id.contact_selector_list_item_name };  // REMOVED: android.R.id.text1 };
-    /**
-     * Defines a constant that contains the columns to be returned from a query
-     */
-    @SuppressLint("InlinedApi")
-    private static final String[] PROJECTION = {
-                    ContactsContract.Contacts._ID,
-                    ContactsContract.Contacts.LOOKUP_KEY,
-                    ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
-                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
-                            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY :
-                            ContactsContract.Contacts.DISPLAY_NAME
-    };
-
-
-    // The column index for the columns you substantiated in the PROJECTION
-    private static final int CONTACT_ID_INDEX = 0;
-    private static final int CONTACT_LOOKUP_KEY_INDEX = 1;
-    private static final int CONTACT_DISPLAY_NAME_INDEX = 2;
-
-    /**
-     * To get the data we want.  Combination of text expressions and variables that tell the
-     * provider the data columns to search and the values to find.
+     * A constant to get the data we want.  Combination of text expressions and variables that tell
+     * the provider the data columns to search and the values to find.
      */
     @SuppressLint("InlinedApi")
     private static final String SELECTION =
@@ -84,17 +63,43 @@ public class ContactSelectionFragment extends Fragment implements
                             + ContactsContract.Contacts.HAS_PHONE_NUMBER + "=1) AND ("
                             + ContactsContract.Contacts.DISPLAY_NAME + " != '' ))"; //" LIKE ?";
 
+    // Defines an array to hold values that replace the "?" in the SELECTION
+    private String[] mSelectionArgs;
+
+    /**
+     * Defines an array that contains column names to move from the Cursor to the ListView
+     */
+    @SuppressLint("InlinedApi")
+    private final static String[] FROM_COLUMNS = {
+            ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,  // Thumbnail-sized photo
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
+                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY :
+                    ContactsContract.Contacts.DISPLAY_NAME
+    };
+
+    /**
+     * Defines an array that contains resource ids for the layout views
+     * that get inflated with the Cursor column contents.
+     */
+    private final static int[] TO_IDS = { R.id.contact_selector_list_item_pic,
+            R.id.contact_selector_list_item_name };
+
+
+    // The column indices for the columns you substantiated in the PROJECTION
+    private static final int CONTACT_ID_INDEX = 0;
+    private static final int CONTACT_LOOKUP_KEY_INDEX = 1;
+    private static final int PHOTO_THUMBNAIL_URI_INDEX = 2;
+    private static final int CONTACT_DISPLAY_NAME_INDEX = 3;
+
+
     // The search filter to weed through the contacts
     private String mSearchString;
 
-    // Defines an array to hold values that replace the "?"
-    private String[] mSelectionArgs = { mSearchString };
-
-
-
-    // Define global mutable variables
-    // Define a ListView object
+    // Define the ListView object that will bind to the cursorAdapter
     ListView mContactsList;
+
+    // The view encapsulating the search text
+    private EditText mEditText;
 
     // Define variables for the contact the user selects
     // The contact's _ID value
@@ -111,27 +116,13 @@ public class ContactSelectionFragment extends Fragment implements
 
     private OnContactSelectedListener mListener;  // Requires implementation in parent activity
 
-    // The view encapsulating the search text
-    private EditText mEditText;
-
-
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ContactSelectionFragment.
      */
     // TODO: Rename and change types and number of parameters
     public static ContactSelectionFragment newInstance(String param1, String param2) {
         ContactSelectionFragment fragment = new ContactSelectionFragment();
-        /*
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        */
         return fragment;
     }
 
@@ -165,12 +156,13 @@ public class ContactSelectionFragment extends Fragment implements
         return inflater.inflate(R.layout.contact_selector_list_view, container, false);
     }
 
+    /*
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(int phonenum) {
         if (mListener != null) {
             mListener.onContactSelected(phonenum);
         }
-    }
+    } */
 
     @Override
     public void onAttach(Activity activity) {
@@ -200,7 +192,8 @@ public class ContactSelectionFragment extends Fragment implements
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnContactSelectedListener {
-        public void onContactSelected(int phonenum);
+        public void onContactSelected(String lookupKey);
+        public void onContactSelected(String lookupKey, String displayName, String thumbnailUriString);
     }
 
     @Override
@@ -260,9 +253,26 @@ public class ContactSelectionFragment extends Fragment implements
         mContactId = cursor.getLong(CONTACT_ID_INDEX);
         // Get the selected LOOKUP_KEY
         mContactKey = cursor.getString(CONTACT_LOOKUP_KEY_INDEX);
-        // Create teh contact's content Uri
+        // Create the contact's content Uri
         mContactUri = ContactsContract.Contacts.getLookupUri(mContactId, mContactKey);
 
+        // Get the thumnail URI; implementation will have to be different depending on version
+/*        Uri thumbnailUri = getPhotoThumbnailUri( cursor.getString(
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
+                    PHOTO_THUMBNAIL_URI_INDEX :
+                    CONTACT_ID_INDEX
+        ));*/
+        String thumbnailUriString = cursor.getString(
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
+                        PHOTO_THUMBNAIL_URI_INDEX :
+                        CONTACT_ID_INDEX
+        );
+        // The INDEX for the display name is the same regardless of android version
+        String contactName = cursor.getString(CONTACT_DISPLAY_NAME_INDEX);
+
+        //mListener.onContactSelected(mContactId, mContactKey, mContactUri);
+//        mListener.onContactSelected(mContactKey);  // Returns Lookup Key to Activity
+        mListener.onContactSelected(mContactKey, contactName, thumbnailUriString);
     }
 
     /**
@@ -330,5 +340,70 @@ public class ContactSelectionFragment extends Fragment implements
         getLoaderManager().restartLoader(0, null, this);
     }
 
+    /**
+     * Private method that returns the Uri for a photo thumbnail, handling the dichotomy between
+     * post-Honeycomb versions
+     * TODO: parsing best to be placed in new fragment
+     */
+    private Uri getPhotoThumbnailUri (String data) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            return Uri.parse(data);
+        }
+
+        return Uri.withAppendedPath(
+                Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, data),
+                ContactsContract.Contacts.Photo.CONTENT_DIRECTORY
+            );
+    }
+
+    /* Didn't need to extend it anyway!
+    private static class ContactsAdapter extends SimpleCursorAdapter {
+
+        public ContactsAdapter(Context context, int layout, Cursor c,
+                               String[] from, int[] to, int flags) {
+            super(context, layout, c, from, to, flags);
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor){
+            final ViewBinder binder = getViewBinder();
+            final int count = mTo.length;
+            final int[] from = mFrom;
+            final int[] to = mTo;
+
+            for (int i=0; i < count; i++) {
+                final View v = view.findViewById(to[i]);
+                if (v != null) {
+                    boolean bound = false;
+                    if (binder != null) {
+                        bound = binder.setViewValue(v, cursor, from[i]);
+
+                    }
+                    if (!bound) {
+                        String text = cursor.getString(from[i]);
+                        if (text == null) {
+                            text = "";
+                        }
+                        if (v instanceof TextView) {
+                            setViewText((TextView) v, text);
+                        }
+                        else if (v instanceof ImageView) {
+                            setViewImage((ImageView) v, text);
+                        }
+                        else {
+                            throw new IllegalStateException(v.getClass().getName() +
+                            "is not a view that can be bound by this ContactsAdapter.");
+                        }
+
+                    }
+                }
+            }
+
+
+        }
+
+    }
+    */
 
 }

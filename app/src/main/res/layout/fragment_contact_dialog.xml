@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="10dp"
+        android:id="@+id/contact_selected_thumbnail"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/contact_selected_display_name"
+        android:ellipsize="none"
+        android:maxLines="4"
+        android:scrollHorizontally="false"
+        android:textSize="24sp"
+        android:layout_toRightOf="@id/contact_selected_thumbnail"
+        android:inputType="textPersonName"
+        android:padding="5dp"
+        />
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/contact_selected_phone_num_list"
+        android:layout_below="@id/contact_selected_thumbnail"/>
+</RelativeLayout>
