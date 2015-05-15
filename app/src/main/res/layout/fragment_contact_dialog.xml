@@ -2,12 +2,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:id="@+id/dialog_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/contact_dialog_instruction"
+        android:text="@string/contact_selected_instruction"
+        android:textSize="20sp"
+        android:background="@color/gunmetal"
+        android:textColor="@color/white"
+        android:padding="20dp"/>
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_margin="10dp"
-        android:id="@+id/contact_selected_thumbnail"/>
+        android:id="@+id/contact_selected_thumbnail"
+        android:layout_below="@id/contact_dialog_instruction"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,6 +28,7 @@
         android:scrollHorizontally="false"
         android:textSize="24sp"
         android:layout_toRightOf="@id/contact_selected_thumbnail"
+        android:layout_below="@id/contact_dialog_instruction"
         android:inputType="textPersonName"
         android:padding="5dp"
         />

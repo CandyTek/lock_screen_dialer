@@ -10,7 +10,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -24,7 +23,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
 
 public class ContactDialogFragment extends DialogFragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
@@ -42,7 +40,7 @@ public class ContactDialogFragment extends DialogFragment implements
     private ImageView mThumbnailView;
     private View mRootView;
 
-    private SimpleCursorAdapter mCursorAdapter;
+    private ContactsCursorAdapter mCursorAdapter;
 
     /**
      * Private variables to set up the database retrievals
@@ -79,6 +77,11 @@ public class ContactDialogFragment extends DialogFragment implements
                     R.id.phone_selector_list_item_phone_type
             };
 
+    // The column indices for the columns you substantiated in the PROJECTION
+    private static final int PHONE_ID_INDEX = 0;
+    private static final int PHONE_NUMBER_INDEX = 1;
+    private static final int PHONE_TYPE_INDEX = 2;
+    private static final int PHONE_LABEL_INDEX = 3;
 
     public ContactDialogFragment() {
         // Required empty public constructor
@@ -138,14 +141,8 @@ public class ContactDialogFragment extends DialogFragment implements
         // Gets the ListView from the parent activity (even though it was returned from here)
         mPhoneNumsView = (ListView) mRootView.findViewById(R.id.contact_selected_phone_num_list);
 
-        //if (mPhoneNumsList == null) Log.d("ContactDialogFragment", "mPhone NumsList is null.");
         // Establish the CursorAdapter to get the phone numbers
-        //Log.d(TAG, ""+Integer.valueOf(String.valueOf(R.id.contact_selected_phone_num_list), 16));
-        //Log.d(TAG, ""+getActivity().findViewById(R.id.contact_selected_phone_num_list));
-        //Log.d(TAG, ""+mRootView.findViewById(R.id.contact_selected_phone_num_list));
-
-        // Establish the CursorAdapter to get the phone numbers
-        mCursorAdapter = new SimpleCursorAdapter(
+        mCursorAdapter = new ContactsCursorAdapter(
                 getActivity(),
                 R.layout.fragment_contact_dialog_item,
                 null, // cursor not available yet
@@ -193,7 +190,7 @@ public class ContactDialogFragment extends DialogFragment implements
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onPhoneNumSelected(uri);
+            //mListener.onPhoneNumSelected(uri);
         }
     }
 
@@ -221,21 +218,6 @@ public class ContactDialogFragment extends DialogFragment implements
     @Override
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
 
-        /*
-        Uri baseUri;
-
-        if (mSearchString != null && mSearchString.length() != 0) {
-            Log.d("DB QUERY", "mSearchString length is not 0");
-            //mSelectionArgs[0] = "'%" + mSearchString + "%'";
-            baseUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_FILTER_URI, Uri.encode(mSearchString));
-
-        }
-        else {
-            Log.d("DB QUERY", "mSearchString length is 0");
-            //mSelectionArgs[0] = "'%a%'";
-            baseUri = ContactsContract.Contacts.CONTENT_URI;
-        }
-        */
         mSelectionArgs[0]=mContactLookupKey;
 
 
@@ -253,7 +235,7 @@ public class ContactDialogFragment extends DialogFragment implements
 
     /**
      * Implement onLoadFinished, which is loaded when the Contacts Provider returns the results
-     * of a query.  In this method, put the result of Cursor in teh SimpleCursorAdapter to
+     * of a query.  In this method, put the result of Cursor in teh ContactsCursorAdapter to
      * automatically update the ListView with the search results
      */
     public void onLoadFinished (Loader<Cursor> loader, Cursor cursor) {
@@ -263,7 +245,7 @@ public class ContactDialogFragment extends DialogFragment implements
 
     /**
      * This method is invoked when the loader framework detects that the result Cursor contains
-     * stale data.  If you don't delete the SimpleCursorAdapter reference to the existing Cursor
+     * stale data.  If you don't delete the ContactsCursorAdapter reference to the existing Cursor
      * the loader framework will not recycle the Cursor, which causes a memory leak.
      */
     @Override
@@ -274,7 +256,33 @@ public class ContactDialogFragment extends DialogFragment implements
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.d("listener", "onItemClick() reached.");
+/*        // Get the Cursor
+        Cursor cursor = ((ContactsCursorAdapter) parent.getAdapter()).getCursor();
+        // Move to the selected contact
+        cursor.moveToPosition(position);
+        // Get the _ID value
+        long ContactId = cursor.getLong(CONTACT_ID_INDEX);
+        // Get the selected LOOKUP_KEY
+        String ContactKey = cursor.getString(CONTACT_LOOKUP_KEY_INDEX);
+        // Create the contact's content Uri
+        Uri ContactUri = ContactsContract.Contacts.getLookupUri(ContactId, ContactKey);
 
+        String thumbnailUriString = cursor.getString(
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
+                        PHOTO_THUMBNAIL_URI_INDEX :
+                        CONTACT_ID_INDEX
+        );
+        // The INDEX for the display name is the same regardless of android version
+        String contactName = cursor.getString(CONTACT_DISPLAY_NAME_INDEX);*/
+        TextView numberView= (TextView) view.findViewById(R.id.phone_selector_list_item_number);
+        TextView typeView = (TextView) view.findViewById(R.id.phone_selector_list_item_phone_type);
+        mListener.onPhoneNumSelected(
+                mContactDisplayName, // Send the Contact's display name for storage
+                mContactThumbnailUriString, // Send the Contact's thumbnail URI for storage
+                numberView.getText().toString(), // Send the phone number for storage
+                typeView.getText().toString() //Send the phone number type for storage
+        );
     }
 
     /**
@@ -289,7 +297,8 @@ public class ContactDialogFragment extends DialogFragment implements
      */
     public interface OnPhoneNumSelectionListener {
         // TODO: Update argument type and name
-        public void onPhoneNumSelected(Uri uri);
+        public void onPhoneNumSelected(String displayName, String thumbUri,
+                                       String phoneNum, String phoneType);
     }
 
     private int pixelToDIP(int pixels){

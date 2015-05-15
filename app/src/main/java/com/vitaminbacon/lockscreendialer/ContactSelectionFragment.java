@@ -13,7 +13,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -27,6 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.provider.ContactsContract;
 
+import static android.provider.ContactsContract.Contacts;
 
 public class ContactSelectionFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
@@ -38,12 +38,12 @@ public class ContactSelectionFragment extends Fragment implements
     // TODO Do we need to account for old versions in using PHOTO_THUMBNAIL_URI??
     @SuppressLint("InlinedApi")
     private static final String[] PROJECTION = {
-            ContactsContract.Contacts._ID,
-            ContactsContract.Contacts.LOOKUP_KEY,
-            ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
+            Contacts._ID,
+            Contacts.LOOKUP_KEY,
+            Contacts.PHOTO_THUMBNAIL_URI,
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
-                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY :
-                    ContactsContract.Contacts.DISPLAY_NAME
+                    Contacts.DISPLAY_NAME_PRIMARY :
+                    Contacts.DISPLAY_NAME
     };
 
     /**
@@ -53,15 +53,23 @@ public class ContactSelectionFragment extends Fragment implements
     @SuppressLint("InlinedApi")
     private static final String SELECTION =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
-                    // Use DISPLAY_NAME_PRIMARY for Honeycomb + versions
-                    "(("
+                    "(" + Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?) AND " +
+                    "(" + Contacts.DISPLAY_NAME_PRIMARY + " IS NOT NULL) AND" +
+                    "(" + Contacts.HAS_PHONE_NUMBER + " = 1)":
+
+                    "(" + Contacts.DISPLAY_NAME + " LIKE ?) AND " +
+                    "(" + Contacts.DISPLAY_NAME + " IS NOT NULL)" +
+                    "(" + Contacts.HAS_PHONE_NUMBER + " = 1)";
+
+
+/*                    "(("
                             + ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " NOTNULL) AND ("
                             + ContactsContract.Contacts.HAS_PHONE_NUMBER + "=1) AND ("
                             + ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " != '' ))" :
                     // Use DISPLAY_NAME otherwise
                     "((" + ContactsContract.Contacts.DISPLAY_NAME + " NOTNULL) AND ("
                             + ContactsContract.Contacts.HAS_PHONE_NUMBER + "=1) AND ("
-                            + ContactsContract.Contacts.DISPLAY_NAME + " != '' ))"; //" LIKE ?";
+                            + ContactsContract.Contacts.DISPLAY_NAME + " != '' ))"; //" LIKE ?";*/
 
     // Defines an array to hold values that replace the "?" in the SELECTION
     private String[] mSelectionArgs;
@@ -71,10 +79,10 @@ public class ContactSelectionFragment extends Fragment implements
      */
     @SuppressLint("InlinedApi")
     private final static String[] FROM_COLUMNS = {
-            ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,  // Thumbnail-sized photo
+            Contacts.PHOTO_THUMBNAIL_URI,  // Thumbnail-sized photo
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
-                    ContactsContract.Contacts.DISPLAY_NAME_PRIMARY :
-                    ContactsContract.Contacts.DISPLAY_NAME
+                    Contacts.DISPLAY_NAME_PRIMARY :
+                    Contacts.DISPLAY_NAME
     };
 
     /**
@@ -112,7 +120,7 @@ public class ContactSelectionFragment extends Fragment implements
     Uri mContactUri;
 
     // An adapter that binds the result Cursor to the ListView
-    private SimpleCursorAdapter mCursorAdapter;
+    private ContactsCursorAdapter mCursorAdapter;
 
     private OnContactSelectedListener mListener;  // Requires implementation in parent activity
 
@@ -134,6 +142,7 @@ public class ContactSelectionFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d("Fragment", "onCreate() entered.");
+        mSelectionArgs = new String[] { mSearchString };
         /*
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -219,14 +228,21 @@ public class ContactSelectionFragment extends Fragment implements
             public void onTextChanged(CharSequence s, int start, int count, int after){
                 mSearchString = s.toString();
                 Log.d("Text Listener", mSearchString);
-                // Now reload the query
+
+                // This if statement functions to avoid a contact list update when search
+                // string is null or just a blank space.
+                // TODO: blank space situation doesn't appear to be working
+                if (mSearchString.length() == 0 || mSearchString == " "){
+                    return;
+                }
+                // Reload the query
                 restartLoaderManager();  // Can't directly restart here, because "this" variable incorrect in this context
             }
 
         });
 
         // Get CursorAdapter
-        mCursorAdapter = new SimpleCursorAdapter(
+        mCursorAdapter = new ContactsCursorAdapter(
                 getActivity(),
                 R.layout.contact_selector_list_item,
                 null, // cursor not available yet
@@ -246,7 +262,7 @@ public class ContactSelectionFragment extends Fragment implements
     public void onItemClick (AdapterView<?> parent, View item, int position, long rowID) {
         Log.d("listener", "onItemClick() reached.");
         // Get the Cursor
-        Cursor cursor = ((SimpleCursorAdapter) parent.getAdapter()).getCursor();
+        Cursor cursor = ((ContactsCursorAdapter) parent.getAdapter()).getCursor();
         // Move to teh selected contact
         cursor.moveToPosition(position);
         // Get the _ID value
@@ -254,14 +270,8 @@ public class ContactSelectionFragment extends Fragment implements
         // Get the selected LOOKUP_KEY
         mContactKey = cursor.getString(CONTACT_LOOKUP_KEY_INDEX);
         // Create the contact's content Uri
-        mContactUri = ContactsContract.Contacts.getLookupUri(mContactId, mContactKey);
+        mContactUri = Contacts.getLookupUri(mContactId, mContactKey);
 
-        // Get the thumnail URI; implementation will have to be different depending on version
-/*        Uri thumbnailUri = getPhotoThumbnailUri( cursor.getString(
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
-                    PHOTO_THUMBNAIL_URI_INDEX :
-                    CONTACT_ID_INDEX
-        ));*/
         String thumbnailUriString = cursor.getString(
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
                         PHOTO_THUMBNAIL_URI_INDEX :
@@ -283,9 +293,9 @@ public class ContactSelectionFragment extends Fragment implements
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
 
         //TODO: fix DB search so that it only searches field names, instead of any field in the contact
-        Uri baseUri;
+        //Uri baseUri;
 
-        if (mSearchString != null && mSearchString.length() != 0) {
+/*        if (mSearchString != null && mSearchString.length() != 0) {
             Log.d("DB QUERY", "mSearchString length is not 0");
             //mSelectionArgs[0] = "'%" + mSearchString + "%'";
             baseUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_FILTER_URI, Uri.encode(mSearchString));
@@ -295,26 +305,33 @@ public class ContactSelectionFragment extends Fragment implements
             Log.d("DB QUERY", "mSearchString length is 0");
             //mSelectionArgs[0] = "'%a%'";
             baseUri = ContactsContract.Contacts.CONTENT_URI;
-        }
+        }*/
 
-
+        mSelectionArgs[0] = "%" + mSearchString + "%";
 
         // Start the query
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            return new CursorLoader(
+                    getActivity(),
+                    Contacts.CONTENT_URI,
+                    PROJECTION,
+                    SELECTION,
+                    mSelectionArgs,
+                    Contacts.DISPLAY_NAME_PRIMARY);
+        }
         return new CursorLoader(
                 getActivity(),
-                baseUri,
-                //ContactsContract.Contacts.CONTENT_URI,
+                Contacts.CONTENT_URI,
                 PROJECTION,
                 SELECTION,
-                null,
-                //mSelectionArgs,
-                null
-        );
+                mSelectionArgs,
+                Contacts.DISPLAY_NAME);
     }
 
     /**
      * Implement onLoadFinished, which is loaded when the Contacts Provider returns the results
-     * of a query.  In this method, put the result of Cursor in teh SimpleCursorAdapter to
+     * of a query.  In this method, put the result of Cursor in teh ContactsCursorAdapter to
      * automatically update the ListView with the search results
      */
     public void onLoadFinished (Loader<Cursor> loader, Cursor cursor) {
@@ -324,7 +341,7 @@ public class ContactSelectionFragment extends Fragment implements
 
     /**
      * This method is invoked when the loader framework detects that the result Cursor contains
-     * stale data.  If you don't delete the SimpleCursorAdapter reference to the existing Cursor
+     * stale data.  If you don't delete the ContactsCursorAdapter reference to the existing Cursor
      * the loader framework will not recycle the Cursor, which causes a memory leak.
      */
     @Override
@@ -357,53 +374,5 @@ public class ContactSelectionFragment extends Fragment implements
             );
     }
 
-    /* Didn't need to extend it anyway!
-    private static class ContactsAdapter extends SimpleCursorAdapter {
-
-        public ContactsAdapter(Context context, int layout, Cursor c,
-                               String[] from, int[] to, int flags) {
-            super(context, layout, c, from, to, flags);
-        }
-
-        @Override
-        public void bindView(View view, Context context, Cursor cursor){
-            final ViewBinder binder = getViewBinder();
-            final int count = mTo.length;
-            final int[] from = mFrom;
-            final int[] to = mTo;
-
-            for (int i=0; i < count; i++) {
-                final View v = view.findViewById(to[i]);
-                if (v != null) {
-                    boolean bound = false;
-                    if (binder != null) {
-                        bound = binder.setViewValue(v, cursor, from[i]);
-
-                    }
-                    if (!bound) {
-                        String text = cursor.getString(from[i]);
-                        if (text == null) {
-                            text = "";
-                        }
-                        if (v instanceof TextView) {
-                            setViewText((TextView) v, text);
-                        }
-                        else if (v instanceof ImageView) {
-                            setViewImage((ImageView) v, text);
-                        }
-                        else {
-                            throw new IllegalStateException(v.getClass().getName() +
-                            "is not a view that can be bound by this ContactsAdapter.");
-                        }
-
-                    }
-                }
-            }
-
-
-        }
-
-    }
-    */
 
 }

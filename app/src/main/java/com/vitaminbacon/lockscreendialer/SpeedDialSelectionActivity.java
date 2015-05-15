@@ -13,8 +13,6 @@ import android.widget.Button;
 
 public class SpeedDialSelectionActivity extends ActionBarActivity {
 
-    public final static String KEY_NUMBER_TO_ASSIGN =
-            "com.vitaminbacon.lockscreendialer.KEY_NUMBER_TO_ASSIGN";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +60,7 @@ public class SpeedDialSelectionActivity extends ActionBarActivity {
         Intent intent = new Intent(this, ContactSelectionActivity.class);
         String message = button.getText().toString();
         // The next activity will need to know which number was pressed!
-        intent.putExtra(KEY_NUMBER_TO_ASSIGN, message);
+        intent.putExtra(String.valueOf(R.string.key_number_to_assign), message);
         startActivity(intent);
     }
 }

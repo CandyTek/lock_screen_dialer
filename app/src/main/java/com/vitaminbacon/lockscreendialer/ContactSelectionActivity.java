@@ -1,5 +1,8 @@
 package com.vitaminbacon.lockscreendialer;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -17,9 +20,14 @@ public class ContactSelectionActivity extends ActionBarActivity
         implements ContactSelectionFragment.OnContactSelectedListener,
         ContactDialogFragment.OnPhoneNumSelectionListener {
 
+    private String mkeyNumberSelected;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mkeyNumberSelected = getIntent().
+                getStringExtra(String.valueOf(R.string.key_number_to_assign));
         setContentView(R.layout.activity_contact_selection);
 
         /*
@@ -92,8 +100,24 @@ public class ContactSelectionActivity extends ActionBarActivity
     /**
      * Implementing the contact dialog fragment interface
      */
-    public void onPhoneNumSelected(Uri uri){
+    public void onPhoneNumSelected(String displayName, String thumbUri,
+                                   String phoneNum, String phoneType){
+        SharedPreferences sharedPref = this.getSharedPreferences(
+                getString(R.string.speed_dial_preference_file_key),
+                Context.MODE_PRIVATE
+        );
 
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(R.string.key_number_store_prefix_name + mkeyNumberSelected, displayName);
+        editor.putString(R.string.key_number_store_prefix_thumb + mkeyNumberSelected, thumbUri);
+        editor.putString(R.string.key_number_store_prefix_phone + mkeyNumberSelected, phoneNum);
+        editor.putString(R.string.key_number_store_prefix_type + mkeyNumberSelected, phoneType);
+        editor.commit();
+
+        // Now return to the main SettingsActivity, and dump this activity using flags.
+        Intent intent = new Intent(this, SettingsActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     /**
