@@ -37,5 +37,15 @@
     <string name="key_number_store_prefix_name">com.vitaminbacon.lockscreendialer.KEY_ASSIGNMENT_NAME_</string>
     <string name="key_number_store_prefix_thumb">com.vitaminbacon.lockscreendialer.KEY_ASSIGNMENT_THUMB_</string>
     <string name="key_number_store_prefix_type">com.vitaminbacon.lockscreendialer.KEY_ASSIGNMENT_TYPE_</string>
+    <string name="is_key_number_already_assigned">com.vitaminbacon.lockscreendialer.IS_KEY_ASSIGNED</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="contact_assigned_instruction_1">Reassign speed dial #</string>
+    <string name="contact_assigned_instruction_2">to new contact?</string>
+    <string name="contact_assigned_reassign">Reassign</string>
+    <string name="contact_assigned_cancel">Cancel</string>
+
+    <string name="toast_contact_assigned">assigned to speed dial #</string>
+    <string name="toast_contact_cleared">Contact cleared from speed dial #</string>
 
 </resources>

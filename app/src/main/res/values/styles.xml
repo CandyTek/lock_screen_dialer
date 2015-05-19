@@ -5,4 +5,34 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="key_pad_buttons">
+        <item name="android:typeface">monospace</item>
+        <item name="android:textColor">@color/gunmetal</item>
+        <item name="android:textSize">50sp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:background">@drawable/selector_speed_dial</item>
+    </style>
+
+    <style name="key_pad_dividers">
+        <item name="android:background">@color/divider</item>
+        <item name="android:layout_weight">0</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginBottom">0dp</item>
+    </style>
+
+    <style name="dialog_buttons">
+
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:background">@drawable/selector_dialog_buttons</item>
+    </style>
 </resources>

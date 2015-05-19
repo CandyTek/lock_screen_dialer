@@ -1,165 +1,250 @@
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:layout_marginTop="40dp"
-    android:stretchColumns="*"
-    android:layout_centerInParent="true"
+    android:orientation="vertical"
     tools:context="com.vitaminbacon.lockscreendialer.SpeedDialSelectionActivity">
-    <!--android:gravity="center_horizontal"-->
 
-    <TableRow>
 
-        <TextView
-            android:text="@string/speed_dial_selection_instructions"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
+    <TextView
+        android:text="@string/speed_dial_selection_instructions"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:padding="5dp"/>
 
-    </TableRow>
+    <TextView
+        android:text="@string/speed_dial_selection_details"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:padding="5dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="40dp"/>
 
-    <TableRow>
-
-        <TextView
-            android:text="@string/speed_dial_selection_details"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-    </TableRow>
-
-    <TableRow>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/speed_dial_selection_1"
             android:text="1"
             android:onClick="assignSpeedDialContact"
+            style="@style/key_pad_buttons"/>
 
-            android:textColor="#FFFFFF"
-            android:textSize="50sp"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_weight=".33"
-            android:layout_margin="10dip"
-            android:background="@drawable/key_shape" />
+        <View
+           android:layout_width="1dp"
+           android:layout_height="match_parent"
+           style="@style/key_pad_dividers"/>
 
         <Button
             android:id="@+id/speed_dial_selection_2"
             android:text="2"
             android:onClick="assignSpeedDialContact"
+            style="@style/key_pad_buttons" />
 
-            android:textColor="#FFFFFF"
-            android:textSize="50sp"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_weight=".33"
-            android:layout_margin="10dip"
-            android:background="@drawable/key_shape" />
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            style="@style/key_pad_dividers"/>
 
         <Button
             android:id="@+id/speed_dial_selection_3"
             android:text="3"
             android:onClick="assignSpeedDialContact"
+            style="@style/key_pad_buttons"/>
 
-            android:textColor="#FFFFFF"
-            android:textSize="50sp"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_weight=".33"
-            android:layout_margin="10dip"
-            android:background="@drawable/key_shape" />
+    </LinearLayout>
 
-    </TableRow>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider"/>
 
-    <TableRow>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/speed_dial_selection_4"
             android:text="4"
             android:onClick="assignSpeedDialContact"
+            style="@style/key_pad_buttons" />
 
-            android:textColor="#FFFFFF"
-            android:textSize="50sp"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_weight=".33"
-            android:layout_margin="10dip"
-            android:background="@drawable/key_shape" />
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            style="@style/key_pad_dividers"/>
 
         <Button
             android:id="@+id/speed_dial_selection_5"
             android:text="5"
             android:onClick="assignSpeedDialContact"
+            style="@style/key_pad_buttons" />
 
-            android:textColor="#FFFFFF"
-            android:textSize="50sp"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_weight=".33"
-            android:layout_margin="10dip"
-            android:background="@drawable/key_shape" />
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            style="@style/key_pad_dividers"/>
 
         <Button
             android:id="@+id/speed_dial_selection_6"
             android:text="6"
             android:onClick="assignSpeedDialContact"
-            android:textColor="#FFFFFF"
-            android:textSize="50sp"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_weight=".33"
-            android:layout_margin="10dip"
-            android:background="@drawable/key_shape" />
+            style="@style/key_pad_buttons" />
 
-    </TableRow>
+    </LinearLayout>
 
-    <TableRow>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider"/>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
 
         <Button
             android:id="@+id/speed_dial_selection_7"
             android:text="7"
             android:onClick="assignSpeedDialContact"
+            style="@style/key_pad_buttons"/>
 
-            android:textColor="#FFFFFF"
-            android:textSize="50sp"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_weight=".33"
-            android:layout_margin="10dip"
-            android:background="@drawable/key_shape" />
-
-
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            style="@style/key_pad_dividers"/>
 
         <Button
             android:id="@+id/speed_dial_selection_8"
             android:text="8"
             android:onClick="assignSpeedDialContact"
+            style="@style/key_pad_buttons" />
 
-            android:textColor="#FFFFFF"
-            android:textSize="50sp"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_weight=".33"
-            android:layout_margin="10dip"
-            android:background="@drawable/key_shape" />
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            style="@style/key_pad_dividers"/>
 
         <Button
             android:id="@+id/speed_dial_selection_9"
             android:text="9"
             android:onClick="assignSpeedDialContact"
+            style="@style/key_pad_buttons" />
 
-            android:textColor="#FFFFFF"
-            android:textSize="50sp"
-            android:layout_width="0dp"
-            android:layout_height="60dp"
-            android:layout_weight=".33"
-            android:layout_margin="10dip"
-            android:background="@drawable/key_shape" />
+    </LinearLayout>
 
-    </TableRow>
+</LinearLayout>
 
-</TableLayout>
+
+
+    <!--
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginTop="40dp"
+        tools:context="com.vitaminbacon.lockscreendialer.SpeedDialSelectionActivity">
+        &lt;!&ndash;android:gravity="center_horizontal"&ndash;&gt;
+
+        <TableRow android:padding = "5dp">
+
+            <TextView
+                android:text="@string/speed_dial_selection_instructions"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+        </TableRow>
+
+        <TableRow android:padding = "5dp">
+
+            <TextView
+                android:text="@string/speed_dial_selection_details"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        </TableRow>
+
+        <TableRow>
+
+            <Button
+                android:id="@+id/speed_dial_selection_1"
+                android:text="1"
+                style="@style/key_pad_buttons"
+     />
+
+     &lt;!&ndash;       <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/divider"
+                android:layout_weight="0"/>&ndash;&gt;
+
+            <Button
+                android:id="@+id/speed_dial_selection_2"
+                android:text="2"
+                style="@style/key_pad_buttons" />
+    &lt;!&ndash;        <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/divider"
+                android:layout_weight="0"/>&ndash;&gt;
+
+            <Button
+                android:id="@+id/speed_dial_selection_3"
+                android:text="3"
+                style="@style/key_pad_buttons"/>
+
+        </TableRow>
+
+        <TableRow>
+
+            <Button
+                android:id="@+id/speed_dial_selection_4"
+                android:text="4"
+                style="@style/key_pad_buttons" />
+
+            <Button
+                android:id="@+id/speed_dial_selection_5"
+                android:text="5"
+                style="@style/key_pad_buttons" />
+
+            <Button
+                android:id="@+id/speed_dial_selection_6"
+                android:text="6"
+                style="@style/key_pad_buttons" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <Button
+                android:id="@+id/speed_dial_selection_7"
+                android:text="7"
+                style="@style/key_pad_buttons"/>
+
+
+
+            <Button
+                android:id="@+id/speed_dial_selection_8"
+                android:text="8"
+                style="@style/key_pad_buttons" />
+
+            <Button
+                android:id="@+id/speed_dial_selection_9"
+                android:text="9"
+                style="@style/key_pad_buttons" />
+
+        </TableRow>
+
+    </TableLayout>
+    -->

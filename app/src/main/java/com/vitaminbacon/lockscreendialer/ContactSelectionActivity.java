@@ -8,26 +8,38 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
+import android.widget.Toast;
 
 
 public class ContactSelectionActivity extends ActionBarActivity
         implements ContactSelectionFragment.OnContactSelectedListener,
-        ContactDialogFragment.OnPhoneNumSelectionListener {
+        ContactDialogFragment.OnPhoneNumSelectionListener,
+        ContactAssignedDialogFragment.ReassignSpeedDialInterface {
 
     private String mkeyNumberSelected;
+    //private Boolean mkeyNumberAlreadyAssigned; -- phased out, check for this cleaner by checking if data exists for assignment
+    private static final String TAG = "ContactsSelectionAct";
+
+    private ContactAssignedDialogFragment mAssignedDialogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mkeyNumberSelected = getIntent().
-                getStringExtra(String.valueOf(R.string.key_number_to_assign));
+                getStringExtra(getResources().getString(R.string.key_number_to_assign));
+
+        /*mkeyNumberAlreadyAssigned = getIntent().getBooleanExtra(
+                getResources().getString(R.string.is_key_number_already_assigned),
+                false);*/
+
         setContentView(R.layout.activity_contact_selection);
 
         /*
@@ -54,6 +66,42 @@ public class ContactSelectionActivity extends ActionBarActivity
             // Add the fragment to the fragment container
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.contact_list_container, fragment).commit();
+
+            // Check to see whether we need to open up the clear contact assignment dialog
+            SharedPreferences sharedPref = this.getSharedPreferences(
+                    getString(R.string.speed_dial_preference_file_key),
+                    Context.MODE_PRIVATE);
+
+            if (sharedPref.getString( // Checks that value exists
+                    getString(R.string.key_number_store_prefix_phone) + mkeyNumberSelected,
+                    null) != null) {
+                // get the stored values
+
+                String phoneNum = sharedPref.getString(
+                        getString(R.string.key_number_store_prefix_phone) + mkeyNumberSelected,
+                        null);
+                String displayName = sharedPref.getString(
+                        getString(R.string.key_number_store_prefix_name) + mkeyNumberSelected,
+                        null);
+                if (displayName ==null){
+                    displayName = "Unknown";
+                }
+                String thumbUri = sharedPref.getString(
+                        getString(R.string.key_number_store_prefix_thumb) + mkeyNumberSelected,
+                        null);
+                String phoneType = sharedPref.getString(
+                        getString(R.string.key_number_store_prefix_type) + mkeyNumberSelected,
+                        null);
+
+                mAssignedDialogFragment =
+                        ContactAssignedDialogFragment.newInstance(displayName,
+                                thumbUri,
+                                phoneNum,
+                                phoneType,
+                                mkeyNumberSelected);
+
+                mAssignedDialogFragment.show(getSupportFragmentManager(), "fragment_contact_dialog");
+            }
         }
     }
 
@@ -108,16 +156,76 @@ public class ContactSelectionActivity extends ActionBarActivity
         );
 
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(R.string.key_number_store_prefix_name + mkeyNumberSelected, displayName);
-        editor.putString(R.string.key_number_store_prefix_thumb + mkeyNumberSelected, thumbUri);
-        editor.putString(R.string.key_number_store_prefix_phone + mkeyNumberSelected, phoneNum);
-        editor.putString(R.string.key_number_store_prefix_type + mkeyNumberSelected, phoneType);
+        editor.putString(
+                getString(R.string.key_number_store_prefix_name) + mkeyNumberSelected,
+                displayName);
+        editor.putString(
+                getString(R.string.key_number_store_prefix_thumb) + mkeyNumberSelected,
+                thumbUri);
+        editor.putString(
+                getString(R.string.key_number_store_prefix_phone) + mkeyNumberSelected,
+                phoneNum);
+        editor.putString(
+                getString(R.string.key_number_store_prefix_type) + mkeyNumberSelected,
+                phoneType);
         editor.commit();
 
         // Now return to the main SettingsActivity, and dump this activity using flags.
-        Intent intent = new Intent(this, SettingsActivity.class);
+/*        Intent intent = new Intent(this, SettingsActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+        startActivity(intent);*/
+        finish();
+        Toast.makeText(getApplicationContext(),
+                displayName + " "
+                        + getString(R.string.toast_contact_assigned)
+                        + mkeyNumberSelected,
+                Toast.LENGTH_SHORT
+        ).show();
+
+    }
+
+
+/*    public void reassignButtonClicked(View view) {
+        reassignSpeedDial(true); //User clicks "Reassign" speed dial
+    }
+
+    public void cancelButtonClicked(View view) {
+        reassignSpeedDial(false); //User clicks "Cancel"
+    }*/
+
+    public void reassignSpeedDial (Boolean isContactReassigned) {
+
+        // Regardless, dismiss the dialog fragment
+        if (mAssignedDialogFragment != null) {
+            mAssignedDialogFragment.dismiss();
+        }
+
+        if (!isContactReassigned) {
+            finish(); // End ContactSelectionActivity because 'Cancel' has been pressed
+            return;
+        }
+
+        //  Delete the stored contact information
+        SharedPreferences sharedPref = this.getSharedPreferences(
+                getString(R.string.speed_dial_preference_file_key),
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        editor.remove(getString(R.string.key_number_store_prefix_name) + mkeyNumberSelected);
+        editor.remove(getString(R.string.key_number_store_prefix_phone) + mkeyNumberSelected);
+        editor.remove(getString(R.string.key_number_store_prefix_thumb) + mkeyNumberSelected);
+        editor.remove(getString(R.string.key_number_store_prefix_type) + mkeyNumberSelected);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD){ //.apply() is faster, but only supported on API 9
+            editor.apply();
+        }
+        else {
+            editor.commit();
+        }
+        Toast.makeText(getApplicationContext(),
+                getString(R.string.toast_contact_cleared) + mkeyNumberSelected,
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
     /**

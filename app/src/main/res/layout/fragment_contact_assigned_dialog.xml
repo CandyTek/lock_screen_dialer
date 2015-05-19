@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/dialog_assigned_parent">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/contact_assigned_instruction"
+        android:textSize="20sp"
+        android:background="@color/gunmetal"
+        android:textColor="@color/white"
+        android:padding="10dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="10dp"
+        android:id="@+id/contact_assigned_thumbnail"
+        android:layout_below="@id/contact_assigned_instruction"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/contact_assigned_display_name"
+        android:ellipsize="none"
+        android:maxLines="4"
+        android:scrollHorizontally="false"
+        android:textSize="24sp"
+        android:layout_toRightOf="@id/contact_assigned_thumbnail"
+        android:layout_below="@id/contact_assigned_instruction"
+        android:inputType="textPersonName"
+        android:padding="5dp"
+        />
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/contact_assigned_phone_info"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/contact_assigned_thumbnail">
+
+        <ImageView
+            android:id="@+id/phone_selector_list_item_pic"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_action_call"
+
+            android:layout_margin="5dp"/>
+
+        <TextView
+            android:id="@+id/contact_assigned_phone_type"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:textSize="20dp"
+            android:padding="5dp"
+            android:gravity="center"/>
+
+        <TextView
+            android:id="@+id/contact_assigned_phone_num"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:textSize="20dp"
+            android:padding="5dp"
+            android:layout_marginRight="20dp"
+            android:gravity="right"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/contact_assigned_phone_info">
+
+        <Button
+            android:id="@+id/contact_assigned_reassign"
+            android:text="@string/contact_assigned_reassign"
+
+            style="@style/dialog_buttons"/>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            style="@style/key_pad_dividers"/>
+
+        <Button
+            android:id="@+id/contact_assigned_cancel"
+            android:text="@string/contact_assigned_cancel"
+
+            style="@style/dialog_buttons"/>
+
+    </LinearLayout>
+</RelativeLayout>

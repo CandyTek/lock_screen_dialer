@@ -3,5 +3,13 @@
     <color name="gunmetal">#2C3539</color>
     <color name="white">#FFFFFF</color>
 
+    <color name="pressed">#737CA1</color>
+    <color name="black_cow">#4C4646</color>
+    <color name="divider">#646D7E</color>
+    <color name="gray_goose">#D1D0CE</color>
+    <color name="cornsilk">#FFF8DC</color>
+    <color name="beige">#F5F5DC</color>
+    <color name="platinum">#E5E4E2</color>
+
 
 </resources>
