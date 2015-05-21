@@ -21,6 +21,7 @@ public class SpeedDialSelectionActivity extends ActionBarActivity {
     private Button[] mkeypadButtons;
     private Boolean[] mkeypadAssignedTracker;
     private static final int SELECTED_COLOR_ID = R.color.platinum;
+    private static final int TRANSPARENT_COLOR = 0x00000000;
 
 
     @Override
@@ -70,6 +71,9 @@ public class SpeedDialSelectionActivity extends ActionBarActivity {
                 Log.d(TAG, "Setting shaded background on key " + keyNum);
                 mkeypadButtons[i].setBackgroundColor(getResources().getColor(SELECTED_COLOR_ID));
                 mkeypadAssignedTracker[i] = true;
+            }
+            else {
+                mkeypadButtons[i].setBackgroundColor(TRANSPARENT_COLOR);
             }
         }
 

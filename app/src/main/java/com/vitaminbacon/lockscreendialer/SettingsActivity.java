@@ -2,6 +2,8 @@ package com.vitaminbacon.lockscreendialer;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -17,6 +19,7 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 
 import java.util.List;
@@ -32,7 +35,9 @@ import java.util.List;
  * href="http://developer.android.com/guide/topics/ui/settings.html">Settings
  * API Guide</a> for more information on developing a Settings UI.
  */
-public class SettingsActivity extends PreferenceActivity {
+@SuppressWarnings("deprecation")
+public class SettingsActivity extends PreferenceActivity
+        implements SharedPreferences.OnSharedPreferenceChangeListener{
     /**
      * Determines whether to always show the simplified settings UI, where
      * settings are presented in a single list. When false, settings are shown
@@ -40,15 +45,29 @@ public class SettingsActivity extends PreferenceActivity {
      * shown on tablets.
      */
     private static final boolean ALWAYS_SIMPLE_PREFS = false;
+    private static final String KEY_TOGGLE_LOCK_SCREEN = "toggle_lock_screen"; // for the change listener
+    private static final String TAG = "SettingsActivity";
 
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
 
+
         setupSimplePreferencesScreen();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
     /**
      * Shows the simplified settings UI if the device configuration if the
      * device configuration dictates that a simplified, single-pane UI should be
@@ -262,4 +281,33 @@ public class SettingsActivity extends PreferenceActivity {
         }
     }
     */
+
+    public void onSharedPreferenceChanged (SharedPreferences sharedPreferences, String key) {
+
+        Log.d(TAG, "onSharedPreferencesChanged called, key = " + key);
+        if (key.equals(KEY_TOGGLE_LOCK_SCREEN)) {
+/*            @SuppressWarnings("deprecation")
+            Preference toggleLockScreenPreference = findPreference(key);*/
+            Boolean isLockScreenEnabled = sharedPreferences.getBoolean(key, false);
+
+            if (isLockScreenEnabled) {
+                // Start the lock screen service that will register and listen for the intents
+                startService(new Intent(this, LockScreenService.class));
+                Toast.makeText(
+                        getApplicationContext(),
+                        getString(R.string.toast_lock_screen_enabled),
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+            else {
+                // Stop the lock screen service
+                stopService(new Intent(this, LockScreenService.class));
+                Toast.makeText(
+                        getApplicationContext(),
+                        getString(R.string.toast_lock_screen_disabled),
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+        }
+    }
 }

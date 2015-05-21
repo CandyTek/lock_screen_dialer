@@ -113,7 +113,7 @@ public class ContactDialogFragment extends DialogFragment implements
         super.onResume();
         Window window = getDialog().getWindow();
         //window.setLayout(pixelToDIP(250), pixelToDIP(400));
-        window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, pixelToDIP(300));
+        window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT); //TODO: check that this works, instead of pixelToDP(300)
         window.setGravity(Gravity.CENTER);
 
         //setStyle(STYLE_NO_TITLE, android.R.style.Theme_Holo_Light);

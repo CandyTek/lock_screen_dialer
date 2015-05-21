@@ -88,9 +88,9 @@
 
     <string name="pref_description_display_contact_info">Custom text display, e.g., name and email</string>
 
-    <string name="speed_dial_selection_instructions">Click a key to assign it a speed dial number.</string>
+    <string name="speed_dial_selection_instructions">Tap a key to assign a phone number.</string>
 
-    <string name="speed_dial_selection_details">Shaded keys have already been assigned.</string>
+    <string name="speed_dial_selection_details">Shaded keys have been assigned.</string>
 
     <string name="contact_search_hint">Type a contact name</string>
 </resources>

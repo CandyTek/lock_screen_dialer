@@ -67,6 +67,8 @@ public class ContactSelectionActivity extends ActionBarActivity
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.contact_list_container, fragment).commit();
 
+            //TODO: Would it be better UI experience to have the below dialog appear in SpeedDialSelectionActivity?
+
             // Check to see whether we need to open up the clear contact assignment dialog
             SharedPreferences sharedPref = this.getSharedPreferences(
                     getString(R.string.speed_dial_preference_file_key),
@@ -193,18 +195,48 @@ public class ContactSelectionActivity extends ActionBarActivity
         reassignSpeedDial(false); //User clicks "Cancel"
     }*/
 
-    public void reassignSpeedDial (Boolean isContactReassigned) {
+    public void reassignSpeedDial (int viewId) {
 
         // Regardless, dismiss the dialog fragment
         if (mAssignedDialogFragment != null) {
             mAssignedDialogFragment.dismiss();
         }
 
-        if (!isContactReassigned) {
-            finish(); // End ContactSelectionActivity because 'Cancel' has been pressed
-            return;
-        }
+        switch (viewId) {
 
+            case R.id.contact_assigned_reassign: // Reassign button pressed
+                deleteContactFromSpeedDial();
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.toast_contact_reassign_cleared) + mkeyNumberSelected,
+                        Toast.LENGTH_SHORT
+                ).show();
+                break;
+
+            case R.id.contact_assigned_cancel: // Cancel "x" pressed
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.toast_contact_reassign_cancelled),
+                        Toast.LENGTH_SHORT
+                ).show();
+                finish();
+                break;
+
+            case R.id.contact_assigned_remove: // Remove button pressed
+                deleteContactFromSpeedDial();
+                Toast.makeText(getApplicationContext(),
+                        getString(R.string.toast_contact_reassign_cleared) + mkeyNumberSelected,
+                        Toast.LENGTH_SHORT
+                ).show();
+                finish();
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Method that deletes the stored information for the key specified by mkeyNumberSelected
+     */
+    public void deleteContactFromSpeedDial(){
         //  Delete the stored contact information
         SharedPreferences sharedPref = this.getSharedPreferences(
                 getString(R.string.speed_dial_preference_file_key),
@@ -222,12 +254,7 @@ public class ContactSelectionActivity extends ActionBarActivity
         else {
             editor.commit();
         }
-        Toast.makeText(getApplicationContext(),
-                getString(R.string.toast_contact_cleared) + mkeyNumberSelected,
-                Toast.LENGTH_SHORT
-        ).show();
     }
-
     /**
      * A placeholder fragment containing a simple view.
      */

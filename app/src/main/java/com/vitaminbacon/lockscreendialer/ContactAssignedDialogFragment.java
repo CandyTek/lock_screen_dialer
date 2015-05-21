@@ -37,6 +37,7 @@ public class ContactAssignedDialogFragment extends DialogFragment
     private TextView mphoneTypeView;
     private TextView mInstructionView;
     private Button mReassignButton;
+    private Button mRemoveButton;
     private Button mCancelButton;
 
 
@@ -113,12 +114,13 @@ public class ContactAssignedDialogFragment extends DialogFragment
         mphoneTypeView.setText(mphoneType);
 
         mInstructionView = (TextView) rootView.findViewById(R.id.contact_assigned_instruction);
-        mInstructionView.setText(getString(R.string.contact_assigned_instruction_1)
-                + mkeyNumSelected + " from " + mdisplayName + " "
-                + getString(R.string.contact_assigned_instruction_2));
+        mInstructionView.setText("#" + mkeyNumSelected + " "
+                + getString(R.string.contact_assigned_instruction));
 
         mReassignButton = (Button) rootView.findViewById(R.id.contact_assigned_reassign);
         mReassignButton.setOnClickListener(this);
+        mRemoveButton = (Button) rootView.findViewById(R.id.contact_assigned_remove);
+        mRemoveButton.setOnClickListener(this);
         mCancelButton = (Button) rootView.findViewById(R.id.contact_assigned_cancel);
         mCancelButton.setOnClickListener(this);
 
@@ -132,23 +134,11 @@ public class ContactAssignedDialogFragment extends DialogFragment
      * as set in the onCreate method
      * @param v
      */
-    // TODO: create and handle a button to simply unassign.  Put x in upper corner of dialog for cancel
     public void onClick(View v) {
-        Boolean reassignButtonSelected;
-        switch (v.getId()) {
-            case R.id.contact_assigned_reassign:
-                reassignButtonSelected = true;
-                break;
-            case R.id.contact_assigned_cancel:
-                reassignButtonSelected = false;
-                break;
-            default:
-                reassignButtonSelected = false;
-                break;
-        }
-        mListener.reassignSpeedDial(reassignButtonSelected);
+        mListener.reassignSpeedDial(v.getId());
     }
-/*    // TODO: Rename method, update argument and hook method into UI event
+
+    /*
     public void reassignButtonClicked(View view) {
         //mListener.ReassignSpeedDial(true); //User clicks "Reassign" speed dial
     }
@@ -185,8 +175,7 @@ public class ContactAssignedDialogFragment extends DialogFragment
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface ReassignSpeedDialInterface {
-        // TODO: Update argument type and name
-        public void reassignSpeedDial(Boolean isContactReassigned);
+        public void reassignSpeedDial(int viewId);
     }
 
 }

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_marginTop="40dp"
+    android:layout_marginTop="10dp"
     android:orientation="vertical"
     tools:context="com.vitaminbacon.lockscreendialer.SpeedDialSelectionActivity">
 
@@ -24,7 +24,7 @@
         android:padding="5dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginBottom="40dp"/>
+        android:layout_marginBottom="20dp"/>
 
     <LinearLayout
         android:layout_width="fill_parent"

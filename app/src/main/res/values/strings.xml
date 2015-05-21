@@ -40,12 +40,15 @@
     <string name="is_key_number_already_assigned">com.vitaminbacon.lockscreendialer.IS_KEY_ASSIGNED</string>
 
 <!-- TODO: Remove or change this placeholder text -->
-    <string name="contact_assigned_instruction_1">Reassign speed dial #</string>
-    <string name="contact_assigned_instruction_2">to new contact?</string>
+    <string name="contact_assigned_instruction">currently assigned to:</string>
+
     <string name="contact_assigned_reassign">Reassign</string>
-    <string name="contact_assigned_cancel">Cancel</string>
+    <string name="contact_assigned_remove">Remove</string>
 
     <string name="toast_contact_assigned">assigned to speed dial #</string>
-    <string name="toast_contact_cleared">Contact cleared from speed dial #</string>
+    <string name="toast_contact_reassign_cancelled">Reassignment cancelled</string>
+    <string name="toast_contact_reassign_cleared">Contact cleared from speed dial #</string>
+    <string name="toast_lock_screen_enabled">Lock Screen Dialer enabled</string>
+    <string name="toast_lock_screen_disabled">Lock Screen Dialer disabled</string>
 
 </resources>

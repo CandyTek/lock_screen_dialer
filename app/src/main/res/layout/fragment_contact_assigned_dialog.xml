@@ -4,23 +4,43 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:id="@+id/dialog_assigned_parent">
-    <TextView
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/contact_assigned_instruction"
-        android:textSize="20sp"
-        android:background="@color/gunmetal"
-        android:textColor="@color/white"
-        android:padding="10dp"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal"
+        android:id="@+id/contact_assigned_instruction_bar">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:id="@+id/contact_assigned_instruction"
+
+            style="@style/dialog_title_bar"/>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            style="@style/key_pad_dividers"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/contact_assigned_cancel"
+            android:text="x"
+            android:background="@drawable/selector_dialog_buttons"
+            style="@style/dialog_title_bar_close"/>
+        </LinearLayout>
+
+
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_margin="10dp"
         android:id="@+id/contact_assigned_thumbnail"
-        android:layout_below="@id/contact_assigned_instruction"/>
+        android:layout_below="@id/contact_assigned_instruction_bar"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,10 +50,10 @@
         android:scrollHorizontally="false"
         android:textSize="24sp"
         android:layout_toRightOf="@id/contact_assigned_thumbnail"
-        android:layout_below="@id/contact_assigned_instruction"
+        android:layout_below="@id/contact_assigned_instruction_bar"
         android:inputType="textPersonName"
-        android:padding="5dp"
-        />
+        android:padding="5dp"/>
+
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/contact_assigned_phone_info"
@@ -85,8 +105,8 @@
             style="@style/key_pad_dividers"/>
 
         <Button
-            android:id="@+id/contact_assigned_cancel"
-            android:text="@string/contact_assigned_cancel"
+            android:id="@+id/contact_assigned_remove"
+            android:text="@string/contact_assigned_remove"
 
             style="@style/dialog_buttons"/>
 

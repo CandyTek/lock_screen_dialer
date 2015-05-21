@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.util.Log;
 
 public class LockScreenEventReceiver extends BroadcastReceiver {
+    public static boolean wasScreenOn = true;
+
     public LockScreenEventReceiver() {
     }
 
