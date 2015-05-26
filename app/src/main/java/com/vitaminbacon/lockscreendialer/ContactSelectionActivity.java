@@ -69,12 +69,12 @@ public class ContactSelectionActivity extends ActionBarActivity
 
             //TODO: Would it be better UI experience to have the below dialog appear in SpeedDialSelectionActivity?
 
-            // Check to see whether we need to open up the clear contact assignment dialog
+            // Check to see whether we need to open up the assigned contact dialog to reassign or clear the contact
             SharedPreferences sharedPref = this.getSharedPreferences(
                     getString(R.string.speed_dial_preference_file_key),
                     Context.MODE_PRIVATE);
 
-            if (sharedPref.getString( // Checks that value exists
+            if (sharedPref.getString( // Checks that value exists for the key number selected
                     getString(R.string.key_number_store_prefix_phone) + mkeyNumberSelected,
                     null) != null) {
                 // get the stored values

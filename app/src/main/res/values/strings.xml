@@ -39,7 +39,7 @@
     <string name="key_number_store_prefix_type">com.vitaminbacon.lockscreendialer.KEY_ASSIGNMENT_TYPE_</string>
     <string name="is_key_number_already_assigned">com.vitaminbacon.lockscreendialer.IS_KEY_ASSIGNED</string>
 
-<!-- TODO: Remove or change this placeholder text -->
+
     <string name="contact_assigned_instruction">currently assigned to:</string>
 
     <string name="contact_assigned_reassign">Reassign</string>
@@ -50,5 +50,33 @@
     <string name="toast_contact_reassign_cleared">Contact cleared from speed dial #</string>
     <string name="toast_lock_screen_enabled">Lock Screen Dialer enabled</string>
     <string name="toast_lock_screen_disabled">Lock Screen Dialer disabled</string>
+    <string name="title_activity_lock_screen_selection">Lock Screen Type Selection</string>
+
+    <string name="lock_screen_selection_instruction">Select a lock screen:</string>
+    <string name="lock_screen_keypad_pin_name">Enter Keypad PIN</string>
+    <string name="lock_screen_keypad_pattern_name">Draw Keypad Pattern</string>
+    <string name="title_activity_keypad_pattern_config">Configure Keypad Pattern</string>
+    <string name="title_activity_keypad_pin_config">Configure Keypad PIN</string>
+
+    <string name="btn_keypad_pin_config_submit_1">Continue</string>
+    <string name="btn_keypad_pin_config_submit_2">Confirm</string>
+    <string name="btn_keypad_pin_config_cancel">Cancel</string>
+    <string name="keypad_pin_config_instructions_1">Enter a PIN</string>
+    <string name="keypad_pin_config_instructions_2">PIN must be at least 4 digits</string>
+    <string name="keypad_pin_config_instructions_3">Tap "Continue" when finished</string>
+    <string name="keypad_pin_config_instructions_4">Confirm PIN</string>
+    <string name="err_keypad_pin_config_too_short">The PIN must be at least 4 numbers.</string>
+    <string name="err_keypad_pin_config_not_matching">The PINs you entered do not match.</string>
+    <string name="keypad_pin_config_success">Keypad PIN lock screen enabled.</string>
+    <string name="lock_screen_type_file_key">com.vitaminbacon.lockscreendialer.LOCK_SCREEN_TYPE_FILE</string>
+    <string name="lock_screen_type_value_key">LOCK_SCREEN_TYPE</string>
+    <string name="lock_screen_type_value_keypad_pin">KEYPAD_PIN</string>
+    <string name="lock_screen_passcode_value_key">PASSCODE</string>
+
+    <string name="lock_screen_pin_default_display">Enter PIN</string>
+    <string name="toast_wrong_pin_entered">Invalid PIN entered</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

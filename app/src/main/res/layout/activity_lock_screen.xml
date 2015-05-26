@@ -1,12 +1,65 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
+    android:background="@color/gunmetal"
+    android:orientation="vertical"
     tools:context="com.vitaminbacon.lockscreendialer.LockScreenActivity">
 
-    <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+     <LinearLayout
+         android:layout_width="fill_parent"
+         android:layout_height="wrap_content"
+         android:id="@+id/lock_screen_info_block"
+         android:orientation="vertical"
+         android:gravity="right">
 
-</RelativeLayout>
+         <com.vitaminbacon.lockscreendialer.MyDigitalClock
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:id="@+id/lock_screen_clock"
+             style="@style/lock_screen_clock"/>
+         <TextView
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:id="@+id/lock_screen_date"
+             android:text="Fri December 31, 1999"
+             style="@style/lock_screen_date"/>
+         <TextView
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:id="@+id/lock_screen_info"
+             android:text="Bob Jones"
+             style="@style/lock_screen_info"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lock_screen_fragment_container"
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lock_screen_additional_widgets"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lock_screen_emergency"
+            android:text="Emergency"
+            android:layout_weight="1"
+            style="@style/lock_screen_additional_widgets"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lock_screen_camera"/>
+
+    </LinearLayout>
+
+</LinearLayout>

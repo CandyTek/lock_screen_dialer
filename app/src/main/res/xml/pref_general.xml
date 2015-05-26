@@ -1,14 +1,14 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <CheckBoxPreference
-        android:key="toggle_lock_screen"
+        android:key="@string/key_toggle_lock_screen"
         android:title="@string/pref_title_toggle_lock_screen"
         android:summary="@string/pref_description_toggle_lock_screen"
         android:defaultValue="false" />
 
     <!-- A preference that directs you to a new activity to select speed dial contacts -->
     <Preference
-        android:key="select_speed_dial_contacts"
+        android:key="@string/key_assign_speed_dial_contacts"
         android:title="@string/pref_title_assign_speed_dial_contacts"
         android:summary="@string/pref_description_assign_speed_dial_contacts" >
         <intent
@@ -18,15 +18,15 @@
     </Preference>
 
     <!-- A list of available lock screen mechanisms to bypass to access phone -->
-    <ListPreference
-        android:key="select_screen_lock_type"
+    <Preference
+        android:key="@string/key_select_lock_screen_type"
         android:title="@string/pref_title_select_screen_lock_type"
-        android:defaultValue="-1"
-        android:entries="@array/pref_screen_lock_types_titles"
-        android:entryValues="@array/pref_screen_lock_types_values"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null" />
-
+        android:defaultValue="-1">
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="com.vitaminbacon.lockscreendialer"
+            android:targetClass="com.vitaminbacon.lockscreendialer.LockScreenSelectionActivity" />
+    </Preference>
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
     <!-- Commenting out default generated content

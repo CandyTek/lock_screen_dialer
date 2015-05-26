@@ -5,8 +5,10 @@
         <!-- Customize your theme here. -->
     </style>
 
+
+
     <style name="key_pad_buttons">
-        <item name="android:typeface">monospace</item>
+        <item name="android:typeface">sans</item>
         <item name="android:textColor">@color/gunmetal</item>
         <item name="android:textSize">50sp</item>
         <item name="android:layout_width">0dp</item>
@@ -52,4 +54,83 @@
         <item name="android:minWidth">48dp</item>
         <item name="android:padding">10dp</item>
     </style>
+
+    <style name="lock_screen_clock">
+        <item name="android:textSize">60sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+    </style>
+
+    <style name="lock_screen_date">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+    </style>
+
+    <style name="lock_screen_info">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+    </style>
+
+    <style name="lock_screen_additional_widgets">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+    </style>
+
+    <style name="pin_pad_buttons">
+        <item name="android:typeface">sans</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">50sp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:background">@drawable/selector_speed_dial</item>
+    </style>
+
+    <style name="list_item_selection">
+        <item name="android:padding">30dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/selector_speed_dial</item>
+    </style>
+
+    <style name="list_item_selection_summary">
+
+    </style>
+
+    <style name="general_instruction">
+        <item name="android:padding">30dp</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    </style>
+
+    <style name="key_pad_buttons_lock_screen">
+        <item name="android:typeface">sans</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">40sp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:background">@drawable/selector_speed_dial</item>
+    </style>
+
 </resources>

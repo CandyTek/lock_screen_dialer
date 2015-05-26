@@ -45,7 +45,6 @@ public class SettingsActivity extends PreferenceActivity
      * shown on tablets.
      */
     private static final boolean ALWAYS_SIMPLE_PREFS = false;
-    private static final String KEY_TOGGLE_LOCK_SCREEN = "toggle_lock_screen"; // for the change listener
     private static final String TAG = "SettingsActivity";
 
 
@@ -89,6 +88,12 @@ public class SettingsActivity extends PreferenceActivity
         fakeHeader.setTitle(R.string.pref_header_display);  // Changed from template
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_display);  //Changed from template
+
+/*        //Change the summary of the lock screen type to display the currently selected type
+        ListPreference lockScreenTypePreference =
+                (ListPreference) findPreference(getString(R.string.key_select_lock_screen_type));
+        String[] lockScreenTypeValues = getResources().getStringArray(R.array.pref_screen_lock_types_titles);
+        lockScreenTypePreference.setSummary(lockScreenTypePreference.getValue());*/
 
         // Add 'data and sync' preferences, and a corresponding header.
         //fakeHeader = new PreferenceCategory(this);
@@ -285,7 +290,7 @@ public class SettingsActivity extends PreferenceActivity
     public void onSharedPreferenceChanged (SharedPreferences sharedPreferences, String key) {
 
         Log.d(TAG, "onSharedPreferencesChanged called, key = " + key);
-        if (key.equals(KEY_TOGGLE_LOCK_SCREEN)) {
+        if (key.equals(getString(R.string.key_toggle_lock_screen))) {
 /*            @SuppressWarnings("deprecation")
             Preference toggleLockScreenPreference = findPreference(key);*/
             Boolean isLockScreenEnabled = sharedPreferences.getBoolean(key, false);
@@ -308,6 +313,9 @@ public class SettingsActivity extends PreferenceActivity
                         Toast.LENGTH_SHORT
                 ).show();
             }
+        }
+        if (key.equals(getString(R.string.key_select_lock_screen_type))) {
+            Log.d(TAG, "Lock screen type change selected.");
         }
     }
 }

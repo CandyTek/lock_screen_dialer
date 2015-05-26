@@ -1,0 +1,60 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:orientation="vertical"
+
+    android:paddingTop="@dimen/activity_vertical_margin"
+
+    tools:context="com.vitaminbacon.lockscreendialer.KeypadPinConfigActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Instruction"
+        android:gravity="center_horizontal"
+        android:id="@+id/keypad_pin_config_instruction"
+        style="@style/general_instruction"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/keypad_pin_config_edittext"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:minWidth="40dp"
+        android:inputType="numberPassword"
+        android:gravity="center_horizontal"
+        android:maxLength="6"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"/>
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_keypad_pin_config_submit"
+            android:onClick="submitButtonClicked"
+            android:textAllCaps="false"
+
+            style="@style/dialog_buttons"/>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            style="@style/key_pad_dividers"/>
+
+        <Button
+            android:id="@+id/contact_assigned_remove"
+            android:text="@string/btn_keypad_pin_config_cancel"
+            android:onClick="cancelButtonClicked"
+            android:textAllCaps="false"
+
+            style="@style/dialog_buttons"/>
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>

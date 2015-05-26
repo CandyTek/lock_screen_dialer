@@ -88,6 +88,7 @@ public class ContactAssignedDialogFragment extends DialogFragment
 
         mdisplayNameView = (TextView) rootView.findViewById(R.id.contact_assigned_display_name);
         mdisplayNameView.setText(mdisplayName);
+        mdisplayNameView.setSingleLine(false); // To make wrapping; can't seem to do this via XML
 
         mthumbnailView = (ImageView) rootView.findViewById(R.id.contact_assigned_thumbnail);
         if(mthumbUri != null) {

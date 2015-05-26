@@ -65,7 +65,7 @@
     <string name="pref_title_select_screen_lock_type">Choose lock screen type</string>
 
     <string-array name="pref_screen_lock_types_titles">
-        <item>Keypad</item>
+        <item>Keypad PIN</item>
     </string-array>
 
     <string-array name="pref_screen_lock_types_values">
@@ -93,4 +93,8 @@
     <string name="speed_dial_selection_details">Shaded keys have been assigned.</string>
 
     <string name="contact_search_hint">Type a contact name</string>
+
+    <string name="key_toggle_lock_screen">key_toggle_lock_screen</string>
+    <string name="key_assign_speed_dial_contacts">key_assign_speed_dial_contacts</string>
+    <string name="key_select_lock_screen_type">key_select_lock_screen_type</string>
 </resources>

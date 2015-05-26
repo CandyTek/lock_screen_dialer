@@ -5,6 +5,7 @@
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -33,12 +34,15 @@
         </activity>
         <activity
             android:name=".LockScreenActivity"
-            android:label="@string/title_activity_lock_screen" >
+            android:label="@string/title_activity_lock_screen"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".SpeedDialSelectionActivity"
             android:label="@string/title_activity_speed_dial_selection"
-            android:parentActivityName=".SettingsActivity" >
+            android:parentActivityName=".SettingsActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.vitaminbacon.lockscreendialer.SettingsActivity" />
@@ -46,7 +50,8 @@
         <activity
             android:name=".ContactSelectionActivity"
             android:label="@string/title_activity_contact_selection"
-            android:parentActivityName=".SpeedDialSelectionActivity" >
+            android:parentActivityName=".SpeedDialSelectionActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.vitaminbacon.lockscreendialer.SpeedDialSelectionActivity" />
@@ -56,8 +61,35 @@
             android:name=".LockScreenService"
             android:enabled="true"
             android:exported="true" >
-
         </service>
+
+        <activity
+            android:name=".LockScreenSelectionActivity"
+            android:label="@string/title_activity_lock_screen_selection"
+            android:parentActivityName=".SettingsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.vitaminbacon.lockscreendialer.SettingsActivity" />
+        </activity>
+        <activity
+            android:name=".KeypadPatternConfigActivity"
+            android:label="@string/title_activity_keypad_pattern_config"
+            android:parentActivityName=".LockScreenSelectionActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.vitaminbacon.lockscreendialer.LockScreenSelectionActivity" />
+        </activity>
+        <activity
+            android:name=".KeypadPinConfigActivity"
+            android:label="@string/title_activity_keypad_pin_config"
+            android:parentActivityName=".LockScreenSelectionActivity"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.vitaminbacon.lockscreendialer.LockScreenSelectionActivity" />
+        </activity>
     </application>
 
 </manifest>
