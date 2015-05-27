@@ -3,9 +3,14 @@ package com.vitaminbacon.lockscreendialer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
+import android.view.WindowManager;
 
 public class LockScreenEventReceiver extends BroadcastReceiver {
+
+    private static final String TAG = "LSEventRecevier";
+
     public static boolean wasScreenOn = true;
 
     public LockScreenEventReceiver() {
@@ -29,19 +34,23 @@ public class LockScreenEventReceiver extends BroadcastReceiver {
          ===========================================================================================
          */
 
+
+
         // Create a new intent that directs to the lockscreen
-        Intent lockscreenIntent = new Intent(context, LockScreenActivity.class);
-        lockscreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // necessary to add to android's stack of things to do
 
         if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
 
             Log.d(LockScreenEventReceiver.class.getSimpleName(), "onReceive() received event ACTION_SCREEN_OFF.");
-            context.startActivity(lockscreenIntent);
+
+            Intent lockScreenIntent = getLockScreenActivityIntent(context);
+            context.startActivity(lockScreenIntent);
+
         }
         else if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
 
             Log.d(LockScreenEventReceiver.class.getSimpleName(), "onReceive() received event ACTION_BOOT_COMPLETED.");
-            context.startActivity(lockscreenIntent);
+            Intent lockScreenIntent = getLockScreenActivityIntent(context);
+            context.startActivity(lockScreenIntent);
         }
         else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
 
@@ -52,5 +61,32 @@ public class LockScreenEventReceiver extends BroadcastReceiver {
         else {
             Log.d(LockScreenEventReceiver.class.getSimpleName(), "onReceive() received unanticipated event.");
         }
+    }
+
+    private Intent getLockScreenActivityIntent(Context context){
+
+        Intent intent;
+        // Get the lock screen type from sharedPref
+
+        SharedPreferences sharedPref = context.getSharedPreferences(
+                context.getString(R.string.lock_screen_type_file_key),
+                Context.MODE_PRIVATE);
+
+        String lockScreenType = sharedPref.getString(
+                context.getString(R.string.lock_screen_type_value_key),
+                null);
+
+        if(lockScreenType != null &&
+                lockScreenType.equals(context.getString(R.string.lock_screen_type_value_keypad_pin))){ // Now enable the correct lock screen
+            intent = new Intent (context, LockScreenKeypadPinActivity.class);
+            Log.d(TAG, "Keypad PIN fragment to be implemented.");
+        } //TODO: enable other lock screen types
+        else { //An error of some kind
+            Log.d(TAG, "No value for key " + context.getString(R.string.lock_screen_type_value_key));
+            intent = new Intent (context, ErrorPageActivity.class);
+        }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // necessary to add to android's stack of things to do
+        intent.addFlags(WindowManager.LayoutParams.TYPE_SYSTEM_ERROR); //this allows the activity to be placed on top of everything -- UGLY HACK??
+        return intent;
     }
 }

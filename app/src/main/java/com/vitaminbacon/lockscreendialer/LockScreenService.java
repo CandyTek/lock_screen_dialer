@@ -1,5 +1,6 @@
 package com.vitaminbacon.lockscreendialer;
 
+import android.app.KeyguardManager;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
@@ -25,9 +26,13 @@ public class LockScreenService extends Service {
         super.onCreate();
 
         // TODO: implement keyguardmanager.keyguardlock
+        KeyguardManager km = (KeyguardManager)getSystemService(KEYGUARD_SERVICE);
+        KeyguardManager.KeyguardLock keyguardLock = km.newKeyguardLock("IN");
+        keyguardLock.disableKeyguard();
 
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_BOOT_COMPLETED);
         mReceiver = new LockScreenEventReceiver();
         registerReceiver(mReceiver, filter);
 

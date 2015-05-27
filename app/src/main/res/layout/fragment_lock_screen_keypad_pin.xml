@@ -29,14 +29,14 @@
             android:id="@+id/lock_screen_pin_button_delete"
             android:layout_toRightOf="@id/lock_screen_pin_display"
             android:layout_centerVertical="true"
-            android:textSize="15dp"
+            android:textSize="25dp"
             android:textColor="@color/white"
             android:shadowColor="#000000"
             android:shadowDx="1"
             android:shadowDy="1"
             android:visibility="invisible"
             android:background="@drawable/selector_speed_dial"
-            android:minWidth="20dp"/>
+            android:minWidth="40dp"/>
         <!---->
         <!--<ImageView-->
             <!--android:layout_width="wrap_content"-->

@@ -50,7 +50,7 @@ public class SpeedDialSelectionActivity extends ActionBarActivity {
 
         // Grab the buttons
         mkeypadButtons = new Button[9];
-        mkeypadAssignedTracker = new Boolean[9];
+        mkeypadAssignedTracker = new Boolean[9];  //TODO: can't I just get rid of this tracker now?
         Arrays.fill(mkeypadAssignedTracker, false); // initialize the tracker array as false
         mkeypadButtons[0] = (Button)this.findViewById(R.id.speed_dial_selection_1);
         mkeypadButtons[1] = (Button)this.findViewById(R.id.speed_dial_selection_2);

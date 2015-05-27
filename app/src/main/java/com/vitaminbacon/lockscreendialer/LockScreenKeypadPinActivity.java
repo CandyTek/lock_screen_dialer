@@ -4,24 +4,28 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.PixelFormat;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Vibrator;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class LockScreenKeypadPinFragment extends Fragment
-    implements View.OnClickListener, View.OnLongClickListener {
+public class LockScreenKeypadPinActivity extends Activity
+        implements View.OnClickListener, View.OnLongClickListener {
 
-    private static final String TAG = "PinFragment";
+    private final static String TAG = "LSKeypadPinActivity";
 
     private TextView mPinDisplayView;
     private Button mDeleteButton;
@@ -31,17 +35,15 @@ public class LockScreenKeypadPinFragment extends Fragment
     private String mPinEntered;
     private int mNumTries;
 
-    private OnCorrectPasscode mListener;
-
-
-
-    public LockScreenKeypadPinFragment() {
-        // Required empty public constructor
-    }
+    // Variables to implement TYPE_SYSTEM_ERROR stuff
+    public WindowManager winManager;
+    private RelativeLayout mWrapperView;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate() called.");
         super.onCreate(savedInstanceState);
+
         if (savedInstanceState != null) {
             mNumTries = savedInstanceState.getInt("numTries");
         }
@@ -51,20 +53,26 @@ public class LockScreenKeypadPinFragment extends Fragment
 
         mkeypadButtons = new Button[10];
 
-    }
+        // Implement some of the WindowManager TYPE_SYSTEM_ERROR hocus pocus
+        WindowManager.LayoutParams localLayoutParams =
+                new WindowManager.LayoutParams(
+                        WindowManager.LayoutParams.TYPE_SYSTEM_ERROR,
+                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | // To avoid notification bar
+                                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | // Same
+                                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, //Same
+                        PixelFormat.TRANSLUCENT);
+        this.winManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
+        this.mWrapperView = new RelativeLayout(getBaseContext());
+        getWindow().setAttributes(localLayoutParams);
+        View.inflate(this, R.layout.activity_lock_screen_keypad_pin, this.mWrapperView);
+        this.winManager.addView(this.mWrapperView, localLayoutParams);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_lock_screen_keypad_pin, container, false);
-
-        // grab the display that we will need to change on button press
-        mPinDisplayView = (TextView) view.findViewById(R.id.lock_screen_pin_display);
+        // Instantiate class variables for the interactive views
+        mPinDisplayView = (TextView) mWrapperView.findViewById(R.id.lock_screen_pin_display);
         mPinDisplayView.setText(getString(R.string.lock_screen_pin_default_display)); // In case returning to this display from elsewhere, want to reset
 
-        mDeleteButton = (Button) view.findViewById(R.id.lock_screen_pin_button_delete);
-        mOkButton = (Button) view.findViewById(R.id.lock_screen_pin_button_OK);
+        mDeleteButton = (Button) mWrapperView.findViewById(R.id.lock_screen_pin_button_delete);
+        mOkButton = (Button) mWrapperView.findViewById(R.id.lock_screen_pin_button_OK);
 
         mPinEntered = ""; // Same -- we want to reset
 
@@ -72,21 +80,22 @@ public class LockScreenKeypadPinFragment extends Fragment
 
         if (mPinStored == null) {
             Log.d(TAG, "Stored PIN is null.");
-            mListener.onCorrectPasscode(); //For now, just exit.  TODO: find good way to handle these errors.
+            onCorrectPasscode(); //For now, just exit.  TODO: find good way to handle these errors.
         }
 
-        mkeypadButtons[0] = (Button) view.findViewById(R.id.lock_screen_pin_button_0);
-        mkeypadButtons[1] = (Button) view.findViewById(R.id.lock_screen_pin_button_1);
-        mkeypadButtons[2] = (Button) view.findViewById(R.id.lock_screen_pin_button_2);
-        mkeypadButtons[3] = (Button) view.findViewById(R.id.lock_screen_pin_button_3);
-        mkeypadButtons[4] = (Button) view.findViewById(R.id.lock_screen_pin_button_4);
-        mkeypadButtons[5] = (Button) view.findViewById(R.id.lock_screen_pin_button_5);
-        mkeypadButtons[6] = (Button) view.findViewById(R.id.lock_screen_pin_button_6);
-        mkeypadButtons[7] = (Button) view.findViewById(R.id.lock_screen_pin_button_7);
-        mkeypadButtons[8] = (Button) view.findViewById(R.id.lock_screen_pin_button_8);
-        mkeypadButtons[9] = (Button) view.findViewById(R.id.lock_screen_pin_button_9);
+        mkeypadButtons[0] = (Button) mWrapperView.findViewById(R.id.lock_screen_pin_button_0);
+        mkeypadButtons[1] = (Button) mWrapperView.findViewById(R.id.lock_screen_pin_button_1);
+        mkeypadButtons[2] = (Button) mWrapperView.findViewById(R.id.lock_screen_pin_button_2);
+        mkeypadButtons[3] = (Button) mWrapperView.findViewById(R.id.lock_screen_pin_button_3);
+        mkeypadButtons[4] = (Button) mWrapperView.findViewById(R.id.lock_screen_pin_button_4);
+        mkeypadButtons[5] = (Button) mWrapperView.findViewById(R.id.lock_screen_pin_button_5);
+        mkeypadButtons[6] = (Button) mWrapperView.findViewById(R.id.lock_screen_pin_button_6);
+        mkeypadButtons[7] = (Button) mWrapperView.findViewById(R.id.lock_screen_pin_button_7);
+        mkeypadButtons[8] = (Button) mWrapperView.findViewById(R.id.lock_screen_pin_button_8);
+        mkeypadButtons[9] = (Button) mWrapperView.findViewById(R.id.lock_screen_pin_button_9);
 
-        SharedPreferences sharedPref = getActivity().getSharedPreferences(
+        // Set the onClickListeners to the appropriate views
+        SharedPreferences sharedPref = getSharedPreferences(
                 getString(R.string.speed_dial_preference_file_key),
                 Context.MODE_PRIVATE
         );
@@ -103,8 +112,6 @@ public class LockScreenKeypadPinFragment extends Fragment
         }
         mDeleteButton.setOnClickListener(this);
         mOkButton.setOnClickListener(this);
-
-        return view;
     }
 
     @Override
@@ -113,12 +120,7 @@ public class LockScreenKeypadPinFragment extends Fragment
         outState.putInt("numTries", mNumTries);
     }
 
-
     public void onClick (View view) {
-        if (mListener == null) {
-            Log.d(TAG, "mListener is null");
-            return;
-        }
         switch (view.getId()) {
             case R.id.lock_screen_pin_button_0:
                 mPinEntered += '0';
@@ -169,12 +171,12 @@ public class LockScreenKeypadPinFragment extends Fragment
 
         //  Now check whether the PIN entered so far matches the stored PIN
         if (mPinEntered.equals(mPinStored)) {
-            mListener.onCorrectPasscode();
+            onCorrectPasscode();
         }
     }
 
     public boolean onLongClick (View view){  // TODO: will need to set a longer longClick
-        SharedPreferences sharedPref = getActivity().getSharedPreferences(
+        SharedPreferences sharedPref = getSharedPreferences(
                 getString(R.string.speed_dial_preference_file_key),
                 Context.MODE_PRIVATE
         );
@@ -185,7 +187,7 @@ public class LockScreenKeypadPinFragment extends Fragment
 
 
         switch (view.getId()) {
-                // TODO: set zero key as a lock screen dialer?
+            // TODO: set zero key as a lock screen dialer?
             case R.id.lock_screen_pin_button_1:
                 telNum = sharedPref.getString(preferenceKeyPrefix+"1", null);
                 break;
@@ -223,66 +225,33 @@ public class LockScreenKeypadPinFragment extends Fragment
         }
 
         intent.setData(Uri.parse("tel:" + (telNum.trim())));
-        getActivity().startActivity(intent);
+        startActivity(intent);
 
         return true;
     }
 
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnCorrectPasscode) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnCorrectPasscode {
-        // TODO: Update argument type and name
-        public void onCorrectPasscode();
+    public void onCorrectPasscode() {
+        finish();
     }
 
     private String getStoredPin(){
-        SharedPreferences sharedPref = getActivity().getSharedPreferences(
+        SharedPreferences sharedPref = getSharedPreferences(
                 getString(R.string.lock_screen_type_file_key),
                 Context.MODE_PRIVATE);
 
         return sharedPref.getString( getString(R.string.lock_screen_passcode_value_key), null);
 
     }
-
-    /**
-     * Method for handling when an erroneous PIN has been entered
-     */
     private void wrongPinEntered() {
         resetPinEntry();
         mNumTries++;
         Toast toast = Toast.makeText(
-                getActivity().getApplicationContext(),
+                getApplicationContext(),
                 getString(R.string.toast_wrong_pin_entered),
                 Toast.LENGTH_LONG);
         toast.setGravity(Gravity.TOP,0,0);
         toast.show();
-        Vibrator v = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         v.vibrate(200);
     }
 
@@ -294,4 +263,41 @@ public class LockScreenKeypadPinFragment extends Fragment
         mPinEntered = "";
         mDeleteButton.setVisibility(View.INVISIBLE);
     }
+    @Override
+    public void onBackPressed() {  // Overrides the back button to prevent exit
+        return;
+    }
+
+    // Implemented to use TYPE_SYSTEM_ERROR hack
+    @Override
+    public void onDestroy() {
+        // TODO: is there a way to animate this?
+        this.winManager.removeView(this.mWrapperView);
+        this.mWrapperView.removeAllViews();
+        super.onDestroy();
+    }
+
+/*
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_lock_screen, menu);
+        return true;
+    }
+*/
+
+/*    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }*/
 }
