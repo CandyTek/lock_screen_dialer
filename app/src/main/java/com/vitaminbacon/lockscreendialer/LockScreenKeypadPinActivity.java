@@ -3,13 +3,16 @@ package com.vitaminbacon.lockscreendialer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
 import android.net.Uri;
+import android.os.RemoteException;
 import android.os.Vibrator;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -21,16 +24,24 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.internal.telephony.ITelephony;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 
 public class LockScreenKeypadPinActivity extends Activity
         implements View.OnClickListener, View.OnLongClickListener {
 
     private final static String TAG = "LSKeypadPinActivity";
 
+    // UI elements
     private TextView mPinDisplayView;
     private Button mDeleteButton;
     private Button mOkButton;
     private Button[] mkeypadButtons;
+
+    // variables relating to the logic of the lockscreen
     private String mPinStored;
     private String mPinEntered;
     private int mNumTries;
@@ -39,19 +50,25 @@ public class LockScreenKeypadPinActivity extends Activity
     public WindowManager winManager;
     private RelativeLayout mWrapperView;
 
+    // Variables to utilize phone state service and handle phone calls
+    //private PhoneStateReceiver mReceiver;
+    private boolean mPhoneCallInitiated;
+    private String mPhoneNumOnCall;
+    private String mPhoneTypeOnCall;
+    private String mContactNameOnCall;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate() called.");
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            mNumTries = savedInstanceState.getInt("numTries");
-        }
-        else {
-            mNumTries = 0;
-        }
+        mNumTries = 0;  // Possibly modified later by onRestoreInstanceState
 
         mkeypadButtons = new Button[10];
+
+        mPinStored = getStoredPin();
+
+        mWrapperView = new RelativeLayout(getBaseContext());
 
         // Implement some of the WindowManager TYPE_SYSTEM_ERROR hocus pocus
         WindowManager.LayoutParams localLayoutParams =
@@ -62,26 +79,16 @@ public class LockScreenKeypadPinActivity extends Activity
                                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, //Same
                         PixelFormat.TRANSLUCENT);
         this.winManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
-        this.mWrapperView = new RelativeLayout(getBaseContext());
         getWindow().setAttributes(localLayoutParams);
         View.inflate(this, R.layout.activity_lock_screen_keypad_pin, this.mWrapperView);
         this.winManager.addView(this.mWrapperView, localLayoutParams);
 
-        // Instantiate class variables for the interactive views
         mPinDisplayView = (TextView) mWrapperView.findViewById(R.id.lock_screen_pin_display);
         mPinDisplayView.setText(getString(R.string.lock_screen_pin_default_display)); // In case returning to this display from elsewhere, want to reset
+        mPinEntered = ""; // Same -- we want to reset
 
         mDeleteButton = (Button) mWrapperView.findViewById(R.id.lock_screen_pin_button_delete);
         mOkButton = (Button) mWrapperView.findViewById(R.id.lock_screen_pin_button_OK);
-
-        mPinEntered = ""; // Same -- we want to reset
-
-        mPinStored = getStoredPin();
-
-        if (mPinStored == null) {
-            Log.d(TAG, "Stored PIN is null.");
-            onCorrectPasscode(); //For now, just exit.  TODO: find good way to handle these errors.
-        }
 
         mkeypadButtons[0] = (Button) mWrapperView.findViewById(R.id.lock_screen_pin_button_0);
         mkeypadButtons[1] = (Button) mWrapperView.findViewById(R.id.lock_screen_pin_button_1);
@@ -104,21 +111,108 @@ public class LockScreenKeypadPinActivity extends Activity
             mkeypadButtons[i].setOnClickListener(this); // all buttons will have an onClickListener
 
             String filename = getString(R.string.key_number_store_prefix_phone) + i;
-            Log.d(TAG, "Attempting to access " + filename);
+            //Log.d(TAG, "Attempting to access " + filename);
             if (sharedPref.getString(filename, null) != null) { //only set the long click where necessary
-                Log.d(TAG, "Setting long click on key " + i);
+                //Log.d(TAG, "Setting long click on key " + i);
                 mkeypadButtons[i].setOnLongClickListener(this);
             }
         }
         mDeleteButton.setOnClickListener(this);
         mOkButton.setOnClickListener(this);
+
+
+
+        if (mPinStored == null) {
+            Log.d(TAG, "Stored PIN is null.");
+            onCorrectPasscode(); //For now, just exit.  TODO: find good way to handle these errors.
+        }
+
+
+
+        // Initialize the receiver; must always be re-instantiated in onCreate, since activity was destroyed or just started
+//        IntentFilter filter = new IntentFilter(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
+//        mReceiver = new PhoneStateReceiver();
+//        registerReceiver(mReceiver, filter);
+        startService(new Intent(this, PhoneStateService.class));
+        mPhoneCallInitiated = false; // Possibly revised later by onResumeInstanceState
+
+    }
+
+    @Override
+    public void onResume(){
+
+
+
+        // if there is still a phone call active, we need to set the display to handle that
+        if (mPhoneCallInitiated) {
+            enableCallButtonsInView(mPhoneNumOnCall, mContactNameOnCall, mPhoneTypeOnCall);
+        }
+
+        super.onResume();
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        mNumTries = savedInstanceState.getInt("numTries");
+        mPhoneCallInitiated = savedInstanceState.getBoolean("phoneCallInitiated");
+        mContactNameOnCall = savedInstanceState.getString("contactNameOnCall");
+        mPhoneNumOnCall = savedInstanceState.getString("phoneNumOnCall");
+        mPhoneTypeOnCall = savedInstanceState.getString("phoneTypeOnCall");
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("numTries", mNumTries);
+        outState.putBoolean("phoneCallInitiated", mPhoneCallInitiated);
+        if (mContactNameOnCall != null) {
+            outState.putString("contactNameOnCall", mContactNameOnCall);
+        }
+        if (mPhoneNumOnCall != null) {
+            outState.putString("phoneNumOnCall", mPhoneNumOnCall);
+        }
+        if (mPhoneTypeOnCall != null) {
+            outState.putString("phoneTypeOnCall", mPhoneTypeOnCall);
+        }
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        int phoneState = intent.getIntExtra(PhoneStateReceiver.EXTRA_PHONE_STATE, 0); // returns 0 if doesn't exist
+
+        Log.d(TAG, "onNewIntent called, phoneState = " + phoneState);
+
+        if (phoneState == PhoneStateReceiver.PHONE_STATE_IDLE) {
+            // Phone was just hung up
+            mPhoneCallInitiated = false;
+            mContactNameOnCall = mPhoneNumOnCall = mPhoneTypeOnCall = null;
+            disableCallButtonsInView();
+        }
+        else if (phoneState == PhoneStateReceiver.PHONE_STATE_RINGING) { // a call has been received, we should handle lock screen in case user returns there
+
+            // This implementation ends the lock screen, but it should be recalled by the receiver once the call is over
+            finish();
+
+            // Below implementation supports handling the call in the lock screen
+            /*mPhoneCallInitiated = true;
+            mPhoneNumOnCall = intent.getStringExtra(PhoneStateReceiver.EXTRA_PHONE_DATA_NUMBER);
+            enableCallButtonsInView(mPhoneNumOnCall, null, null);*/ // TODO: worth trying to get Contacts data for the number?
+            //moveTaskToBack(true); // for now, don't have the activity come to the foreground
+            //Log.d(TAG, "New Intent called, Phone State Ringing from " + mPhoneNumOnCall);
+
+            //TODO: implement setting for whether user wants to handle phone calls in lock screen or not?
+        }
+        else if (phoneState == PhoneStateReceiver.PHONE_STATE_OFFHOOK) {
+            // Currently requires no implementation
+            return;
+        }
+
+    }
+
 
     public void onClick (View view) {
         switch (view.getId()) {
@@ -155,6 +249,10 @@ public class LockScreenKeypadPinActivity extends Activity
             case R.id.lock_screen_pin_button_OK:
                 wrongPinEntered();  // Because our functionality will automatically accept a PIN when it is entered, we can assume error
                 return;
+            case R.id.lock_screen_end_call_button:
+                disableCallButtonsInView();
+                endPhoneCall();
+                return;
             default:  // This should be the delete button
                 Log.d(TAG, "delete button pressed.");
                 resetPinEntry();
@@ -178,10 +276,14 @@ public class LockScreenKeypadPinActivity extends Activity
     public boolean onLongClick (View view){  // TODO: will need to set a longer longClick
         SharedPreferences sharedPref = getSharedPreferences(
                 getString(R.string.speed_dial_preference_file_key),
-                Context.MODE_PRIVATE
-        );
-        String telNum;
+                Context.MODE_PRIVATE);
         String preferenceKeyPrefix = getString(R.string.key_number_store_prefix_phone);
+
+        String telNum;
+        String name;
+        String type;
+
+        int speedDialNum;
 
         Intent intent = new Intent (Intent.ACTION_CALL);
 
@@ -189,48 +291,167 @@ public class LockScreenKeypadPinActivity extends Activity
         switch (view.getId()) {
             // TODO: set zero key as a lock screen dialer?
             case R.id.lock_screen_pin_button_1:
-                telNum = sharedPref.getString(preferenceKeyPrefix+"1", null);
+                speedDialNum = 1;
                 break;
             case R.id.lock_screen_pin_button_2:
-                telNum = sharedPref.getString(preferenceKeyPrefix+"2", null);
+                speedDialNum = 2;
                 break;
             case R.id.lock_screen_pin_button_3:
-                telNum = sharedPref.getString(preferenceKeyPrefix+"3", null);
+                speedDialNum = 3;
                 break;
             case R.id.lock_screen_pin_button_4:
-                telNum = sharedPref.getString(preferenceKeyPrefix+"4", null);
+                speedDialNum = 4;
                 break;
             case R.id.lock_screen_pin_button_5:
-                telNum = sharedPref.getString(preferenceKeyPrefix+"5", null);
+                speedDialNum = 5;
                 break;
             case R.id.lock_screen_pin_button_6:
-                telNum = sharedPref.getString(preferenceKeyPrefix+"6", null);
+                speedDialNum = 6;
                 break;
             case R.id.lock_screen_pin_button_7:
-                telNum = sharedPref.getString(preferenceKeyPrefix+"7", null);
+                speedDialNum = 7;
                 break;
             case R.id.lock_screen_pin_button_8:
-                telNum = sharedPref.getString(preferenceKeyPrefix+"8", null);
+                speedDialNum = 8;
                 break;
             case R.id.lock_screen_pin_button_9:
-                telNum = sharedPref.getString(preferenceKeyPrefix+"9", null);
+                speedDialNum = 9;
                 break;
-            default:  // This should be the delete button
-                telNum = null;
+            default:
+                speedDialNum = -1;
                 break;
         }
 
-        if (telNum == null) {
+        if (speedDialNum == -1) { //error handling
+            Log.d(TAG, "Error in finding view id.");
             return false;
         }
 
+        telNum = sharedPref.getString(
+                getString(R.string.key_number_store_prefix_phone) + speedDialNum,
+                null);
+        name = sharedPref.getString(
+                getString(R.string.key_number_store_prefix_name) + speedDialNum,
+                "Unknown");
+        type = sharedPref.getString(
+                getString(R.string.key_number_store_prefix_type) + speedDialNum,
+                "Phone");
+
+        if (telNum == null) {
+            Log.d(TAG, "Error in obtaining phone number for longClick");
+            return false;
+        }
+
+        enableCallButtonsInView(telNum, name, type);
+        initializePhoneStateReceiver();
         intent.setData(Uri.parse("tel:" + (telNum.trim())));
         startActivity(intent);
 
         return true;
     }
 
-    public void onCorrectPasscode() {
+    /**
+     * Simple function that makes the call views visible and hides unnecessary views
+     * @param telNum - a string with the telephone number
+     * @param name - a string to display the contact's name
+     * @param type - a string to display the phone number type
+     */
+    private void enableCallButtonsInView(String telNum, String name, String type){
+        //Display the end call button
+        Button endCallBtn = (Button) mWrapperView.findViewById(R.id.lock_screen_end_call_button);
+        endCallBtn.setVisibility(View.VISIBLE);
+        endCallBtn.setOnClickListener(this);
+
+        //Display the information regarding the number we are dialing
+        TextView dialInfoView = (TextView) mWrapperView.findViewById(R.id.lock_screen_call_display);
+        dialInfoView.setText(getDialInfoViewText(telNum, name, type));
+        dialInfoView.setVisibility(View.VISIBLE);
+
+        // Hide the clock
+        mWrapperView.findViewById(R.id.lock_screen_clock).setVisibility(View.GONE);
+        // Hide the date
+        mWrapperView.findViewById(R.id.lock_screen_date).setVisibility(View.GONE);
+        // Hide the other information
+        mWrapperView.findViewById(R.id.lock_screen_info).setVisibility(View.GONE);
+
+    }
+
+    private void disableCallButtonsInView() {
+        mWrapperView.findViewById(R.id.lock_screen_end_call_button).setVisibility(View.GONE);
+
+        mWrapperView.findViewById(R.id.lock_screen_call_display).setVisibility(View.GONE);
+
+        mWrapperView.findViewById(R.id.lock_screen_clock).setVisibility(View.VISIBLE);
+
+        mWrapperView.findViewById(R.id.lock_screen_date).setVisibility(View.VISIBLE);
+
+        mWrapperView.findViewById(R.id.lock_screen_info).setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Method that provides acceptable display information depending on the information available.
+     * @param telNum
+     * @param name
+     * @param type
+     * @return
+     */
+    private String getDialInfoViewText(String telNum, String name, String type){
+        if (name != null && type != null ) {
+            return "Call with " + name + " on " + type.toLowerCase() + "....";
+        }
+        else if (name != null & telNum != null) {
+            return "Call with " + name + "on phone no. " + telNum + " ....";
+        }
+        else if (name != null) { // this shouldn't happen, but....
+            return "Call with " + name + " ....";
+        }
+        else if (telNum != null) { // this should be case where call was received
+            return "Call with phone no. " + telNum + " ....";
+        }
+
+        return "Call ongoing ....";
+    }
+
+    private void initializePhoneStateReceiver() {
+
+    }
+
+    private void endPhoneCall() {
+        TelephonyManager telephonyManager;
+        Class c;
+        Method m;
+        telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+
+        try {
+
+            c = Class.forName(telephonyManager.getClass().getName());
+            m = c.getDeclaredMethod("getITelephony");
+            m.setAccessible(true);
+            ITelephony telephonyService = (ITelephony) m.invoke(telephonyManager);
+            telephonyService.endCall();
+
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    /**
+     * Simple method that handles logic when the correct passcode is entered
+     */
+    private void onCorrectPasscode() {
+        Log.d(TAG, "Finishing activity, clearing service.");
+        //unregisterReceiver(mReceiver);
+        stopService(new Intent(this, PhoneStateService.class));
         finish();
     }
 
@@ -274,8 +495,12 @@ public class LockScreenKeypadPinActivity extends Activity
         // TODO: is there a way to animate this?
         this.winManager.removeView(this.mWrapperView);
         this.mWrapperView.removeAllViews();
+
+        //unregister the receiver
         super.onDestroy();
     }
+
+
 
 /*
     @Override

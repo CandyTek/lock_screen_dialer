@@ -81,4 +81,7 @@
     <string name="title_activity_lock_screen_keypad_pin">Lock Screen Keypad Pin Activity</string>
     <string name="title_activity_error_page">ErrorPageActivity</string>
 
+    <string name="lock_screen_end_call_button_text">End Call</string>
+    <string name="title_activity_lock_screen_launcher">LockScreenLauncherActivity</string>
+
 </resources>

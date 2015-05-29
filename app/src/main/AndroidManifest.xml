@@ -10,6 +10,9 @@
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
@@ -29,7 +32,7 @@
         <receiver
             android:name=".LockScreenEventReceiver"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="false" >
         </receiver>
 
         <activity
@@ -64,7 +67,7 @@
         <service
             android:name=".LockScreenService"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="false" >
         </service>
 
         <activity
@@ -103,6 +106,27 @@
         <activity
             android:name=".ErrorPageActivity"
             android:label="@string/title_activity_error_page" >
+        </activity>
+
+        <receiver
+            android:name=".PhoneStateReceiver"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter android:priority="0" >
+                <action android:name="android.intent.action.PHONE_STATE" />
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".PhoneStateService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
+
+        <activity
+            android:name=".LockScreenLauncherActivity"
+            android:label="@string/title_activity_lock_screen_launcher" >
         </activity>
     </application>
 

@@ -33,6 +33,23 @@
             android:text="Bob Jones"
             style="@style/lock_screen_info"/>
 
+        <!--  Now set "gone" elements for the instance of a phone call -->
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/lock_screen_end_call_button"
+            android:text="@string/lock_screen_end_call_button_text"
+            android:visibility="gone"
+            style="@style/end_call_button"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lock_screen_call_display"
+            android:text="Sample text"
+            android:visibility="gone"
+            style="@style/lock_screen_call_display"/>
+
     </LinearLayout>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

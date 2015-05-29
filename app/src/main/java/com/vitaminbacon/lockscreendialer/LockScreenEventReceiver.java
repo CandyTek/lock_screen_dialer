@@ -37,8 +37,15 @@ public class LockScreenEventReceiver extends BroadcastReceiver {
 
 
         // Create a new intent that directs to the lockscreen
+        if ( intent.getAction().equals(Intent.ACTION_SCREEN_OFF) ||
+                intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
+            Log.d(TAG, "onReceive() received ACTION_SCREEN_OFF or ACTION_BOOT_COMPLETED");
+            Intent lockScreenIntent = new Intent (context, LockScreenLauncherActivity.class);
+            lockScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(lockScreenIntent);
 
-        if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+        }
+/*        if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
 
             Log.d(LockScreenEventReceiver.class.getSimpleName(), "onReceive() received event ACTION_SCREEN_OFF.");
 
@@ -51,19 +58,19 @@ public class LockScreenEventReceiver extends BroadcastReceiver {
             Log.d(LockScreenEventReceiver.class.getSimpleName(), "onReceive() received event ACTION_BOOT_COMPLETED.");
             Intent lockScreenIntent = getLockScreenActivityIntent(context);
             context.startActivity(lockScreenIntent);
-        }
+        }*/
         else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
 
-            Log.d(LockScreenEventReceiver.class.getSimpleName(), "onReceive() received event ACTION_SCREEN_ON.");
+            Log.d(TAG, "onReceive() received event ACTION_SCREEN_ON.");
 
             // Do nothing, since this event should have been handled after ACTION_SCREEN_OFF
         }
         else {
-            Log.d(LockScreenEventReceiver.class.getSimpleName(), "onReceive() received unanticipated event.");
+            Log.d(TAG, "onReceive() received unanticipated event.");
         }
     }
 
-    private Intent getLockScreenActivityIntent(Context context){
+/*    private Intent getLockScreenActivityIntent(Context context){
 
         Intent intent;
         // Get the lock screen type from sharedPref
@@ -88,5 +95,5 @@ public class LockScreenEventReceiver extends BroadcastReceiver {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // necessary to add to android's stack of things to do
         intent.addFlags(WindowManager.LayoutParams.TYPE_SYSTEM_ERROR); //this allows the activity to be placed on top of everything -- UGLY HACK??
         return intent;
-    }
+    }*/
 }
