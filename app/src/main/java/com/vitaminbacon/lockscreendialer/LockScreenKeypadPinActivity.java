@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -28,10 +29,11 @@ import com.android.internal.telephony.ITelephony;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import android.os.Handler;
 
 
 public class LockScreenKeypadPinActivity extends Activity
-        implements View.OnClickListener, View.OnLongClickListener {
+        implements View.OnClickListener, View.OnTouchListener {
 
     private final static String TAG = "LSKeypadPinActivity";
 
@@ -51,23 +53,26 @@ public class LockScreenKeypadPinActivity extends Activity
     private RelativeLayout mWrapperView;
 
     // Variables to utilize phone state service and handle phone calls
-    //private PhoneStateReceiver mReceiver;
     private boolean mPhoneCallInitiated;
     private String mPhoneNumOnCall;
     private String mPhoneTypeOnCall;
     private String mContactNameOnCall;
+
+    // Timer to handle on long clicks using the ontouchlistener
+    private Handler mHandler;
+    private DialerRunnable mRunnable;
+    private final int mLongPressThreshold = 1000; // 1.0 s
+    private boolean mLongPressFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate() called.");
         super.onCreate(savedInstanceState);
 
+        // Initialize some basic variables
         mNumTries = 0;  // Possibly modified later by onRestoreInstanceState
-
         mkeypadButtons = new Button[10];
-
         mPinStored = getStoredPin();
-
         mWrapperView = new RelativeLayout(getBaseContext());
 
         // Implement some of the WindowManager TYPE_SYSTEM_ERROR hocus pocus
@@ -114,7 +119,7 @@ public class LockScreenKeypadPinActivity extends Activity
             //Log.d(TAG, "Attempting to access " + filename);
             if (sharedPref.getString(filename, null) != null) { //only set the long click where necessary
                 //Log.d(TAG, "Setting long click on key " + i);
-                mkeypadButtons[i].setOnLongClickListener(this);
+                mkeypadButtons[i].setOnTouchListener(this);
             }
         }
         mDeleteButton.setOnClickListener(this);
@@ -215,49 +220,25 @@ public class LockScreenKeypadPinActivity extends Activity
 
 
     public void onClick (View view) {
-        switch (view.getId()) {
-            case R.id.lock_screen_pin_button_0:
-                mPinEntered += '0';
-                break;
-            case R.id.lock_screen_pin_button_1:
-                mPinEntered += '1';
-                break;
-            case R.id.lock_screen_pin_button_2:
-                mPinEntered += '2';
-                break;
-            case R.id.lock_screen_pin_button_3:
-                mPinEntered += '3';
-                break;
-            case R.id.lock_screen_pin_button_4:
-                mPinEntered += '4';
-                break;
-            case R.id.lock_screen_pin_button_5:
-                mPinEntered += '5';
-                break;
-            case R.id.lock_screen_pin_button_6:
-                mPinEntered += '6';
-                break;
-            case R.id.lock_screen_pin_button_7:
-                mPinEntered += '7';
-                break;
-            case R.id.lock_screen_pin_button_8:
-                mPinEntered += '8';
-                break;
-            case R.id.lock_screen_pin_button_9:
-                mPinEntered += '9';
-                break;
-            case R.id.lock_screen_pin_button_OK:
+        if (mLongPressFlag) {
+            mLongPressFlag = false;
+            return;
+        }
+        int num = getSpeedDialButtonPressed(view.getId(), -1);
+        if (num == -1) { //Not a speed dial number
+            if (view.getId() == R.id.lock_screen_pin_button_OK) {
                 wrongPinEntered();  // Because our functionality will automatically accept a PIN when it is entered, we can assume error
-                return;
-            case R.id.lock_screen_end_call_button:
+            } else if (view.getId() == R.id.lock_screen_end_call_button) {
                 disableCallButtonsInView();
                 endPhoneCall();
-                return;
-            default:  // This should be the delete button
+            } else {
                 Log.d(TAG, "delete button pressed.");
                 resetPinEntry();
-                return;
+            }
+            return;
         }
+
+        mPinEntered += num;
 
         // Display a new "digit" on the text view
         if (mPinDisplayView.getText().toString().equals(getString(R.string.lock_screen_pin_default_display))){
@@ -268,12 +249,13 @@ public class LockScreenKeypadPinActivity extends Activity
         }
 
         //  Now check whether the PIN entered so far matches the stored PIN
+        //Log.d(TAG, mPinEntered + " vs " + mPinStored);
         if (mPinEntered.equals(mPinStored)) {
             onCorrectPasscode();
         }
     }
 
-    public boolean onLongClick (View view){  // TODO: will need to set a longer longClick
+/*    public boolean onLongClick (View view){  // TODO: will need to set a longer longClick
         SharedPreferences sharedPref = getSharedPreferences(
                 getString(R.string.speed_dial_preference_file_key),
                 Context.MODE_PRIVATE);
@@ -348,7 +330,36 @@ public class LockScreenKeypadPinActivity extends Activity
         startActivity(intent);
 
         return true;
+    }*/
+
+    public boolean onTouch(View v, MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if (mHandler == null) { // means there is no pending handler
+                    mHandler = new Handler();
+                    mRunnable = new DialerRunnable(getSpeedDialButtonPressed(v.getId(), -1));
+                    mHandler.postDelayed(mRunnable, mLongPressThreshold);
+                    mLongPressFlag = false;  // flag to let
+                }
+
+                break;
+            case MotionEvent.ACTION_UP:
+                mHandler.removeCallbacks(mRunnable);
+                mHandler = null;
+                mRunnable = null;
+                /*if (mLongPressFlag) { // Long press was consumed by the runnable!
+                    mLongPressFlag = false; // reset it
+                    return true; // Hopefully this consumes the event so onClick is not triggered
+                }*/
+
+                //Now it is just a normal button press
+
+                break;
+        }
+
+        return false;
     }
+
 
     /**
      * Simple function that makes the call views visible and hides unnecessary views
@@ -412,9 +423,6 @@ public class LockScreenKeypadPinActivity extends Activity
         return "Call ongoing ....";
     }
 
-    private void initializePhoneStateReceiver() {
-
-    }
 
     private void endPhoneCall() {
         TelephonyManager telephonyManager;
@@ -484,6 +492,36 @@ public class LockScreenKeypadPinActivity extends Activity
         mPinEntered = "";
         mDeleteButton.setVisibility(View.INVISIBLE);
     }
+
+    private int getSpeedDialButtonPressed(int id, int defaultReturn){
+        switch (id) {
+            // TODO: set zero key as a lock screen dialer?
+            case R.id.lock_screen_pin_button_1:
+                return 1;
+            case R.id.lock_screen_pin_button_2:
+                return 2;
+            case R.id.lock_screen_pin_button_3:
+                return 3;
+            case R.id.lock_screen_pin_button_4:
+                return 4;
+            case R.id.lock_screen_pin_button_5:
+                return 5;
+            case R.id.lock_screen_pin_button_6:
+                return 6;
+            case R.id.lock_screen_pin_button_7:
+                return 7;
+            case R.id.lock_screen_pin_button_8:
+                return 8;
+            case R.id.lock_screen_pin_button_9:
+                return 9;
+            default:
+                return defaultReturn;
+        }
+    }
+
+    private void enableLongPressFlag () { mLongPressFlag = true; }
+
+
     @Override
     public void onBackPressed() {  // Overrides the back button to prevent exit
         return;
@@ -525,4 +563,52 @@ public class LockScreenKeypadPinActivity extends Activity
 
         return super.onOptionsItemSelected(item);
     }*/
+
+    protected class DialerRunnable implements Runnable {
+        private int num; // the ID of the button pressed
+
+        public DialerRunnable(int num) {
+            this.num = num;
+        }
+
+        public void run() {
+
+            SharedPreferences sharedPref = getSharedPreferences(
+                    getString(R.string.speed_dial_preference_file_key),
+                    Context.MODE_PRIVATE);
+            String preferenceKeyPrefix = getString(R.string.key_number_store_prefix_phone);
+
+            if (num == -1) { //error handling
+                Log.d(TAG, "Error in finding view id.");
+                return;
+            }
+
+            String telNum = sharedPref.getString(
+                    getString(R.string.key_number_store_prefix_phone) + num,
+                    null);
+            String name = sharedPref.getString(
+                    getString(R.string.key_number_store_prefix_name) + num,
+                    "Unknown");
+            String type = sharedPref.getString(
+                    getString(R.string.key_number_store_prefix_type) + num,
+                    "Phone");
+
+            if (telNum == null) {
+                Log.d(TAG, "Error in obtaining phone number");
+                return;
+            }
+
+            Intent intent = new Intent (Intent.ACTION_CALL);
+            intent.setData(Uri.parse("tel:" + (telNum.trim())));
+            startActivity(intent);
+
+            enableCallButtonsInView(telNum, name, type);
+            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            v.vibrate(350);
+            resetPinEntry();
+            enableLongPressFlag();
+
+        }
+    }
 }
+
