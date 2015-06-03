@@ -97,4 +97,32 @@
     <string name="key_toggle_lock_screen">key_toggle_lock_screen</string>
     <string name="key_assign_speed_dial_contacts">key_assign_speed_dial_contacts</string>
     <string name="key_select_lock_screen_type">key_select_lock_screen_type</string>
+    <string name="key_toggle_clock_display">key_toggle_clock_display</string>
+    <string name="key_toggle_date_display">key_toggle_date_display</string>
+    <string name="key_toggle_info_display">key_toggle_info_display</string>
+    <string name="key_toggle_camera_display">key_toggle_camera_display</string>
+
+    <string name="date_format">E d MMM yyyy</string>
+
+    <!-- These three arrays work together; the location of each item in array must correspond to the appropriate item in the other array -->
+    <array name="optional_display_view_file_keys">
+        <item>@string/key_toggle_clock_display</item>
+        <item>@string/key_toggle_date_display</item>
+        <item>@string/key_toggle_info_display</item>
+        <item>@string/key_toggle_camera_display</item>
+    </array>
+    <array name="optional_display_view_layout_ids">
+        <item>@id/lock_screen_clock</item>
+        <item>@id/lock_screen_date</item>
+        <item>@id/lock_screen_info</item>
+        <item>@id/lock_screen_camera</item>
+    </array>
+    <array name="optional_display_view_data_types">
+        <item>boolean</item>
+        <item>boolean</item>
+        <item>string</item>
+        <item>boolean</item>
+    </array>
+
+
 </resources>

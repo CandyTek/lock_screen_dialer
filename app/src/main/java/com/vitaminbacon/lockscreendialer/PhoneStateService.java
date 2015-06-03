@@ -16,7 +16,7 @@ public class PhoneStateService extends Service {
 
 
     public PhoneStateService() {
-        Log.d(TAG, "Constructor called.");
+        //Log.d(TAG, "Constructor called.");
     }
 
     @Override
@@ -27,23 +27,39 @@ public class PhoneStateService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d(TAG, "onCreate called");
+        //Log.d(TAG, "onCreate called");
         super.onCreate();
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId){
-        Log.d(TAG, "onStartCommand called");
         IntentFilter filter = new IntentFilter(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
         mReceiver = new PhoneStateReceiver();
         registerReceiver(mReceiver, filter);
+    }
+
+    /**
+     * Originally was overriden to implement the receiver.  This ends up being a bad move.
+     * While a service can only have one given instance at a time, meaning onCreate is only called
+     * once, subsequent calls to a service will call onStartCommand, meaning you would be registering
+     * a receiver multiple times, leading to errors.
+     * @param intent
+     * @param flags
+     * @param startId
+     * @return
+     */
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId){
+        //Log.d(TAG, "onStartCommand called");
+
+
+        /*IntentFilter filter = new IntentFilter(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
+        mReceiver = new PhoneStateReceiver();
+        registerReceiver(mReceiver, filter);*/
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
+
+        unregisterReceiver(mReceiver);
         Log.d(TAG, "Service called onDestroy().");
-        unregisterReceiver (mReceiver);
         super.onDestroy();
     }
 

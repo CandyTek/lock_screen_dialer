@@ -276,12 +276,7 @@ public class LockScreenKeypadPinFragment extends Fragment
     private void wrongPinEntered() {
         resetPinEntry();
         mNumTries++;
-        Toast toast = Toast.makeText(
-                getActivity().getApplicationContext(),
-                getString(R.string.toast_wrong_pin_entered),
-                Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.TOP,0,0);
-        toast.show();
+
         Vibrator v = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
         v.vibrate(200);
     }

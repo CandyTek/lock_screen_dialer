@@ -42,7 +42,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             }
 
             else if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
-                // Incoming call -- we don't care about this except for debugging curiousity
+                // Incoming call
                 String incomingNumber =
                         intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
 
@@ -51,9 +51,9 @@ public class PhoneStateReceiver extends BroadcastReceiver {
                 lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PHONE_STATE_RINGING);
                 lockScreenIntent.putExtra(EXTRA_PHONE_DATA_NUMBER, incomingNumber);
-                Log.d(TAG, "PhoneStateReceiver**Incoming call from "
+                /*Log.d(TAG, "PhoneStateReceiver**Incoming call from "
                         + lockScreenIntent.getStringExtra(EXTRA_PHONE_DATA_NUMBER)
-                        + " with state " + lockScreenIntent.getIntExtra(EXTRA_PHONE_STATE, 0));
+                        + " with state " + lockScreenIntent.getIntExtra(EXTRA_PHONE_STATE, 0));*/
                 context.startActivity(lockScreenIntent);
 
 /*                if (!killCall(context)) { // Using the method defined earlier

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="id" name="lock_screen_clock"/>
+    <item type="id" name="lock_screen_date"/>
+    <item type="id" name="lock_screen_info"/>
+    <item type="id" name="lock_screen_camera"/>
+</resources>

@@ -2,25 +2,25 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <CheckBoxPreference
-        android:key="toggle_clock"
+        android:key="@string/key_toggle_clock_display"
         android:title="@string/pref_title_toggle_clock"
         android:summary="@string/pref_description_toggle_clock"
         android:defaultValue="true" />
 
     <CheckBoxPreference
-        android:key="toggle_date"
+        android:key="@string/key_toggle_date_display"
         android:title="@string/pref_title_toggle_date"
         android:summary="@string/pref_description_toggle_date"
         android:defaultValue="true" />
 
     <CheckBoxPreference
-        android:key="toggle_camera_shortcut"
+        android:key="@string/key_toggle_camera_display"
         android:title="@string/pref_title_toggle_camera_shortcut"
         android:summary="@string/pref_description_toggle_camera_shortcut"
         android:defaultValue="true" />
 
     <EditTextPreference
-        android:key="display_contact_info"
+        android:key="@string/key_toggle_info_display"
         android:title="@string/pref_title_display_contact_info"
         android:summary="@string/pref_description_display_contact_info"
         android:selectAllOnFocus="true"
@@ -28,9 +28,5 @@
         android:capitalize="words"
         android:singleLine="false"
         android:maxLines="2" />
-
-
-
-
 
 </PreferenceScreen>

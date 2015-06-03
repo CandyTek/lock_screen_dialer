@@ -293,7 +293,7 @@ public class SettingsActivity extends PreferenceActivity
         if (key.equals(getString(R.string.key_toggle_lock_screen))) {
 /*            @SuppressWarnings("deprecation")
             Preference toggleLockScreenPreference = findPreference(key);*/
-            Boolean isLockScreenEnabled = sharedPreferences.getBoolean(key, false);
+            boolean isLockScreenEnabled = sharedPreferences.getBoolean(key, false);
 
             if (isLockScreenEnabled) {
                 // Start the lock screen service that will register and listen for the intents

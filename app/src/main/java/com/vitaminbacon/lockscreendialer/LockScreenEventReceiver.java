@@ -39,7 +39,7 @@ public class LockScreenEventReceiver extends BroadcastReceiver {
         // Create a new intent that directs to the lockscreen
         if ( intent.getAction().equals(Intent.ACTION_SCREEN_OFF) ||
                 intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
-            Log.d(TAG, "onReceive() received ACTION_SCREEN_OFF or ACTION_BOOT_COMPLETED");
+            //Log.d(TAG, "onReceive() received ACTION_SCREEN_OFF or ACTION_BOOT_COMPLETED");
             Intent lockScreenIntent = new Intent (context, LockScreenLauncherActivity.class);
             lockScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(lockScreenIntent);
@@ -61,7 +61,7 @@ public class LockScreenEventReceiver extends BroadcastReceiver {
         }*/
         else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
 
-            Log.d(TAG, "onReceive() received event ACTION_SCREEN_ON.");
+            //Log.d(TAG, "onReceive() received event ACTION_SCREEN_ON.");
 
             // Do nothing, since this event should have been handled after ACTION_SCREEN_OFF
         }
