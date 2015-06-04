@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -43,7 +44,8 @@
             android:name=".LockScreenActivity"
             android:label="@string/title_activity_lock_screen"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NoBackground" >
         </activity>
         <activity
             android:name=".SpeedDialSelectionActivity"
@@ -101,7 +103,8 @@
             android:name=".LockScreenKeypadPinActivity"
             android:label="@string/title_activity_lock_screen_keypad_pin"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NoBackground" >
         </activity>
         <activity
             android:name=".ErrorPageActivity"
@@ -127,6 +130,15 @@
         <activity
             android:name=".LockScreenLauncherActivity"
             android:label="@string/title_activity_lock_screen_launcher" >
+        </activity>
+        <activity
+            android:name=".BackgroundSelectionActivity"
+            android:label="@string/title_activity_background_selection"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".SettingsActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.vitaminbacon.lockscreendialer.SettingsActivity" />
         </activity>
     </application>
 

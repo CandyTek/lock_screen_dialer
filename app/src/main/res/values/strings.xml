@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="package_name">com.vitaminbacon.lockscreendialer</string>
     <string name="app_name">Lock Screen Dialer</string>
     <string name="title_activity_lock_screen">Lock Screen</string>
 
@@ -82,6 +83,11 @@
     <string name="title_activity_error_page">ErrorPageActivity</string>
 
     <string name="lock_screen_end_call_button_text">End Call</string>
+
     <string name="title_activity_lock_screen_launcher">LockScreenLauncherActivity</string>
+    <string name="title_activity_background_selection">Current background:</string>
+    <string name="button_activity_background_selection">Change background</string>
+    <string name="key_background">com.vitaminbacon.lockscreendialer.KEY_BACKGROUND</string>
+    <string name="key_background_orientation">com.vitaminbacon.lockscreendialer.KEY_BACKGROUND_ORIENTATION</string>
 
 </resources>

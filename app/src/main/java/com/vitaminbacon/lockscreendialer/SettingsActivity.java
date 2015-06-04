@@ -97,7 +97,7 @@ public class SettingsActivity extends PreferenceActivity
 
         // Add 'data and sync' preferences, and a corresponding header.
         //fakeHeader = new PreferenceCategory(this);
-        //fakeHeader.setTitle(R.string.pref_header_data_sync);
+        //fakeHeader.setTitle(R.string.pref_header_data_sync);select wallpaper
         //getPreferenceScreen().addPreference(fakeHeader);
         //addPreferencesFromResource(R.xml.pref_data_sync);
 

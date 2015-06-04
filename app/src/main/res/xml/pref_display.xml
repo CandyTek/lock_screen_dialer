@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <Preference
+        android:key="key_select_lock_screen_background"
+        android:title="@string/pref_title_select_lock_screen_background"
+        android:summary="@string/pref_description_select_lock_screen_background">
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="com.vitaminbacon.lockscreendialer"
+            android:targetClass="com.vitaminbacon.lockscreendialer.BackgroundSelectionActivity" />
+    </Preference>
+
     <CheckBoxPreference
         android:key="@string/key_toggle_clock_display"
         android:title="@string/pref_title_toggle_clock"
