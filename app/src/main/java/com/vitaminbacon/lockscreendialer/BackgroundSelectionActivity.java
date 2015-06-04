@@ -8,17 +8,22 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import java.lang.ref.WeakReference;
 
 
 public class BackgroundSelectionActivity extends ActionBarActivity implements View.OnClickListener {
@@ -53,8 +58,9 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
     @Override
     protected void onResume() {
         super.onResume();
-        mCurrentBackgroundView.setImageBitmap(getBackgroundBitmap());
-        //mCurrentBackgroundView.setImageURI(getBackgroundBitmap());
+        setBackgroundBitmap();
+        //mCurrentBackgroundView.setImageBitmap(setBackgroundBitmap());
+        //mCurrentBackgroundView.setImageURI(setBackgroundBitmap());
     }
 
 
@@ -109,6 +115,12 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
                 Uri selectedImage = data.getData();
                 String filePath = getBitmapFilePath(selectedImage);
 
+                if (filePath == null) { // unable to access filePath
+                    makeToast(getString(R.string.toast_background_selection_file_access_error));
+                    Log.d(TAG, "Unable to obtain file path from uri: " + selectedImage.toString());
+                    return;
+                }
+
                 SharedPreferences prefs = getPreferences(MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString(getString(R.string.key_background), filePath);
@@ -125,7 +137,7 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
         }
     }
 
-
+    // TODO: background remove button, reverting to default, and select simple color
     public void onClick(View view) {
         pickBackgroundFromGallery();
     }
@@ -134,6 +146,12 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
      * Private methods
      * *********************************************************************************************
      */
+
+    private void makeToast (String string) {
+        Toast toast = Toast.makeText(this, string, Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
+    }
 
     private void pickBackgroundFromGallery() {
         Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -149,7 +167,7 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
         startActivityForResult(chooserIntent, PICK_IMAGE);
     }
 
-    private Bitmap getBackgroundBitmap() {
+    private void setBackgroundBitmap() {
         SharedPreferences prefs = getPreferences(MODE_PRIVATE);
         String path = prefs.getString(getString(R.string.key_background), null);
         int orientation = prefs.getInt(
@@ -160,9 +178,11 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
                     + getString(R.string.package_name)
                     + "/"
                     + R.drawable.background_default);*/
-            return BitmapFactory.decodeResource(getResources(), R.drawable.background_default);
+            mCurrentBackgroundView.setImageBitmap(
+                    BitmapFactory.decodeResource(getResources(), R.drawable.background_default));
+            //return BitmapFactory.decodeResource(getResources(), R.drawable.background_default);
         } else {
-            Log.d(TAG, "assessing Uri from stored data");
+            Log.d(TAG, "assessing image Uri from stored data");
             //BitmapFactory.Options options = new BitmapFactory.Options();
             //int imageHeight, imageWidth;
 
@@ -175,15 +195,22 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
             //return Uri.parse(path);
             Display display = getWindowManager().getDefaultDisplay();
             Bitmap bitmap;
+            int w, h;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
                 Point size = new Point();
                 display.getSize(size);
-                bitmap = decodeSampledBitmapFromFile(path, orientation, size.x, size.y);
+                w = size.x;
+                h = size.y;
+                /*bitmap = decodeSampledBitmapFromFile(path, orientation, size.x, size.y);*/
             } else {
-                bitmap = decodeSampledBitmapFromFile(path, orientation,
-                        display.getWidth(), display.getHeight());
+                w = display.getWidth();
+                h = display.getHeight();
+                /*bitmap = decodeSampledBitmapFromFile(path, orientation,
+                        display.getWidth(), display.getHeight());*/
             }
-            return bitmap;
+            BitmapWorkerTask task = new BitmapWorkerTask(mCurrentBackgroundView, path);
+            task.execute(orientation, w, h);
+            //return bitmap;
         }
     }
 
@@ -240,12 +267,14 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
                 new String[] { MediaStore.Images.ImageColumns.ORIENTATION },
                 null, null, null);
 
-        if (cursor.getCount() != 1) {
+        if ( cursor == null || cursor.getCount() != 1) {
             return defaultReturn;
         }
 
         cursor.moveToFirst();
-        return cursor.getInt(0);
+        int orientation = cursor.getInt(0);
+        cursor.close();
+        return orientation;
     }
 
     /**
@@ -260,7 +289,12 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
         Cursor cursor = getContentResolver().query(photoUri,
                 filePathColumn, null, null, null);
         // Move to first row
+        if (cursor == null || cursor.getCount() < 1) {
+            return null;
+        }
+
         cursor.moveToFirst();
+
 
         int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
         String imgDecodableString = cursor.getString(columnIndex);
@@ -268,33 +302,50 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
         return imgDecodableString;
     }
 
-    /*private class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
+    private class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
         private final WeakReference<ImageView> imageViewReference;
-        private int data = 0;
+        private final WeakReference<String> filePathReference;
+        private int orientation = 0;
+        private int width = 0;
+        private int height = 0;
 
-        public BitmapWorkerTask(ImageView imageView) {
-            // Use a WeakReference to ensure the ImageView can be garbage collected
+        public BitmapWorkerTask(ImageView imageView, String filePath) {
+            // Use a WeakReference to ensure the ImageView can't be garbage collected
             imageViewReference = new WeakReference<ImageView>(imageView);
+            filePathReference = new WeakReference<String>(filePath);
         }
 
         // Decode image in background.
         @Override
         protected Bitmap doInBackground(Integer... params) {
-            data = params[0];
-            return decodeSampledBitmapFromFile(getResources(), data, 100, 100));
+
+            orientation = params[0];
+            width = params[1];
+            height = params[2];
+            if (filePathReference.get() == null) {
+                return null;
+            }
+            return decodeSampledBitmapFromFile(filePathReference.get(), orientation, width, height);
         }
 
         // Once complete, see if ImageView is still around and set bitmap.
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            if (imageViewReference != null && bitmap != null) {
+            if (bitmap != null) {
                 final ImageView imageView = imageViewReference.get();
                 if (imageView != null) {
                     imageView.setImageBitmap(bitmap);
                 }
+                else {
+                    Log.e(TAG, "Async received null imageView onPostExecute");
+                }
             }
+            else {
+                Log.e(TAG, "Async received null bitmap onPostExecute");
+            }
+
         }
-    }*/
+    }
     /*private Drawable getCurrentBackground() {
         SharedPreferences prefs = getPreferences(MODE_PRIVATE);
         String filePath = prefs.getString(getString(R.string.key_background), null);

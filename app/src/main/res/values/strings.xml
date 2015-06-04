@@ -52,6 +52,7 @@
     <string name="toast_lock_screen_enabled">Lock Screen Dialer enabled</string>
     <string name="toast_lock_screen_disabled">Lock Screen Dialer disabled</string>
     <string name="title_activity_lock_screen_selection">Lock Screen Type Selection</string>
+    <string name="toast_background_selection_file_access_error">File access error; no change</string>
 
     <string name="lock_screen_selection_instruction">Select a lock screen:</string>
     <string name="lock_screen_keypad_pin_name">Enter Keypad PIN</string>
