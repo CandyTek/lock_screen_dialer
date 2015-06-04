@@ -87,8 +87,11 @@
 
     <string name="title_activity_lock_screen_launcher">LockScreenLauncherActivity</string>
     <string name="title_activity_background_selection">Current background:</string>
-    <string name="button_activity_background_selection">Change background</string>
-    <string name="key_background">com.vitaminbacon.lockscreendialer.KEY_BACKGROUND</string>
+    <string name="button_pics_activity_background_selection">Select picture</string>
+    <string name="button_colors_activity_background_selection">Select color</string>
+    <string name="key_background_pic">com.vitaminbacon.lockscreendialer.KEY_BACKGROUND</string>
     <string name="key_background_orientation">com.vitaminbacon.lockscreendialer.KEY_BACKGROUND_ORIENTATION</string>
+    <string name="key_background_color">com.vitaminbacon.lockscreendialer.KEY_COLOR</string>
+    <string name="title_activity_color_selection">Select Background Color</string>
 
 </resources>

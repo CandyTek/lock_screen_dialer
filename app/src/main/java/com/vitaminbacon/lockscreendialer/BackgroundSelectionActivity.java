@@ -25,16 +25,21 @@ import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
+import yuku.ambilwarna.AmbilWarnaDialog;
+
 
 public class BackgroundSelectionActivity extends ActionBarActivity implements View.OnClickListener {
 
     private final static String TAG = "BackgroundSelActivity";
     private final static int PICK_IMAGE = 1; // Request code to be handled in onActivityResult()
+    //private final static int PICK_COLOR = 2;
+    private final static int NO_COLOR = -1;
     private final static int ORIENTATION_UNKNOWN = -1;
 
     //private ViewGroup mRootViewGroup;
     private ImageView mCurrentBackgroundView;
-    private Button mButton;
+    private Button mPicsSelectButton;
+    private Button mColorsSelectButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +47,11 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
         setContentView(R.layout.activity_background_selection);
         //mRootViewGroup = (ViewGroup) ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
         mCurrentBackgroundView =
-                (ImageView) findViewById(R.id.backgournd_selection_current_background);
-        mButton = (Button) findViewById(R.id.background_selection_button);
-        mButton.setOnClickListener(this);
+                (ImageView) findViewById(R.id.background_selection_current_background);
+        mPicsSelectButton = (Button) findViewById(R.id.background_selection_pics_button);
+        mColorsSelectButton = (Button) findViewById(R.id.background_selection_colors_button);
+        mPicsSelectButton.setOnClickListener(this);
+        mColorsSelectButton.setOnClickListener(this);
         mCurrentBackgroundView.setImageBitmap(null);
 
         /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -91,27 +98,6 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE) {
             if (resultCode == RESULT_OK) {
-                /*Uri uri = data.getData();
-                *//*try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                } catch (FileNotFoundException e) {
-                    Log.e(TAG, "URI did not identify valid file.");
-                    return;
-                } catch (IOException f) {
-                    Log.e(TAG, "IOException - " + f.toString());
-                }*//*
-                if (uri == null) {
-                    Log.e(TAG, "onActivityResult received null data from intent");
-                    return;
-                }
-                File f = new File(uri.getPath());
-                if (!f.isFile()) {
-                    Log.d(TAG, "intent returned file that does not exist, toString " + uri.toString() + ", getPath " + uri.getPath());
-                }
-                if (f.exists()) {
-                    Log.d(TAG, "intent returned file that does exist");
-                }*/
-
                 Uri selectedImage = data.getData();
                 String filePath = getBitmapFilePath(selectedImage);
 
@@ -123,23 +109,65 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
 
                 SharedPreferences prefs = getPreferences(MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
-                editor.putString(getString(R.string.key_background), filePath);
-
+                editor.putString(getString(R.string.key_background_pic), filePath);
                 int orientation = getBitmapOrientation(selectedImage, ORIENTATION_UNKNOWN);
                 editor.putInt(getString(R.string.key_background_orientation), orientation);
+                editor.remove(getString(R.string.key_background_color)); // used to flag whether to display pic or color
                 editor.commit();
                 Log.d(TAG, "Stored file path " + filePath + " and orientation " + orientation);
             } else {
                 Log.d(TAG, "onActivityResult pick image received result code " + resultCode);
             }
-        } else {
+        } /*else if (requestCode == PICK_COLOR) {
+            if (resultCode == RESULT_OK) {
+
+                int colorResId = data.getIntExtra(ColorSelectionActivity.RESULT, NO_COLOR);
+                SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt(getString(R.string.key_background_color), colorResId);
+                editor.commit();
+
+            } else {
+                Log.d(TAG, "onActivityResult pick color received result code " + resultCode);
+            }
+        }*/
+        else {
             Log.e(TAG, "onActivityResult received unknown requestCode");
         }
     }
 
     // TODO: background remove button, reverting to default, and select simple color
     public void onClick(View view) {
-        pickBackgroundFromGallery();
+        switch (view.getId()) {
+            case R.id.background_selection_pics_button:
+                pickBackgroundFromGallery();
+                break;
+            case R.id.background_selection_colors_button:
+                //pickColorsFromActivity();
+                SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+                int color = prefs.getInt(getString(R.string.key_background_color),
+                        getResources().getColor(R.color.ripple_material_light));
+
+                AmbilWarnaDialog dialog = new AmbilWarnaDialog(this, color,
+                        new AmbilWarnaDialog.OnAmbilWarnaListener() {
+                    @Override
+                    public void onCancel(AmbilWarnaDialog ambilWarnaDialog) {
+                        // Do nothing
+                    }
+
+                    @Override
+                    public void onOk(AmbilWarnaDialog ambilWarnaDialog, int i) {
+                        mCurrentBackgroundView.setImageBitmap(null);
+                        mCurrentBackgroundView.setBackgroundColor(i);
+                        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putInt(getString(R.string.key_background_color), i);
+                        editor.commit();
+                    }
+                });
+                dialog.show();
+                break;
+        }
     }
 
     /***********************************************************************************************
@@ -167,32 +195,29 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
         startActivityForResult(chooserIntent, PICK_IMAGE);
     }
 
+    /*private void pickColorsFromActivity() {
+        Intent pickColorsIntent = new Intent(this, ColorSelectionActivity.class);
+        startActivityForResult(pickColorsIntent, PICK_COLOR);
+    }*/
+
     private void setBackgroundBitmap() {
         SharedPreferences prefs = getPreferences(MODE_PRIVATE);
-        String path = prefs.getString(getString(R.string.key_background), null);
+        String path = prefs.getString(getString(R.string.key_background_pic), null);
+        int color = prefs.getInt(getString(R.string.key_background_color), NO_COLOR);
         int orientation = prefs.getInt(
                 getString(R.string.key_background_orientation), ORIENTATION_UNKNOWN);
 
-        if (path == null) { // meaning no background has been selected
-            /*return Uri.parse( "android.resource://"
-                    + getString(R.string.package_name)
-                    + "/"
-                    + R.drawable.background_default);*/
+        if (path == null && color == NO_COLOR) { // meaning no background has been selected
+
             mCurrentBackgroundView.setImageBitmap(
                     BitmapFactory.decodeResource(getResources(), R.drawable.background_default));
             //return BitmapFactory.decodeResource(getResources(), R.drawable.background_default);
+        } else if (color != NO_COLOR) {
+            mCurrentBackgroundView.setImageBitmap(null);
+            mCurrentBackgroundView.setBackgroundColor(color);
         } else {
             Log.d(TAG, "assessing image Uri from stored data");
-            //BitmapFactory.Options options = new BitmapFactory.Options();
-            //int imageHeight, imageWidth;
 
-            // get the dimensions
-            /*options.inJustDecodeBounds = true; // indicates we just want to find the dimensions of the beast
-            BitmapFactory.decodeFile( (new File(path)).getAbsolutePath(), options);
-            imageHeight = options.outHeight;
-            imageWidth = options.outWidth;*/
-
-            //return Uri.parse(path);
             Display display = getWindowManager().getDefaultDisplay();
             Bitmap bitmap;
             int w, h;
@@ -201,12 +226,9 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
                 display.getSize(size);
                 w = size.x;
                 h = size.y;
-                /*bitmap = decodeSampledBitmapFromFile(path, orientation, size.x, size.y);*/
             } else {
                 w = display.getWidth();
                 h = display.getHeight();
-                /*bitmap = decodeSampledBitmapFromFile(path, orientation,
-                        display.getWidth(), display.getHeight());*/
             }
             BitmapWorkerTask task = new BitmapWorkerTask(mCurrentBackgroundView, path);
             task.execute(orientation, w, h);

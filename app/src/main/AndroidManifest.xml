@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.vitaminbacon.lockscreendialer"
-    android:theme="@android:style/Theme.Holo.Light" >
+     >
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -36,10 +36,6 @@
             android:exported="false" >
         </receiver>
 
-        <activity
-            android:name=".LockScreen"
-            android:label="@string/title_activity_lock_screen" >
-        </activity>
         <activity
             android:name=".LockScreenActivity"
             android:label="@string/title_activity_lock_screen"
@@ -134,12 +130,13 @@
         <activity
             android:name=".BackgroundSelectionActivity"
             android:label="@string/title_activity_background_selection"
-            android:screenOrientation="portrait"
-            android:parentActivityName=".SettingsActivity" >
+            android:parentActivityName=".SettingsActivity"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.vitaminbacon.lockscreendialer.SettingsActivity" />
         </activity>
+
     </application>
 
 </manifest>
