@@ -99,7 +99,7 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
         if (requestCode == PICK_IMAGE) {
             if (resultCode == RESULT_OK) {
                 Uri selectedImage = data.getData();
-                String filePath = getBitmapFilePath(selectedImage);
+                String filePath = BitmapToViewHelper.getBitmapFilePath(this, selectedImage);
 
                 if (filePath == null) { // unable to access filePath
                     makeToast(getString(R.string.toast_background_selection_file_access_error));
@@ -107,10 +107,15 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
                     return;
                 }
 
-                SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+                SharedPreferences prefs = getSharedPreferences(
+                        getString(R.string.background_file_key),
+                        MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString(getString(R.string.key_background_pic), filePath);
-                int orientation = getBitmapOrientation(selectedImage, ORIENTATION_UNKNOWN);
+                int orientation = BitmapToViewHelper.getBitmapOrientation(
+                        this,
+                        selectedImage,
+                        ORIENTATION_UNKNOWN);
                 editor.putInt(getString(R.string.key_background_orientation), orientation);
                 editor.remove(getString(R.string.key_background_color)); // used to flag whether to display pic or color
                 editor.commit();
@@ -144,7 +149,9 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
                 break;
             case R.id.background_selection_colors_button:
                 //pickColorsFromActivity();
-                SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+                SharedPreferences prefs = getSharedPreferences(
+                        getString(R.string.background_file_key),
+                        MODE_PRIVATE);
                 int color = prefs.getInt(getString(R.string.key_background_color),
                         getResources().getColor(R.color.ripple_material_light));
 
@@ -159,7 +166,9 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
                     public void onOk(AmbilWarnaDialog ambilWarnaDialog, int i) {
                         mCurrentBackgroundView.setImageBitmap(null);
                         mCurrentBackgroundView.setBackgroundColor(i);
-                        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+                        SharedPreferences sharedPreferences = getSharedPreferences(
+                                getString(R.string.background_file_key),
+                                MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putInt(getString(R.string.key_background_color), i);
                         editor.commit();
@@ -201,7 +210,9 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
     }*/
 
     private void setBackgroundBitmap() {
-        SharedPreferences prefs = getPreferences(MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(
+                getString(R.string.background_file_key),
+                MODE_PRIVATE);
         String path = prefs.getString(getString(R.string.key_background_pic), null);
         int color = prefs.getInt(getString(R.string.key_background_color), NO_COLOR);
         int orientation = prefs.getInt(
@@ -230,13 +241,14 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
                 w = display.getWidth();
                 h = display.getHeight();
             }
-            BitmapWorkerTask task = new BitmapWorkerTask(mCurrentBackgroundView, path);
-            task.execute(orientation, w, h);
+            BitmapToViewHelper.go(mCurrentBackgroundView, path, orientation, w, h);
+            /*BitmapWorkerTask task = new BitmapWorkerTask(mCurrentBackgroundView, path);
+            task.execute(orientation, w, h);*/
             //return bitmap;
         }
     }
 
-    public static int calculateInSampleSize(
+    /*public static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
         final int height = options.outHeight;
@@ -276,7 +288,7 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
         Matrix matrix = new Matrix();
         matrix.postRotate(orientation);
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-    }
+    }*/
 
     /**
      * Returns the orientation of a photo, or the defaultReturn if unknown
@@ -284,7 +296,7 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
      * @param defaultReturn
      * @return
      */
-    private int getBitmapOrientation (Uri photoUri, int defaultReturn) {
+    /*private int getBitmapOrientation (Uri photoUri, int defaultReturn) {
         Cursor cursor = this.getContentResolver().query(photoUri,
                 new String[] { MediaStore.Images.ImageColumns.ORIENTATION },
                 null, null, null);
@@ -297,14 +309,14 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
         int orientation = cursor.getInt(0);
         cursor.close();
         return orientation;
-    }
+    }*/
 
     /**
      * Takes a URI and does magic to return the actual absolute file path of the image
      * @param photoUri
      * @return
      */
-    private String getBitmapFilePath (Uri photoUri) {
+    /*private String getBitmapFilePath (Uri photoUri) {
         String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
         // Get the cursor
@@ -322,9 +334,9 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
         String imgDecodableString = cursor.getString(columnIndex);
         cursor.close();
         return imgDecodableString;
-    }
+    }*/
 
-    private class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
+    /*private class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
         private final WeakReference<ImageView> imageViewReference;
         private final WeakReference<String> filePathReference;
         private int orientation = 0;
@@ -367,7 +379,7 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
             }
 
         }
-    }
+    }*/
     /*private Drawable getCurrentBackground() {
         SharedPreferences prefs = getPreferences(MODE_PRIVATE);
         String filePath = prefs.getString(getString(R.string.key_background), null);

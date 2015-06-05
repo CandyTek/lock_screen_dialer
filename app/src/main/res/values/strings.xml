@@ -92,6 +92,7 @@
     <string name="key_background_pic">com.vitaminbacon.lockscreendialer.KEY_BACKGROUND</string>
     <string name="key_background_orientation">com.vitaminbacon.lockscreendialer.KEY_BACKGROUND_ORIENTATION</string>
     <string name="key_background_color">com.vitaminbacon.lockscreendialer.KEY_COLOR</string>
+    <string name="background_file_key">com.vitaminbacon.lockscreendialder.BACKGROUND_FILE</string>
     <string name="title_activity_color_selection">Select Background Color</string>
 
 </resources>

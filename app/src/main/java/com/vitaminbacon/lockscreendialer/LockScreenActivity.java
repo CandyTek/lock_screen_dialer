@@ -6,19 +6,25 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.RemoteException;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -75,7 +81,8 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
 
         // Check that the layout has the requisite phone-related elements for this activity to function
         if (mWrapperView.findViewById(R.id.lock_screen_end_call_button) == null ||
-                mWrapperView.findViewById(R.id.lock_screen_call_display) == null) {
+                mWrapperView.findViewById(R.id.lock_screen_call_display) == null ||
+                mWrapperView.findViewById(R.id.lock_screen_background_view) == null) {
             throw new ClassCastException(this.toString()
                     + " must use appropriate XML layout with correct IDs and correct types." );
         }
@@ -83,6 +90,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             ImageButton b = (ImageButton)mWrapperView.findViewById(R.id.lock_screen_end_call_button);
             RelativeLayout rl = (RelativeLayout) b.getParent(); // ensures the correct encapsulating layout is there
             TextView v = (TextView)mWrapperView.findViewById(R.id.lock_screen_call_display);
+            ImageView iv = (ImageView)mWrapperView.findViewById(R.id.lock_screen_background_view);
         } catch (ClassCastException e) {
             throw new ClassCastException(this.toString()
                     + " must use appropriate XML layout with correct IDs and correct types.");
@@ -117,6 +125,8 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             disableCallViewsInView();
             enableOptionalViewsInView();
         }
+        setActivityBackground(
+                (ImageView) mWrapperView.findViewById(R.id.lock_screen_background_view));
 
         super.onResume();
     }
@@ -500,7 +510,42 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         super.onDestroy();
     }
 
+    private void setActivityBackground(ImageView view) {
+        SharedPreferences prefs = getSharedPreferences(
+                getString(R.string.background_file_key),
+                MODE_PRIVATE);
+        int color = prefs.getInt(getString(R.string.key_background_color), -1);
+        String filePath = prefs.getString(getString(R.string.key_background_pic), null);
+        int orientation = prefs.getInt(getString(R.string.key_background_orientation), -1);
 
+        if (color != -1) { // since color is set, we just set the background to that
+            Log.d(TAG, "setting activity to a color");
+            view.setImageBitmap(null);
+            view.setBackgroundColor(color);
+        } else if (filePath == null) { // then we have the default image situation
+            Log.d(TAG, "setting acitivty to default image");
+            Bitmap bitmap = BitmapFactory.decodeResource(
+                    getResources(), R.drawable.background_default);
+            view.setImageBitmap(bitmap);
+        } else { //now we must retrieve and set up the stored picture
+            Log.d(TAG, "getting image from stored data");
+            Display display = getWindowManager().getDefaultDisplay();
+            Bitmap bitmap;
+            int w, h;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                Point size = new Point();
+                display.getSize(size);
+                w = size.x;
+                h = size.y;
+            } else {
+                w = display.getWidth();
+                h = display.getHeight();
+            }
+            BitmapToViewHelper.go(view, filePath, orientation, w, h);
+        }
+
+
+    }
 
     /**
      * Runnable class that initiates the phone call on a long press

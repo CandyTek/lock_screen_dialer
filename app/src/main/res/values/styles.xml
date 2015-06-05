@@ -63,8 +63,9 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:typeface">monospace</item>
         <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">1</item>
-        <item name="android:shadowDy">1</item>
+        <item name="android:shadowDx">3</item>
+        <item name="android:shadowDy">3</item>
+        <item name="android:shadowRadius">5</item>
     </style>
 
     <style name="lock_screen_date">
@@ -72,8 +73,9 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:typeface">monospace</item>
         <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">1</item>
-        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">3</item>
+        <item name="android:shadowDx">3</item>
+        <item name="android:shadowDy">5</item>
     </style>
 
     <style name="lock_screen_info">
@@ -81,8 +83,9 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:typeface">monospace</item>
         <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">1</item>
-        <item name="android:shadowDy">1</item>
+        <item name="android:shadowDx">3</item>
+        <item name="android:shadowDy">3</item>
+        <item name="android:shadowRadius">5</item>
     </style>
 
     <style name="lock_screen_additional_widgets">
@@ -131,8 +134,6 @@
         <item name="android:layout_margin">0dp</item>
         <item name="android:padding">12dp</item>
         <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">1</item>
-        <item name="android:shadowDy">1</item>
         <item name="android:gravity">left</item>
         <item name="android:background">@drawable/selector_speed_dial</item>
     </style>
@@ -145,8 +146,10 @@
         <item name="android:layout_margin">0dp</item>
         <item name="android:paddingLeft">12dp</item>
         <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">1</item>
-        <item name="android:shadowDy">1</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">5</item>
+
     </style>
     <style name="key_pad_buttons_lock_screen_alphabetics">
         <item name="android:typeface">sans</item>
@@ -154,8 +157,9 @@
         <item name="android:textSize">16sp</item>
         <item name="android:paddingLeft">10dp</item>
         <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">1</item>
-        <item name="android:shadowDy">1</item>
+        <item name="android:shadowDx">2</item>
+        <item name="android:shadowDy">2</item>
+        <item name="android:shadowRadius">5</item>
     </style>
 
     <style name="end_call_button">
