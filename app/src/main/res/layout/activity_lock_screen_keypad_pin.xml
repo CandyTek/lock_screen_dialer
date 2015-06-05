@@ -412,17 +412,50 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
                 android:id="@+id/lock_screen_emergency"
-                android:text="Emergency"
                 android:layout_weight="1"
-                style="@style/lock_screen_additional_widgets"/>
+                android:gravity="center"
+                android:text="Emergency Dial"
 
-            <ImageView
-                android:layout_width="wrap_content"
+                style="@style/lock_screen_additional_widgets"/>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
+            <RelativeLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/lock_screen_camera"/>
+                android:layout_weight="1">
+                <ToggleButton
+                    android:id="@+id/lock_screen_speed_dial_toggle"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="18dp"
+                    android:textOn=""
+                    android:textOff=""
+                    android:minHeight="50dp"
+                    android:textAllCaps="false"
+                    android:background="@drawable/selector_toggle_button"/>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/lock_screen_speed_dial_toggle_text"
+                        android:gravity="center"
+                        style="@style/lock_screen_additional_widgets"/>
+                </LinearLayout>
+
+
+            </RelativeLayout>
+
 
         </LinearLayout>
 

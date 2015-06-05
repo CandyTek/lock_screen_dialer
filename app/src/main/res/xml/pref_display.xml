@@ -24,9 +24,9 @@
         android:defaultValue="true" />
 
     <CheckBoxPreference
-        android:key="@string/key_toggle_camera_display"
-        android:title="@string/pref_title_toggle_camera_shortcut"
-        android:summary="@string/pref_description_toggle_camera_shortcut"
+        android:key="@string/key_toggle_speed_dial_button"
+        android:title="@string/pref_title_toggle_speed_dial_button"
+        android:summary="@string/pref_description_toggle_speed_dial_button"
         android:defaultValue="true" />
 
     <EditTextPreference

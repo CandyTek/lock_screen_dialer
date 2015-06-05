@@ -23,6 +23,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -30,6 +31,7 @@ import android.widget.TextView;
 
 import com.android.internal.telephony.ITelephony;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -37,9 +39,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.os.Handler;
+import android.widget.ToggleButton;
 
 
-public class LockScreenActivity extends Activity implements View.OnClickListener {
+public class LockScreenActivity extends Activity implements View.OnClickListener,
+        CompoundButton.OnCheckedChangeListener{
 
     private final static String TAG = "LSActivity";
 
@@ -227,6 +231,8 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         dialInfoView.setText(getDialInfoViewText(telNum, name, type));
         dialInfoView.setVisibility(View.VISIBLE);
 
+
+
         // Hide the clock
         /*mWrapperView.findViewById(R.id.lock_screen_clock).setVisibility(View.GONE);
         // Hide the date
@@ -399,6 +405,18 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                         }
                     }
                     break;
+                case R.id.lock_screen_speed_dial_toggle:
+                    Log.d(TAG, "instantiating toggle button");
+                    ToggleButton toggle = (ToggleButton) mWrapperView.findViewById(
+                            R.id.lock_screen_speed_dial_toggle);
+                    TextView tv = (TextView) mWrapperView.findViewById(
+                            R.id.lock_screen_speed_dial_toggle_text);
+                    //TODO: handle settings for this in settings activity
+                    toggle.setOnCheckedChangeListener(this);
+                    if (tv != null) {
+                        tv.setText(getString(R.string.lock_screen_speed_dial_toggle_off));
+                    }
+                    break;
 
             }
         }
@@ -471,10 +489,39 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
     }
 
     public void onClick (View view) {
-        if (view.getId() == R.id.lock_screen_end_call_button) {
-            disableCallViewsInView();
-            enableOptionalViewsInView();
-            endPhoneCall();
+        switch (view.getId()) {
+            case R.id.lock_screen_end_call_button:
+                disableCallViewsInView();
+                enableOptionalViewsInView();
+                endPhoneCall();
+                break;
+            /*case R.id.lock_screen_speed_dial_toggle:
+                Log.d(TAG, "lock screen speed dial toggle button pressed");
+                ToggleButton toggle = (ToggleButton) mWrapperView.findViewById(
+                        R.id.lock_screen_speed_dial_toggle);
+                TextView tv = (TextView) mWrapperView.findViewById(
+                        R.id.lock_screen_speed_dial_toggle_text);
+                toggle.setChecked(!toggle.isChecked());
+                if (tv != null){ // not necessary to have a text view!
+                    if (toggle.isChecked()) {
+                        tv.setText(getString(R.string.lock_screen_speed_dial_toggle_on));
+                    } else {
+                        tv.setText(getString(R.string.lock_screen_speed_dial_toggle_off));
+                    }
+                }*/
+        }
+    }
+
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        Log.d(TAG, "lock screen speed dial toggle button pressed");
+        TextView tv = (TextView) mWrapperView.findViewById(
+                R.id.lock_screen_speed_dial_toggle_text);
+        if (tv != null){ // not necessary to have a text view as we implemented, so can come back null!
+            if (isChecked) {
+                tv.setText(getString(R.string.lock_screen_speed_dial_toggle_on));
+            } else {
+                tv.setText(getString(R.string.lock_screen_speed_dial_toggle_off));
+            }
         }
     }
     /**
@@ -517,6 +564,10 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         int color = prefs.getInt(getString(R.string.key_background_color), -1);
         String filePath = prefs.getString(getString(R.string.key_background_pic), null);
         int orientation = prefs.getInt(getString(R.string.key_background_orientation), -1);
+        File file= null;
+        if (filePath != null) {
+            file = new File(filePath);
+        }
 
         if (color != -1) { // since color is set, we just set the background to that
             Log.d(TAG, "setting activity to a color");
@@ -527,7 +578,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             Bitmap bitmap = BitmapFactory.decodeResource(
                     getResources(), R.drawable.background_default);
             view.setImageBitmap(bitmap);
-        } else { //now we must retrieve and set up the stored picture
+        } else if (file != null && file.exists()){ //now we must retrieve and set up the stored picture
             Log.d(TAG, "getting image from stored data");
             Display display = getWindowManager().getDefaultDisplay();
             Bitmap bitmap;
@@ -542,9 +593,19 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 h = display.getHeight();
             }
             BitmapToViewHelper.go(view, filePath, orientation, w, h);
+        } else {
+            Log.e(TAG, "no background information to load for lockscreen; neither file nor color exist");
         }
 
 
+    }
+
+    protected boolean isSpeedDialEnabled() {
+        ToggleButton toggle = (ToggleButton)mWrapperView.findViewById(
+                R.id.lock_screen_speed_dial_toggle);
+
+        // TODO: OK for now, but need to check whether speed dial enabled at all in the settings
+        return toggle.isChecked();
     }
 
     /**
@@ -580,11 +641,11 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                     "Phone");
 
             if (telNum == null) {
-                Log.d(TAG, "Error in obtaining phone number");
+                Log.e(TAG, "Error in obtaining phone number");
                 return;
             }
 
-            if (!getPhoneCallActiveFlag()) {  //Only want to initiate the call if line is idle
+            if (!getPhoneCallActiveFlag() && isSpeedDialEnabled()) {  //Only want to initiate the call if line is idle and speed dial enabled
                 Intent intent = new Intent(Intent.ACTION_CALL);
                 intent.setData(Uri.parse("tel:" + (telNum.trim())));
                 startActivity(intent);

@@ -3,5 +3,11 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
+    <dimen name="diameter_circle_toggle">22dp</dimen>
+    <dimen name="radius_circle_toggle">11dp</dimen>
+    <dimen name="settings_toggle_width">44dp</dimen>
+    <dimen name="settings_toggle_height">22dp</dimen>
+
+
 
 </resources>

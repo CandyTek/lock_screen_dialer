@@ -83,9 +83,9 @@
 
     <string name="pref_description_toggle_date">Shows the date on the lock screen</string>
 
-    <string name="pref_title_toggle_camera_shortcut">Embed camera access</string>
+    <string name="pref_title_toggle_speed_dial_button">Embed speed dial toggle button</string>
 
-    <string name="pref_description_toggle_camera_shortcut">Provides a link to your camera application on the lockscreen</string>
+    <string name="pref_description_toggle_speed_dial_button">Toggle speed dial on and off in the lockscreen</string>
 
     <string name="pref_title_display_contact_info">Display other text</string>
 
@@ -103,7 +103,7 @@
     <string name="key_toggle_clock_display">key_toggle_clock_display</string>
     <string name="key_toggle_date_display">key_toggle_date_display</string>
     <string name="key_toggle_info_display">key_toggle_info_display</string>
-    <string name="key_toggle_camera_display">key_toggle_camera_display</string>
+    <string name="key_toggle_speed_dial_button">key_toggle_speed_dial_button</string>
 
     <string name="date_format">E d MMM yyyy</string>
 
@@ -112,13 +112,13 @@
         <item>@string/key_toggle_clock_display</item>
         <item>@string/key_toggle_date_display</item>
         <item>@string/key_toggle_info_display</item>
-        <item>@string/key_toggle_camera_display</item>
+        <item>@string/key_toggle_speed_dial_button</item>
     </array>
     <array name="optional_display_view_layout_ids">
         <item>@id/lock_screen_clock</item>
         <item>@id/lock_screen_date</item>
         <item>@id/lock_screen_info</item>
-        <item>@id/lock_screen_camera</item>
+        <item>@id/lock_screen_speed_dial_toggle</item>
     </array>
     <array name="optional_display_view_data_types">
         <item>boolean</item>

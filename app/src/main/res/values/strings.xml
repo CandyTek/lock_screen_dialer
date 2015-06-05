@@ -95,4 +95,7 @@
     <string name="background_file_key">com.vitaminbacon.lockscreendialder.BACKGROUND_FILE</string>
     <string name="title_activity_color_selection">Select Background Color</string>
 
+    <string name="lock_screen_speed_dial_toggle_off">Speed Dial Off</string>
+    <string name="lock_screen_speed_dial_toggle_on">Speed Dial On</string>
+
 </resources>
