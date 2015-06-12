@@ -39,7 +39,6 @@ public class LockScreenLauncherActivity extends Activity {
         if(lockScreenType != null &&
                 lockScreenType.equals(getString(R.string.lock_screen_type_value_keypad_pin))){ // Now enable the correct lock screen
             intent = new Intent (this, LockScreenKeypadPinActivity.class);
-            Log.d(TAG, "Keypad PIN fragment to be implemented.");
         } //TODO: enable other lock screen types
         else { //An error of some kind
             Log.d(TAG, "No value for key " + getString(R.string.lock_screen_type_value_key));

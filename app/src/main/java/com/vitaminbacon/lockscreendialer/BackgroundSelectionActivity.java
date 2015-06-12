@@ -37,22 +37,27 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
     private final static int ORIENTATION_UNKNOWN = -1;
 
     //private ViewGroup mRootViewGroup;
-    private ImageView mCurrentBackgroundView;
+    /*private ImageView mCurrentBackgroundView;
     private Button mPicsSelectButton;
-    private Button mColorsSelectButton;
+    private Button mColorsSelectButton;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_background_selection);
         //mRootViewGroup = (ViewGroup) ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
-        mCurrentBackgroundView =
-                (ImageView) findViewById(R.id.background_selection_current_background);
-        mPicsSelectButton = (Button) findViewById(R.id.background_selection_pics_button);
+        /*mCurrentBackgroundView =
+                (ImageView) findViewById(R.id.background_selection_current_background);*/
+        /*mPicsSelectButton = (Button) findViewById(R.id.background_selection_pics_button);
         mColorsSelectButton = (Button) findViewById(R.id.background_selection_colors_button);
         mPicsSelectButton.setOnClickListener(this);
         mColorsSelectButton.setOnClickListener(this);
-        mCurrentBackgroundView.setImageBitmap(null);
+        mCurrentBackgroundView.setImageBitmap(null);*/
+
+        Button picsSelectButton = (Button) findViewById(R.id.background_selection_pics_button);
+        Button colorsSelectButton = (Button) findViewById(R.id.background_selection_colors_button);
+        picsSelectButton.setOnClickListener(this);
+        colorsSelectButton.setOnClickListener(this);
 
         /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             mRootViewGroup.setBackground(getCurrentBackground());
@@ -141,7 +146,6 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
         }
     }
 
-    // TODO: background remove button, reverting to default, and select simple color
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.background_selection_pics_button:
@@ -164,8 +168,10 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
 
                     @Override
                     public void onOk(AmbilWarnaDialog ambilWarnaDialog, int i) {
-                        mCurrentBackgroundView.setImageBitmap(null);
-                        mCurrentBackgroundView.setBackgroundColor(i);
+                        ImageView bg = (ImageView) findViewById(
+                                R.id.background_selection_current_background);
+                        bg.setImageBitmap(null);  //perhaps consider .setImageDrawable(null)?
+                        bg.setBackgroundColor(i);
                         SharedPreferences sharedPreferences = getSharedPreferences(
                                 getString(R.string.background_file_key),
                                 MODE_PRIVATE);
@@ -217,15 +223,17 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
         int color = prefs.getInt(getString(R.string.key_background_color), NO_COLOR);
         int orientation = prefs.getInt(
                 getString(R.string.key_background_orientation), ORIENTATION_UNKNOWN);
+        ImageView bg = (ImageView) findViewById(
+                R.id.background_selection_current_background);
 
         if (path == null && color == NO_COLOR) { // meaning no background has been selected
 
-            mCurrentBackgroundView.setImageBitmap(
+            bg.setImageBitmap(
                     BitmapFactory.decodeResource(getResources(), R.drawable.background_default));
             //return BitmapFactory.decodeResource(getResources(), R.drawable.background_default);
         } else if (color != NO_COLOR) {
-            mCurrentBackgroundView.setImageBitmap(null);
-            mCurrentBackgroundView.setBackgroundColor(color);
+            bg.setImageBitmap(null);  // TODO: consider setImageDrawable(null)
+            bg.setBackgroundColor(color);
         } else {
             Log.d(TAG, "assessing image Uri from stored data");
 
@@ -241,7 +249,7 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
                 w = display.getWidth();
                 h = display.getHeight();
             }
-            BitmapToViewHelper.go(mCurrentBackgroundView, path, orientation, w, h);
+            BitmapToViewHelper.go(bg, path, orientation, w, h);
             /*BitmapWorkerTask task = new BitmapWorkerTask(mCurrentBackgroundView, path);
             task.execute(orientation, w, h);*/
             //return bitmap;

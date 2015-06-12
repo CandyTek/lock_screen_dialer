@@ -97,6 +97,10 @@
 
     <string name="contact_search_hint">Type a contact name</string>
 
+    <string name="pref_title_toggle_speed_dial_enabled">Enable speed dial</string>
+
+    <string name="pref_description_toggle_speed_dial_enabled">Holding down a key dials a stored contact</string>
+
     <string name="key_toggle_lock_screen">key_toggle_lock_screen</string>
     <string name="key_assign_speed_dial_contacts">key_assign_speed_dial_contacts</string>
     <string name="key_select_lock_screen_type">key_select_lock_screen_type</string>
@@ -104,6 +108,7 @@
     <string name="key_toggle_date_display">key_toggle_date_display</string>
     <string name="key_toggle_info_display">key_toggle_info_display</string>
     <string name="key_toggle_speed_dial_button">key_toggle_speed_dial_button</string>
+    <string name="key_toggle_speed_dial_enabled">key_toggle_speed_dial_enabled</string>
 
     <string name="date_format">E d MMM yyyy</string>
 

@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -40,10 +41,10 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
     private final static String TAG = "LSKeypadPinActivity";
 
     // UI elements
-    private TextView mPinDisplayView;
+/*    private TextView mPinDisplayView;
     private Button mDeleteButton;
     private Button mOkButton;
-    private Button[] mkeypadButtons;
+    private Button[] mkeypadButtons;*/
 
     // variables relating to the logic of the lockscreen
     private String mPinStored;
@@ -56,53 +57,77 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate() called.");
         super.onCreate(savedInstanceState);
+        View wrapperView = getWrapperView();
+/*
+        try {
+            wrapperView = getWindow().getDecorView().getRootView();
+        } catch (ClassCastException e) {
+            Log.e(TAG, "Incompatible root view used with this activity.", e);
+            finish();
+            return;
+        }
+*/
+                //(RelativeLayout) ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
+
+
 
         // Initialize some basic variables
         mNumTries = 0;  // Possibly modified later by onRestoreInstanceState
-        mkeypadButtons = new Button[10];
+        //mkeypadButtons = new Button[10];
         mPinStored = getStoredPin();
         mPinInvalidDisplayFlag = false;
 
-        mPinDisplayView = (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_display);
-        mPinDisplayView.setText(getString(R.string.lock_screen_pin_default_display)); // In case returning to this display from elsewhere, want to reset
-        mPinEntered = ""; // Same -- we want to reset
+        Button[] keypadButtons;
+        TextView pinDisplayView;
+        Button deleteButton, okButton;
 
-        mDeleteButton = (Button) getWrapperView().findViewById(R.id.lock_screen_pin_button_delete);
-        mOkButton = (Button) getWrapperView().findViewById(R.id.lock_screen_pin_button_OK);
+        // In case returning to this display from elsewhere, want to reset
+        // Will also catch error when there is improper layout
+        //Log.d(TAG, "onCreate() calling resetPinEntry()");
+        resetPinEntry(getString(R.string.lock_screen_pin_default_display));
 
-        mkeypadButtons[0] = (Button) getWrapperView().findViewById(R.id.lock_screen_pin_button_0);
-        mkeypadButtons[1] = (Button) getWrapperView().findViewById(R.id.lock_screen_pin_button_1);
-        mkeypadButtons[2] = (Button) getWrapperView().findViewById(R.id.lock_screen_pin_button_2);
-        mkeypadButtons[3] = (Button) getWrapperView().findViewById(R.id.lock_screen_pin_button_3);
-        mkeypadButtons[4] = (Button) getWrapperView().findViewById(R.id.lock_screen_pin_button_4);
-        mkeypadButtons[5] = (Button) getWrapperView().findViewById(R.id.lock_screen_pin_button_5);
-        mkeypadButtons[6] = (Button) getWrapperView().findViewById(R.id.lock_screen_pin_button_6);
-        mkeypadButtons[7] = (Button) getWrapperView().findViewById(R.id.lock_screen_pin_button_7);
-        mkeypadButtons[8] = (Button) getWrapperView().findViewById(R.id.lock_screen_pin_button_8);
-        mkeypadButtons[9] = (Button) getWrapperView().findViewById(R.id.lock_screen_pin_button_9);
+        keypadButtons = getKeypadButtons(wrapperView);
+        deleteButton = getDeleteButton(wrapperView);
+        okButton = getOkButton(wrapperView);
 
         // Set the onClickListeners to the appropriate views
         SharedPreferences sharedPref = getSharedPreferences(
                 getString(R.string.speed_dial_preference_file_key),
-                Context.MODE_PRIVATE
-        );
+                Context.MODE_PRIVATE);
 
         for (int i=0; i < 10; i++) {
-            mkeypadButtons[i].setOnClickListener(this); // all buttons will have an onClickListener
+            try {
+                keypadButtons[i].setOnClickListener(this); // all buttons will have an onClickListener
+                String filename = getString(R.string.key_number_store_prefix_phone) + i;
 
-            String filename = getString(R.string.key_number_store_prefix_phone) + i;
-            //Log.d(TAG, "Attempting to access " + filename);
-            if (sharedPref.getString(filename, null) != null) { //only set the long click where necessary
-                //Log.d(TAG, "Setting long click on key " + i);
-                mkeypadButtons[i].setOnTouchListener(this);
+                if (sharedPref == null) {
+                    Log.w(TAG, "Unable to access shared preferences file"
+                            + getString(R.string.speed_dial_preference_file_key) + "; returned null.");
+                    continue;
+                } else if (sharedPref.getString(filename, null) != null) { //only set the long click where necessary
+                    //Log.d(TAG, "Setting long click on key " + i);
+                    keypadButtons[i].setOnTouchListener(this);
+                }
+            } catch (NullPointerException e) {
+                Log.e(TAG, "Keypad button " + i + " is invalid.", e);
+                onFatalError();
+                return;
             }
         }
-        mDeleteButton.setOnClickListener(this);
-        mOkButton.setOnClickListener(this);
+
+        try {
+            deleteButton.setOnClickListener(this);
+            okButton.setOnClickListener(this);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Delete and/or OK button invalid.", e);
+            onFatalError();
+            return;
+        }
 
         if (mPinStored == null) {
-            Log.d(TAG, "Stored PIN is null.");
-            onCorrectPasscode(); //For now, just exit.  TODO: find good way to handle these errors.
+            Log.e(TAG, "Stored PIN is null.");
+            onFatalError(); //For now, just exit.  TODO: find good way to handle these errors.
+            return;
         }
     }
 
@@ -130,7 +155,9 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
 
     @Override
     public void onDestroy() {
+
         super.onDestroy();
+
     }
 
     @Override
@@ -139,31 +166,45 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
 
         if (mLongPressFlag) {
             mLongPressFlag = false;
+            //Log.d(TAG, "onClick() calling resetPinEntry() on long click");
             resetPinEntry(getString(R.string.lock_screen_pin_default_display));
             return;
         }
         int num = getSpeedDialButtonPressed(view.getId(), -1);
         if (num == -1) { //Not a speed dial number
-            if (view.getId() == R.id.lock_screen_pin_button_OK) {
-                wrongPinEntered();  // Because our functionality will automatically accept a PIN when it is entered, we can assume error
-            } else {
-                //Log.d(TAG, "delete button pressed.");
-                resetPinEntry(getString(R.string.lock_screen_pin_default_display));
+            switch (view.getId()) {
+                case R.id.lock_screen_pin_button_OK:
+                    if (mPinEntered.length() != 0){ // We don't care if the OK button was pressed without any PIN entered
+                        wrongPinEntered();  // Because our functionality will automatically accept a PIN when it is entered, we can assume error
+                    }
+                    break;
+                case R.id.lock_screen_pin_button_delete:
+                    //Log.d(TAG, "onClick() calling resetPinEntry() on delete button pressed.");
+                    resetPinEntry(getString(R.string.lock_screen_pin_default_display));
+                    break;
             }
             return;
         }
 
         mPinEntered += num;
 
+        //Log.d(TAG, "onClick() -- digit " + num + "entered, pin display tag is " + mPinInvalidDisplayFlag);
         // Display a new "digit" on the text view
         if (!mPinInvalidDisplayFlag) {// meaning the display is not taken by displaying an invalid pin message
-                if (mPinDisplayView.getText().toString().
-                        equals(getString(R.string.lock_screen_pin_default_display))){
-                    mPinDisplayView.setText("*");
+            TextView pinDisplayView = getPinDisplayView(getWrapperView());
+            try {
+                if (pinDisplayView.getText().toString().
+                        equals(getString(R.string.lock_screen_pin_default_display))) {
+                    pinDisplayView.setText("*");
                     setPinDisplayToPasswordView();
                 } else {
-                    mPinDisplayView.setText(mPinDisplayView.getText().toString() + "*");
+                    pinDisplayView.setText(pinDisplayView.getText().toString() + "*");
                 }
+            } catch (NullPointerException e) {
+                Log.e(TAG, "pin display text view invalid.", e);
+                onFatalError();
+                return;
+            }
         }
 
         //  Now check whether the PIN entered so far matches the stored PIN
@@ -212,10 +253,98 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         return false;
     }
 
+    private Button[] getKeypadButtons(View wrapperView) {
+        Button[] keypadButtons = new Button[10];
+
+        try {
+            keypadButtons[0] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_0);
+            keypadButtons[1] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_1);
+            keypadButtons[2] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_2);
+            keypadButtons[3] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_3);
+            keypadButtons[4] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_4);
+            keypadButtons[5] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_5);
+            keypadButtons[6] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_6);
+            keypadButtons[7] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_7);
+            keypadButtons[8] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_8);
+            keypadButtons[9] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_9);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Wrapper view could not be located in this activity.", e);
+            onFatalError();  // TODO: find way to gracefully handle these exceptions
+            return null;
+        } catch (ClassCastException e) {
+            Log.e(TAG, "Incompatible layout used with this activity.", e);
+            onFatalError();
+            return null;
+        }
+        return keypadButtons;
+    }
+
+    private TextView getPinDisplayView(View wrapperView) {
+        TextView t;
+        try {
+            t = (TextView) wrapperView.findViewById(R.id.lock_screen_pin_display);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Wrapper view could not be located in this activity.", e);
+            onFatalError();  // TODO: find way to gracefully handle these exceptions
+            return null;
+        } catch (ClassCastException e) {
+            Log.e(TAG, "Incompatible layout used with this activity.", e);
+            onFatalError();
+            return null;
+        }
+
+        if (t == null) {
+            Log.e(TAG, "Incompatible layout use with this activity - pin display view null.");
+            onFatalError();
+        }
+        return t;
+    }
+
+    private Button getOkButton(View wrapperView) {
+        Button b;
+        try {
+            b = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_OK);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Wrapper view could not be located in this activity.", e);
+            onFatalError();  // TODO: find way to gracefully handle these exceptions
+            return null;
+        } catch (ClassCastException e) {
+            Log.e(TAG, "Incompatible layout used with this activity.", e);
+            onFatalError();
+            return null;
+        }
+        return b;
+    }
+
+    private Button getDeleteButton(View wrapperView) {
+        Button b;
+        try {
+            b = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_delete);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Wrapper view could not be located in this activity.", e);
+            onFatalError();  // TODO: find way to gracefully handle these exceptions
+            return null;
+        } catch (ClassCastException e) {
+            Log.e(TAG, "Incompatible layout used with this activity.", e);
+            onFatalError();
+            return null;
+        }
+        return b;
+    }
+
+
+
     private void setPinDisplayToPasswordView(){
-        mPinDisplayView.setTransformationMethod(new PasswordTransformationMethod());  // Turns the text to dots
-        mPinDisplayView.setTextScaleX(1.2f); // sets space between the characters
-        mDeleteButton.setVisibility(View.VISIBLE);
+        TextView pinDisplayView = getPinDisplayView(getWrapperView());
+        Button deleteButton = getDeleteButton(getWrapperView());
+        try {
+            pinDisplayView.setTransformationMethod(new PasswordTransformationMethod());  // Turns the text to dots
+            pinDisplayView.setTextScaleX(1.2f); // sets space between the characters
+            deleteButton.setVisibility(View.VISIBLE);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Layout is incompatible with activity.", e);
+            onFatalError();
+        }
     }
 
     private String getStoredPin(){
@@ -227,12 +356,23 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
 
     }
     private void wrongPinEntered() {
+        // TODO: implement switch statement below
+        /*int delay;
+        String message;
+        switch (mNumTries / 3) {
+            case 0:  // meaning there have been less than 3 tries
+                delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay);
+                message = getString(R.string.lock_screen_wrong_pin_entered);
+                break;
+            case 1:
+
+        }*/
         resetPinEntry(getString(R.string.lock_screen_wrong_pin_entered));
         mPinInvalidDisplayFlag = true;
         mNumTries++;
         SetTextInViewRunnable r = new SetTextInViewRunnable(
                 getString(R.string.lock_screen_pin_default_display),
-                mPinDisplayView);
+                getPinDisplayView(getWrapperView()));
         Handler h = new Handler();
         h.postDelayed(r, getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay));
 
@@ -244,11 +384,19 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
      * Method that resets the Pin Entry
      */
     private void resetPinEntry(String displayText) {
-        mPinDisplayView.setText(displayText);
-        mPinDisplayView.setTransformationMethod(null);
-        mPinDisplayView.setTextScaleX(1.0f);
+        TextView pinDisplayView = getPinDisplayView(getWrapperView());
+        Button deleteButton = getDeleteButton(getWrapperView());
+        try {
+            pinDisplayView.setText(displayText);
+            pinDisplayView.setTransformationMethod(null);
+            pinDisplayView.setTextScaleX(1.0f);
+            deleteButton.setVisibility(View.INVISIBLE);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Incompatible layout with this activity.", e);
+            onFatalError();
+        }
+        //Log.d(TAG, "pinDisplayView text is reset to " + pinDisplayView.getText());
         mPinEntered = "";
-        mDeleteButton.setVisibility(View.INVISIBLE);
     }
 
     private void resetPinInvalidDisplayFlag() {
@@ -287,8 +435,6 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         return mPinEntered.length();
     }
 
-
-
     private class SetTextInViewRunnable implements Runnable {
         private String text;
         private TextView view;
@@ -301,6 +447,7 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
             int i = getPinEnteredLength();
             if (i == 0) {
                 view.setText(text);
+                //Log.d(TAG, "Runnable has set pinDisplayView to " + text);
             } else { // we need to set the string to the appropriate length
                 String s = "";
                 for (int j = 0; j < i; j++) {
@@ -308,8 +455,9 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
                 }
                 view.setText(s);
                 setPinDisplayToPasswordView();
-                resetPinInvalidDisplayFlag();
+                //Log.d(TAG, "Runnable has set pinDisplayVyew to " + s);
             }
+            resetPinInvalidDisplayFlag();
         }
     }
 

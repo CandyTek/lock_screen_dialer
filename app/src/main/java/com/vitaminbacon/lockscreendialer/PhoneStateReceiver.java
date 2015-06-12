@@ -21,7 +21,8 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             "com.vitaminbacon.lockscreendialer.PHONE_STATE_RINGING";
 
     public PhoneStateReceiver() {
-        Log.d(TAG, "Constructor called.");
+
+        //Log.d(TAG, "Constructor called.");
     }
 
     @Override

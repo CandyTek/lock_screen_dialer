@@ -3,7 +3,6 @@ package com.vitaminbacon.lockscreendialer;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -22,7 +21,6 @@ import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -30,6 +28,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.internal.telephony.ITelephony;
+import com.vitaminbacon.lockscreendialer.exceptions.CallHandlerException;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -49,7 +48,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
 
 
     // Variables to implement TYPE_SYSTEM_ERROR stuff
-    private WindowManager winManager;
+    private WindowManager mWindowManager;
     private RelativeLayout mWrapperView;
 
     // Variables to utilize phone state service and handle phone calls
@@ -63,6 +62,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
     protected DialerRunnable mRunnable;
     protected boolean mLongPressFlag;
 
+    private boolean mBackgroundSetFlag;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //Log.d(TAG, "onCreate() called.");
@@ -78,17 +78,21 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | // Same
                                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, //Same
                         PixelFormat.TRANSLUCENT);
-        this.winManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
+        mWindowManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
         getWindow().setAttributes(localLayoutParams);
-        View.inflate(this, R.layout.activity_lock_screen_keypad_pin, this.mWrapperView);
-        this.winManager.addView(this.mWrapperView, localLayoutParams);
+        View.inflate(this, R.layout.activity_lock_screen_keypad_pin, mWrapperView);
+        mWindowManager.addView(mWrapperView, localLayoutParams);
 
         // Check that the layout has the requisite phone-related elements for this activity to function
         if (mWrapperView.findViewById(R.id.lock_screen_end_call_button) == null ||
                 mWrapperView.findViewById(R.id.lock_screen_call_display) == null ||
                 mWrapperView.findViewById(R.id.lock_screen_background_view) == null) {
+            Log.e(TAG, "Layout incompatible with this activity for failing to have proper Views.");
+            onFatalError();
+            return;
+            /*
             throw new ClassCastException(this.toString()
-                    + " must use appropriate XML layout with correct IDs and correct types." );
+                    + " must use appropriate XML layout with correct IDs and correct types." );*/
         }
         try {
             ImageButton b = (ImageButton)mWrapperView.findViewById(R.id.lock_screen_end_call_button);
@@ -96,11 +100,22 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             TextView v = (TextView)mWrapperView.findViewById(R.id.lock_screen_call_display);
             ImageView iv = (ImageView)mWrapperView.findViewById(R.id.lock_screen_background_view);
         } catch (ClassCastException e) {
-            throw new ClassCastException(this.toString()
-                    + " must use appropriate XML layout with correct IDs and correct types.");
+            Log.e(TAG, "Layout incompatible with this activity for failing to have proper Views.");
+            onFatalError();
+            return;
+            /*throw new ClassCastException(this.toString()
+                    + " must use appropriate XML layout with correct IDs and correct types.");*/
         }
 
-        instantiateOptionalViewsInView();
+        try {
+            instantiateOptionalViewsInView();
+        } catch (CallHandlerException e) {
+            Log.e(TAG, "Layout renders activity unable to handle calls", e);
+            onFatalError();
+            return;
+        }
+
+        mBackgroundSetFlag = false;
 
         // begin the phone state service to listen to phone call information; supposedly only one service of a kind can exist
         startService(new Intent(this, PhoneStateService.class));
@@ -122,17 +137,24 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
     public void onResume(){
         // if there is still a phone call active, we need to set the display to handle that
         //Log.d(TAG, "onResume() called.");
-        if (mPhoneCallActiveFlag) {
-            enableCallViewsInView(mPhoneNumOnCall, mContactNameOnCall, mPhoneTypeOnCall);
-            disableOptionalViewsInView();
-        } else {
-            disableCallViewsInView();
-            enableOptionalViewsInView();
-        }
-        setActivityBackground(
-                (ImageView) mWrapperView.findViewById(R.id.lock_screen_background_view));
-
         super.onResume();
+        try {
+            if (mPhoneCallActiveFlag) {
+                enableCallViewsInView(mPhoneNumOnCall, mContactNameOnCall, mPhoneTypeOnCall);
+                disableOptionalViewsInView();
+            } else {
+                disableCallViewsInView();
+                enableOptionalViewsInView();
+            }
+            if (!mBackgroundSetFlag) {
+                setActivityBackground(
+                        (ImageView) mWrapperView.findViewById(R.id.lock_screen_background_view));
+            }
+        } catch (CallHandlerException e) {
+            Log.e(TAG, "Layout renders activity unable to handle calls", e);
+            onFatalError();
+        }
+
     }
 
     @Override
@@ -148,6 +170,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         mContactNameOnCall = savedInstanceState.getString("contactNameOnCall");
         mPhoneNumOnCall = savedInstanceState.getString("phoneNumOnCall");
         mPhoneTypeOnCall = savedInstanceState.getString("phoneTypeOnCall");
+        mBackgroundSetFlag = savedInstanceState.getBoolean("backgroundSetFlag");
     }
 
     @Override
@@ -164,6 +187,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         if (mPhoneTypeOnCall != null) {
             outState.putString("phoneTypeOnCall", mPhoneTypeOnCall);
         }
+        outState.putBoolean("backgroundSetFlag", mBackgroundSetFlag);
     }
 
     /**
@@ -184,7 +208,13 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             mPhoneCallActiveFlag = false;
             mContactNameOnCall = mPhoneNumOnCall = mPhoneTypeOnCall = null;
             disableCallViewsInView();
-            enableOptionalViewsInView();
+            try {
+                enableOptionalViewsInView();
+            } catch (CallHandlerException e) {
+                Log.e(TAG, "Layout renders activity unable to handle calls", e);
+                onFatalError();
+            }
+
             startService(new Intent(this, LockScreenService.class)); // reenable the off-screen receiver
         }
         else if (phoneState == PhoneStateReceiver.PHONE_STATE_RINGING) { // a call has been received, we should handle lock screen in case user returns there
@@ -209,7 +239,29 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
 
     }
 
+    @Override
+    public void onBackPressed() {  // Overrides the back button to prevent exit
+        return;
+    }
 
+    // Implemented to use TYPE_SYSTEM_ERROR hack
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy called");
+        super.onDestroy();
+
+        // TODO: is there a way to animate this?
+        mWindowManager.removeView(mWrapperView);
+        ((ImageView) mWrapperView.findViewById(R.id.lock_screen_background_view)).setImageBitmap(null);  // Probably not necessary
+        mWrapperView.removeAllViews();
+
+        if (mHandler != null && mRunnable != null) {
+            mHandler.removeCallbacks(mRunnable);
+        }
+        mHandler = null;
+        mRunnable = null;
+
+    }
     /**
      * Simple functions that makes the call views visible/invisible and hides unnecessary views.
      * This is the implementation of this parent class that requires certain view IDs --
@@ -219,54 +271,57 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
      */
     private void enableCallViewsInView(String telNum, String name, String type){
         //Display the end call button
-        ImageButton endCallBtn = (ImageButton) mWrapperView.
-                findViewById(R.id.lock_screen_end_call_button);
-        RelativeLayout rl = (RelativeLayout) endCallBtn.getParent();
-        rl.setVisibility(View.VISIBLE);  // Needed to set both the parent and child to get the layout to play nice
-        endCallBtn.setVisibility(View.VISIBLE);
-        endCallBtn.setOnClickListener(this);
+        ImageButton endCallBtn;
+        RelativeLayout rl;
+        TextView dialInfoView;
 
-        //Display the information regarding the number we are dialing
-        TextView dialInfoView = (TextView) mWrapperView.findViewById(R.id.lock_screen_call_display);
-        dialInfoView.setText(getDialInfoViewText(telNum, name, type));
-        dialInfoView.setVisibility(View.VISIBLE);
+        try {
+            endCallBtn = (ImageButton) mWrapperView.findViewById(R.id.lock_screen_end_call_button);
+            rl = (RelativeLayout) endCallBtn.getParent();
+            dialInfoView = (TextView) mWrapperView.findViewById(R.id.lock_screen_call_display);
+        } catch (ClassCastException e) {
+            Log.e(TAG, "Layout incompatible with this activity - enableCallViewsInView().", e);
+            onFatalError();
+            return;
+        }
 
+        try {
+            rl.setVisibility(View.VISIBLE);  // Needed to set both the parent and child to get the layout to play nice
+            endCallBtn.setVisibility(View.VISIBLE);
+            endCallBtn.setOnClickListener(this);
 
-
-        // Hide the clock
-        /*mWrapperView.findViewById(R.id.lock_screen_clock).setVisibility(View.GONE);
-        // Hide the date
-        mWrapperView.findViewById(R.id.lock_screen_date).setVisibility(View.GONE);
-        // Hide the other information
-        mWrapperView.findViewById(R.id.lock_screen_info).setVisibility(View.GONE);*/
-
-
+            //Display the information regarding the number we are dialing
+            dialInfoView.setText(getDialInfoViewText(telNum, name, type));
+            dialInfoView.setVisibility(View.VISIBLE);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Layout incompatible with this activity - enableCallViewsInView()", e);
+            onFatalError();
+            return;
+        }
     }
 
     private void disableCallViewsInView() {
-        ImageButton endCallBtn = (ImageButton) mWrapperView.
-                findViewById(R.id.lock_screen_end_call_button);
-        RelativeLayout rl = (RelativeLayout) endCallBtn.getParent();
-        endCallBtn.setVisibility(View.INVISIBLE);
-        rl.setVisibility(View.INVISIBLE);
+        try {
+            ImageButton endCallBtn = (ImageButton) mWrapperView.
+                    findViewById(R.id.lock_screen_end_call_button);
+            RelativeLayout rl = (RelativeLayout) endCallBtn.getParent();
+            endCallBtn.setVisibility(View.INVISIBLE);
+            rl.setVisibility(View.INVISIBLE);
 
-        mWrapperView.findViewById(R.id.lock_screen_call_display).setVisibility(View.GONE);
-
-        // TODO: when clock etc settings functionality implemented, should check for user settings before making visible
-        /*mWrapperView.findViewById(R.id.lock_screen_clock).setVisibility(View.VISIBLE);
-
-        mWrapperView.findViewById(R.id.lock_screen_date).setVisibility(View.VISIBLE);
-
-        mWrapperView.findViewById(R.id.lock_screen_info).setVisibility(View.VISIBLE);*/
-
+            mWrapperView.findViewById(R.id.lock_screen_call_display).setVisibility(View.GONE);
+        } catch (ClassCastException e) {
+            Log.e(TAG, "Layout incompatible with this activity - CCE in disableCallViewsInView()", e);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Layout incompatible with this activity - NPE in disableCallViewsInView()", e);
+        }
     }
 
-    private void enableOptionalViewsInView(){
+    private void enableOptionalViewsInView() throws CallHandlerException {
         //Log.d(TAG, "Enabling Optional Views");
         setOptionalViewsInView(View.VISIBLE);
     }
 
-    private void disableOptionalViewsInView() {
+    private void disableOptionalViewsInView() throws CallHandlerException {
         //Log.d(TAG, "Disabling Optional Views");
         setOptionalViewsInView(View.GONE);
     }
@@ -276,7 +331,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
      * View.GONE or View.VISIBILE
      * @param value
      */
-    private void setOptionalViewsInView(int value) {
+    private void setOptionalViewsInView (int value) throws CallHandlerException {
 
         if (value != View.GONE && value != View.VISIBLE && value != View.INVISIBLE) {
             Log.e(TAG, "Invalid argument passed to setOptionalViewsInView");
@@ -287,17 +342,19 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         TypedArray ids = getResources().obtainTypedArray(R.array.optional_display_view_layout_ids);
 
         if (keys.length() != ids.length()) {  // TODO: excpetion?
-            Log.e(TAG, "XML arrays for keys and ids to optional views mismatched.");
-            return;
+            //Log.e(TAG, "XML arrays for keys and ids to optional views mismatched.");
+            throw new CallHandlerException(this.toString()
+                    + "XML arrays for keys and ids to optional views mismatched.");
         }
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         for (int i=0; i < keys.length(); i++) {
             //Log.d(TAG, "Iteration " + i + " - value " + value + " - " + keys.getString(i));
+
             View view = mWrapperView.findViewById(ids.getResourceId(i, -1));
             if (view == null) { // There should always be at least an existing id somewhere for the view in the XML
-                Log.e(TAG, "Iteration " + i + " of key " + keys.getString(i)
+                Log.w(TAG, "Iteration " + i + " of key " + keys.getString(i)
                         + " in setOptionalViewsInView() has invalid id.");
                 continue;
             }
@@ -326,48 +383,19 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                     break;*/
             }
         }
-
-
-            /*try {
-
-                if (prefs.getBoolean(keys.getString(i), false) ) {
-                    int viewId = ids.getResourceId(i, -1); // gets the corresponding id for that view (hopefully)
-                    View view = mWrapperView.findViewById(viewId);
-
-                    // Error check for the existence of the id
-                    if (view == null) {
-                        Log.e(TAG, "Iteration " + i + " of key " + keys.getString(i)
-                                + " in setOptionalViewsInView() has invalid id.");
-                        return;
-                    }
-
-                    view.setVisibility(value);
-                }*/
-
-/*
-            } else if ( prefs.getString(keys.getString(i), null) != null ){ // handle other types of preferences
-                int viewId = ids.getResourceId(i, -1);
-                View view = mWrapperView.findViewById(viewId);
-                if (view != null) {
-                    view.setVisibility(value);
-                } else {
-                    Log.e(TAG, "Iteration " + i + " of key " + keys.getString(i)
-                            + " in setOptionalViewsInView() has invalid id.");
-                }
-*/
-
     }
 
-    private void instantiateOptionalViewsInView() {
+    private void instantiateOptionalViewsInView() throws CallHandlerException {
         TypedArray keys = getResources().obtainTypedArray(R.array.optional_display_view_file_keys);
         TypedArray ids = getResources().obtainTypedArray(R.array.optional_display_view_layout_ids);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int viewId;
         View view;
 
-        if (keys.length() != ids.length()) {  // TODO: excpetion?
-            Log.e(TAG, "XML arrays for keys and ids to optional views mismatched.");
-            return;
+        if (keys.length() != ids.length()) {
+            //Log.e(TAG, "XML arrays for keys and ids to optional views mismatched.");
+            throw new CallHandlerException(this.toString()
+                    + "XML arrays for keys and ids to optional views mismatched.");
         }
 
         for (int i=0; i < keys.length(); i++){
@@ -375,49 +403,88 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             view = mWrapperView.findViewById(viewId);
 
             if (view == null) { // Error check
-                Log.e(TAG, "Iteration " + i + " of key " + keys.getString(i)
-                        + " in setOptionalViewsInView() has invalid id.");
-                return;
+                Log.w(TAG, "Iteration " + i + " of key " + keys.getString(i)
+                        + " in setOptionalViewsInView() has invalid id.");  // TODO: do we need to make this an error?
+                continue;
             }
 
-            switch (viewId) {
-                case R.id.lock_screen_date:
-                    SimpleDateFormat df = new SimpleDateFormat(getString(R.string.date_format));
-                    try {
-                        ((TextView) view).setText(df.format(new Date()));
-                    } catch (ClassCastException e) {
-                        Log.e(TAG, "Illegal casting of TextView to view of lock screen date.");
-                    }
-                    break;
-                case R.id.lock_screen_clock:
-                    // do nothing; view already takes care of its own value
-                    break;
-                case R.id.lock_screen_info:
-                    String s = prefs.getString(keys.getString(i), "");
-                    if (s.equals("")) {  //equivalent of no value
-                        continue;
-                    } else {
-                        try {
-                            ((TextView) view).setText(s);
-                            //Log.d(TAG, "Set value for lock screen info.");
-                        } catch (ClassCastException e) {
-                            Log.e(TAG, "Illegal casting of TextView to view of lock screen info.");
-                        }
-                    }
-                    break;
-                case R.id.lock_screen_speed_dial_toggle:
-                    Log.d(TAG, "instantiating toggle button");
-                    ToggleButton toggle = (ToggleButton) mWrapperView.findViewById(
-                            R.id.lock_screen_speed_dial_toggle);
-                    TextView tv = (TextView) mWrapperView.findViewById(
-                            R.id.lock_screen_speed_dial_toggle_text);
-                    //TODO: handle settings for this in settings activity
-                    toggle.setOnCheckedChangeListener(this);
-                    if (tv != null) {
-                        tv.setText(getString(R.string.lock_screen_speed_dial_toggle_off));
-                    }
-                    break;
+            try {
 
+                switch (viewId) {
+                    case R.id.lock_screen_date:
+                        if (prefs.getBoolean(keys.getString(i), false)) {
+                            SimpleDateFormat df = new SimpleDateFormat(getString(R.string.date_format));
+                            ((TextView) view).setText(df.format(new Date()));
+                            view.setVisibility(View.VISIBLE);
+                        } else {
+                            view.setVisibility(View.INVISIBLE);
+                        }
+
+                        break;
+
+                    case R.id.lock_screen_clock:
+                        if (prefs.getBoolean(keys.getString(i), false)) {
+                            view.setVisibility(View.VISIBLE);
+                        } else {
+                            view.setVisibility(View.INVISIBLE);
+                        }
+                        break;
+
+                    case R.id.lock_screen_info:
+                        String s = prefs.getString(keys.getString(i), "");
+                        if (s.equals("")) {  //equivalent of no value
+                            continue;
+                        } else {
+                            ((TextView) view).setText(s);
+                        }
+                        break;
+
+                    case R.id.lock_screen_speed_dial_toggle:
+                        //Log.d(TAG, "instantiating toggle button");
+
+                        /*ToggleButton toggle = (ToggleButton) mWrapperView.findViewById(
+                                R.id.lock_screen_speed_dial_toggle);*/
+
+                        TextView tv = (TextView) mWrapperView.findViewById(
+                                R.id.lock_screen_speed_dial_toggle_text);
+                        if (prefs.getBoolean(keys.getString(i), false)) {
+                            view.setVisibility(View.VISIBLE);
+                            ((ToggleButton) view).setOnCheckedChangeListener(this);
+                            if (tv != null) {
+                                tv.setVisibility(View.VISIBLE);
+                                if (prefs.getBoolean(
+                                        getString(R.string.key_toggle_speed_dial_enabled),
+                                        false)) {
+                                    tv.setText(getString(R.string.lock_screen_speed_dial_toggle_on));
+                                    ((ToggleButton) view).setChecked(true);
+                                } else {
+                                    tv.setText(getString(R.string.lock_screen_speed_dial_toggle_off));
+                                    ((ToggleButton) view).setChecked(false);
+                                }
+                            } else {
+                                Log.w(TAG, "Layout does not have toggle button text");
+                            }
+                        } else {
+                            view.setVisibility(View.INVISIBLE);
+                            if (tv != null) {
+                                tv.setVisibility(View.INVISIBLE);
+                            } else {
+                                Log.w(TAG, "Layout does not have toggle button text");
+                            }
+                        }
+                        break;
+                    case R.id.lock_screen_speed_dial_toggle_text:
+                        if (prefs.getBoolean(keys.getString(i), false)) {  // We will use the same key as lock_screen_speed_dial_toggle in the XML array
+
+
+                        } else {
+                            Log.w(TAG, "No toggle-button text view in this layout.");
+                        }
+
+                }
+            } catch (ClassCastException e) {
+                Log.e(TAG, "Layout incompatible with activity", e);
+                onFatalError();
             }
         }
 
@@ -492,36 +559,36 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         switch (view.getId()) {
             case R.id.lock_screen_end_call_button:
                 disableCallViewsInView();
-                enableOptionalViewsInView();
+                try {
+                    enableOptionalViewsInView();
+                } catch (CallHandlerException e) {
+                    Log.e(TAG, "Exception to activity handling calls", e);
+                    onFatalError();
+                }
                 endPhoneCall();
                 break;
-            /*case R.id.lock_screen_speed_dial_toggle:
-                Log.d(TAG, "lock screen speed dial toggle button pressed");
-                ToggleButton toggle = (ToggleButton) mWrapperView.findViewById(
-                        R.id.lock_screen_speed_dial_toggle);
-                TextView tv = (TextView) mWrapperView.findViewById(
-                        R.id.lock_screen_speed_dial_toggle_text);
-                toggle.setChecked(!toggle.isChecked());
-                if (tv != null){ // not necessary to have a text view!
-                    if (toggle.isChecked()) {
-                        tv.setText(getString(R.string.lock_screen_speed_dial_toggle_on));
-                    } else {
-                        tv.setText(getString(R.string.lock_screen_speed_dial_toggle_off));
-                    }
-                }*/
         }
     }
 
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         Log.d(TAG, "lock screen speed dial toggle button pressed");
-        TextView tv = (TextView) mWrapperView.findViewById(
-                R.id.lock_screen_speed_dial_toggle_text);
-        if (tv != null){ // not necessary to have a text view as we implemented, so can come back null!
-            if (isChecked) {
-                tv.setText(getString(R.string.lock_screen_speed_dial_toggle_on));
-            } else {
-                tv.setText(getString(R.string.lock_screen_speed_dial_toggle_off));
+        try {
+            TextView tv = (TextView) mWrapperView.findViewById(
+                    R.id.lock_screen_speed_dial_toggle_text);
+
+            if (tv != null) { // not necessary to have a text view as we implemented, so can come back null!
+                if (isChecked) {
+                    tv.setText(getString(R.string.lock_screen_speed_dial_toggle_on));
+                } else {
+                    tv.setText(getString(R.string.lock_screen_speed_dial_toggle_off));
+                }
             }
+        } catch (ClassCastException e) {
+            // This isn't a fatal error.
+            Log.w(
+                    TAG,
+                    "Activity does not have valid lock screen toggle text view for custom functionality",
+                    e);
         }
     }
     /**
@@ -534,6 +601,14 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         finish();
     }
 
+    protected void onFatalError() {
+        Log.d(TAG, "onFatalError() called.");
+        stopService(new Intent(this, PhoneStateService.class));
+        finish();
+
+        //TODO: some kind of dialog or toast or something?
+    }
+
     protected void enableLongPressFlag () { mLongPressFlag = true; }
 
     protected void enablePhoneCallActiveFlag() { mPhoneCallActiveFlag = true; }
@@ -542,20 +617,6 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
 
     protected RelativeLayout getWrapperView(){ return mWrapperView; }
 
-    @Override
-    public void onBackPressed() {  // Overrides the back button to prevent exit
-        return;
-    }
-
-    // Implemented to use TYPE_SYSTEM_ERROR hack
-    @Override
-    public void onDestroy() {
-        // TODO: is there a way to animate this?
-        this.winManager.removeView(this.mWrapperView);
-        this.mWrapperView.removeAllViews();
-
-        super.onDestroy();
-    }
 
     private void setActivityBackground(ImageView view) {
         SharedPreferences prefs = getSharedPreferences(
@@ -573,11 +634,13 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             Log.d(TAG, "setting activity to a color");
             view.setImageBitmap(null);
             view.setBackgroundColor(color);
+            mBackgroundSetFlag = true;
         } else if (filePath == null) { // then we have the default image situation
-            Log.d(TAG, "setting acitivty to default image");
+            Log.d(TAG, "setting activity to default image");
             Bitmap bitmap = BitmapFactory.decodeResource(
                     getResources(), R.drawable.background_default);
             view.setImageBitmap(bitmap);
+            mBackgroundSetFlag = true;
         } else if (file != null && file.exists()){ //now we must retrieve and set up the stored picture
             Log.d(TAG, "getting image from stored data");
             Display display = getWindowManager().getDefaultDisplay();
@@ -593,11 +656,10 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 h = display.getHeight();
             }
             BitmapToViewHelper.go(view, filePath, orientation, w, h);
+            mBackgroundSetFlag = true;
         } else {
-            Log.e(TAG, "no background information to load for lockscreen; neither file nor color exist");
+            Log.e(TAG, "no background information to load for lock screen; neither file nor color exist");
         }
-
-
     }
 
     protected boolean isSpeedDialEnabled() {
@@ -651,7 +713,12 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 startActivity(intent);
 
                 enableCallViewsInView(telNum, name, type);
-                disableOptionalViewsInView();
+                try {
+                    disableOptionalViewsInView();
+                } catch (CallHandlerException e) {
+                    Log.e(TAG, "Activity unable to handle calls", e);
+                    onFatalError();
+                }
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 v.vibrate(350);
                 enableLongPressFlag();

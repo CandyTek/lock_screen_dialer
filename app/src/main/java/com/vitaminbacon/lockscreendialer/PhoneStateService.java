@@ -59,7 +59,7 @@ public class PhoneStateService extends Service {
     public void onDestroy() {
 
         unregisterReceiver(mReceiver);
-        Log.d(TAG, "Service called onDestroy().");
+        //Log.d(TAG, "Service called onDestroy().");
         super.onDestroy();
     }
 

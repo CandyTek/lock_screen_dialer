@@ -125,7 +125,7 @@
 
         <activity
             android:name=".LockScreenLauncherActivity"
-            android:label="@string/title_activity_lock_screen_launcher" >
+            android:label="@string/title_activity_lock_screen_launcher">
         </activity>
         <activity
             android:name=".BackgroundSelectionActivity"

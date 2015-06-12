@@ -6,6 +6,12 @@
         android:summary="@string/pref_description_toggle_lock_screen"
         android:defaultValue="false" />
 
+    <CheckBoxPreference
+        android:key="@string/key_toggle_speed_dial_enabled"
+        android:title="@string/pref_title_toggle_speed_dial_enabled"
+        android:summary="@string/pref_description_toggle_speed_dial_enabled"
+        android:defaultValue="true" />
+
     <!-- A preference that directs you to a new activity to select speed dial contacts -->
     <Preference
         android:key="@string/key_assign_speed_dial_contacts"

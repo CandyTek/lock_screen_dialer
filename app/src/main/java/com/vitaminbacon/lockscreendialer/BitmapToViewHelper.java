@@ -158,7 +158,7 @@ public final class BitmapToViewHelper {
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             if (bitmap != null) {
-                final ImageView imageView = imageViewReference.get();
+                ImageView imageView = imageViewReference.get();
                 if (imageView != null) {
                     imageView.setImageBitmap(bitmap);
                 }
