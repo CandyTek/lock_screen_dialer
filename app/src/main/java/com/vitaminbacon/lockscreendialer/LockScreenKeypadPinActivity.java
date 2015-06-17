@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,20 +59,10 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //Log.d(TAG, "onCreate() called.");
+        //mLayoutId = R.layout.activity_lock_screen_keypad_pin;  // must be set before calling super
         super.onCreate(savedInstanceState);
+
         View wrapperView = getWrapperView();
-/*
-        try {
-            wrapperView = getWindow().getDecorView().getRootView();
-        } catch (ClassCastException e) {
-            Log.e(TAG, "Incompatible root view used with this activity.", e);
-            finish();
-            return;
-        }
-*/
-                //(RelativeLayout) ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0);
-
-
 
         // Initialize some basic variables
         mNumTries = 0;  // Possibly modified later by onRestoreInstanceState
@@ -151,12 +142,8 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         outState.putInt("numTries", mNumTries);
     }
 
-    @Override
-    public void onBackPressed() {  // Overrides the back button to prevent exit
-        return;
-    }
 
-    @Override
+/*    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         Log.d(TAG, "Called onConfigurationChanged.");
@@ -166,14 +153,14 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
             Log.d(TAG, "Landscape/Portrait parameter sent.");
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
-    }
+    }*/
 
-    @Override
+/*    @Override
     public void onDestroy() {
 
         super.onDestroy();
 
-    }
+    }*/
 
     @Override
     public void onClick (View view) {
@@ -449,6 +436,11 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
 
     private int getPinEnteredLength(){
         return mPinEntered.length();
+    }
+
+    @Override
+    int getFragmentLayout() {
+        return R.layout.fragment_lock_screen_keypad_pin;
     }
 
     private class SetTextInViewRunnable implements Runnable {

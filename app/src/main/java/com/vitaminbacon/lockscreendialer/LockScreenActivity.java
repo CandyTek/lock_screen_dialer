@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -40,13 +41,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import android.os.Handler;
 import android.widget.ToggleButton;
 
 
-public class LockScreenActivity extends Activity implements View.OnClickListener,
+public abstract class LockScreenActivity extends Activity implements View.OnClickListener,
         CompoundButton.OnCheckedChangeListener, BitmapToViewHelper.GetBitmapFromTaskInterface {
 
     private final static String TAG = "LSActivity";
@@ -71,6 +75,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
     protected boolean mLongPressFlag;
 
     private boolean mBackgroundSetFlag;
+    //protected int mLayoutId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,22 +98,22 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         //View.inflate(this, R.layout.activity_lock_screen_keypad_pin, mWrapperView);
         mWrapperView = (RelativeLayout) LayoutInflater
                 .from(this)
-                .inflate(R.layout.activity_lock_screen_keypad_pin,
+                .inflate(R.layout.activity_lock_screen,  // obtained from subclass onCreate()
                         new RelativeLayout(getBaseContext()),
                         false);
         mWindowManager.addView(mWrapperView, localLayoutParams);
 
         // Check that the layout has the requisite phone-related elements for this activity to function
         if (mWrapperView.findViewById(R.id.lock_screen_end_call_button) == null ||
+                mWrapperView.findViewById(R.id.lock_screen_speaker_call_button) == null ||
+                mWrapperView.findViewById(R.id.lock_screen_phone_buttons) == null ||
                 mWrapperView.findViewById(R.id.lock_screen_call_display) == null ||
                 mWrapperView.findViewById(R.id.lock_screen_background_progress) == null ||
-                mWrapperView.findViewById(R.id.lock_screen_background_view) == null) {
+                mWrapperView.findViewById(R.id.lock_screen_background_view) == null ||
+                mWrapperView.findViewById(R.id.lock_screen_fragment_container) == null) {
             Log.e(TAG, "Layout incompatible with this activity for failing to have proper Views.");
             onFatalError();
             return;
-            /*
-            throw new ClassCastException(this.toString()
-                    + " must use appropriate XML layout with correct IDs and correct types." );*/
         }
         try {
             ImageButton b = (ImageButton)mWrapperView.findViewById(R.id.lock_screen_end_call_button);
@@ -138,7 +143,17 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
 
         mBackgroundSetFlag = false;
 
-
+        //Inflate the pin activity view fragment
+        try {
+            View pinActivityFragment = getLayoutInflater()
+                    .inflate(getFragmentLayout(), null);
+            FrameLayout container = (FrameLayout) mWrapperView
+                    .findViewById(R.id.lock_screen_fragment_container);
+            container.addView(pinActivityFragment);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Layout does not have container into which to enter this lock screen's layout", e);
+            onFatalError();
+        }
 
         // begin the phone state service to listen to phone call information; supposedly only one service of a kind can exist
         startService(new Intent(this, PhoneStateService.class));
@@ -175,32 +190,29 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 disableCallViewsInView();
                 enableOptionalViewsInView();
             }
-            /*if (!mBackgroundSetFlag) {
-                Log.d(TAG, "Resetting background in onResume()");
-                setActivityBackground(
-                        (ImageView) mWrapperView.findViewById(R.id.lock_screen_background_view));
-            }*/
-
-
         } catch (CallHandlerException e) {
             Log.e(TAG, "Layout renders activity unable to handle calls", e);
             onFatalError();
         }
 
-        /*if (!mBackgroundSetFlag & mBackgroundBitmap != null) {
-            ImageView view = (ImageView) mWrapperView.findViewById(R.id.lock_screen_background_view);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {  // Only available in Kitkat and above
-                Log.d(TAG, "Conducting background fade transition");
-                try {
-                    Fade fade = new Fade(Fade.IN);
-                    TransitionManager.beginDelayedTransition((ViewGroup) view.getParent(), fade);
-                } catch (ClassCastException e) {
-                    Log.e(TAG, "Error in casing ViewGroup to parent of image view background in making transition", e);
-                }
+        // For backwards compatibility, we need to manually set the "clock" text view
+        // to the current time
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            try {
+                TextView clock = (TextView) mWrapperView.findViewById(R.id.lock_screen_clock);
+                Calendar cal = Calendar.getInstance(TimeZone.getDefault());
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm a", Locale.getDefault());
+                clock.setText(sdf.format(cal.getTime()));
+            } catch (ClassCastException e) {
+                Log.e(TAG, "Layout has improper clock view type for older versions.", e);
+                onFatalError();
+                return;
+            } catch (NullPointerException e) {
+                Log.e(TAG, "Layout does not have clock view.", e);
+                onFatalError();
+                return;
             }
-            view.setImageBitmap(mBackgroundBitmap);
-            mBackgroundSetFlag = true;
-        }*/
+        }
     }
 
     @Override
@@ -311,6 +323,8 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         mRunnable = null;
 
     }
+
+
     /**
      * Simple functions that makes the call views visible/invisible and hides unnecessary views.
      * This is the implementation of this parent class that requires certain view IDs --
@@ -887,5 +901,15 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
 
         }
     }
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * ABSTRACT METHODS
+     * ---------------------------------------------------------------------------------------------
+     */
+    /**
+     * Abstract function that just returns the resource Id of the subclass's fragment layout view
+     */
+    abstract int getFragmentLayout();
 }
 
