@@ -47,11 +47,12 @@
             android:orientation="vertical"
             android:gravity="right">
 
-            <AnalogClock
+            <TextClock
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@id/lock_screen_clock"
-                style="@style/lock_screen_clock"/>
+                style="@style/lock_screen_clock"
+                tools:ignore="NewApi" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

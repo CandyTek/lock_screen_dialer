@@ -7,14 +7,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
-import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -23,16 +20,10 @@ import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
-import android.transition.Fade;
-import android.transition.Transition;
-import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.OrientationEventListener;
-import android.view.Surface;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
@@ -100,8 +91,11 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         mWindowManager = (WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE);
         getWindow().setAttributes(localLayoutParams);
         //View.inflate(this, R.layout.activity_lock_screen_keypad_pin, mWrapperView);
-        mWrapperView = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.activity_lock_screen_keypad_pin,
-                new RelativeLayout(getBaseContext()), false);
+        mWrapperView = (RelativeLayout) LayoutInflater
+                .from(this)
+                .inflate(R.layout.activity_lock_screen_keypad_pin,
+                        new RelativeLayout(getBaseContext()),
+                        false);
         mWindowManager.addView(mWrapperView, localLayoutParams);
 
         // Check that the layout has the requisite phone-related elements for this activity to function
