@@ -22,7 +22,8 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -99,6 +100,7 @@
             android:name=".LockScreenKeypadPinActivity"
             android:label="@string/title_activity_lock_screen_keypad_pin"
             android:launchMode="singleTask"
+            android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.NoBackground" >
         </activity>
@@ -125,7 +127,8 @@
 
         <activity
             android:name=".LockScreenLauncherActivity"
-            android:label="@string/title_activity_lock_screen_launcher">
+            android:label="@string/title_activity_lock_screen_launcher"
+            android:launchMode="singleInstance">
         </activity>
         <activity
             android:name=".BackgroundSelectionActivity"

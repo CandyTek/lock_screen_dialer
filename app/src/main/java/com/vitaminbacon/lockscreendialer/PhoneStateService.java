@@ -11,7 +11,7 @@ import android.util.Log;
 public class PhoneStateService extends Service {
 
     private final static String TAG = "PhoneStateService";
-    private final IBinder mBinder = new PhoneStateBinder();
+    //private final IBinder mBinder = new PhoneStateBinder();
     private PhoneStateReceiver mReceiver;
 
 
@@ -64,9 +64,9 @@ public class PhoneStateService extends Service {
     }
 
 
-    public class PhoneStateBinder extends Binder {
+    /*public class PhoneStateBinder extends Binder {
         PhoneStateService getService() {
             return PhoneStateService.this;
         }
-    }
+    }*/
 }

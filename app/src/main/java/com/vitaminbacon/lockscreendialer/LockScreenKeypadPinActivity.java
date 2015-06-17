@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.PixelFormat;
 import android.net.Uri;
 import android.os.RemoteException;
@@ -55,7 +57,7 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate() called.");
+        //Log.d(TAG, "onCreate() called.");
         super.onCreate(savedInstanceState);
         View wrapperView = getWrapperView();
 /*
@@ -134,6 +136,7 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
     @Override
     public void onResume(){
         super.onResume();
+        //Log.d(TAG, "onResume() called.");
     }
 
     @Override
@@ -151,6 +154,18 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
     @Override
     public void onBackPressed() {  // Overrides the back button to prevent exit
         return;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        Log.d(TAG, "Called onConfigurationChanged.");
+
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
+                || newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Log.d(TAG, "Landscape/Portrait parameter sent.");
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
     }
 
     @Override
@@ -197,7 +212,8 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
                         equals(getString(R.string.lock_screen_pin_default_display))) {
                     pinDisplayView.setText("*");
                     setPinDisplayToPasswordView();
-                } else {
+                } else if (pinDisplayView.getText().length() <=
+                        getResources().getInteger(R.integer.lock_screen_pin_max_pin_display)){  // TODO: put a cap on the PIN -- implemented in settings as well
                     pinDisplayView.setText(pinDisplayView.getText().toString() + "*");
                 }
             } catch (NullPointerException e) {

@@ -1,14 +1,20 @@
 package com.vitaminbacon.lockscreendialer;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -17,13 +23,21 @@ import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.transition.Fade;
+import android.transition.Transition;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.Display;
+import android.view.LayoutInflater;
+import android.view.OrientationEventListener;
+import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -42,7 +56,7 @@ import android.widget.ToggleButton;
 
 
 public class LockScreenActivity extends Activity implements View.OnClickListener,
-        CompoundButton.OnCheckedChangeListener{
+        CompoundButton.OnCheckedChangeListener, BitmapToViewHelper.GetBitmapFromTaskInterface {
 
     private final static String TAG = "LSActivity";
 
@@ -50,6 +64,9 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
     // Variables to implement TYPE_SYSTEM_ERROR stuff
     private WindowManager mWindowManager;
     private RelativeLayout mWrapperView;
+    private ImageView mBackgroundView;
+    private ProgressBar mBackgroundProgress;
+    //private Bitmap mBackgroundBitmap;
 
     // Variables to utilize phone state service and handle phone calls
     private boolean mPhoneCallActiveFlag;
@@ -63,14 +80,16 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
     protected boolean mLongPressFlag;
 
     private boolean mBackgroundSetFlag;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //Log.d(TAG, "onCreate() called.");
         super.onCreate(savedInstanceState);
 
-        mWrapperView = new RelativeLayout(getBaseContext());
+        //mWrapperView = new RelativeLayout(getBaseContext());
 
         // Implement some of the WindowManager TYPE_SYSTEM_ERROR hocus pocus
+        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         WindowManager.LayoutParams localLayoutParams =
                 new WindowManager.LayoutParams(
                         WindowManager.LayoutParams.TYPE_SYSTEM_ERROR,
@@ -78,14 +97,17 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | // Same
                                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, //Same
                         PixelFormat.TRANSLUCENT);
-        mWindowManager = ((WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE));
+        mWindowManager = (WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE);
         getWindow().setAttributes(localLayoutParams);
-        View.inflate(this, R.layout.activity_lock_screen_keypad_pin, mWrapperView);
+        //View.inflate(this, R.layout.activity_lock_screen_keypad_pin, mWrapperView);
+        mWrapperView = (RelativeLayout) LayoutInflater.from(this).inflate(R.layout.activity_lock_screen_keypad_pin,
+                new RelativeLayout(getBaseContext()), false);
         mWindowManager.addView(mWrapperView, localLayoutParams);
 
         // Check that the layout has the requisite phone-related elements for this activity to function
         if (mWrapperView.findViewById(R.id.lock_screen_end_call_button) == null ||
                 mWrapperView.findViewById(R.id.lock_screen_call_display) == null ||
+                mWrapperView.findViewById(R.id.lock_screen_background_progress) == null ||
                 mWrapperView.findViewById(R.id.lock_screen_background_view) == null) {
             Log.e(TAG, "Layout incompatible with this activity for failing to have proper Views.");
             onFatalError();
@@ -98,7 +120,8 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             ImageButton b = (ImageButton)mWrapperView.findViewById(R.id.lock_screen_end_call_button);
             RelativeLayout rl = (RelativeLayout) b.getParent(); // ensures the correct encapsulating layout is there
             TextView v = (TextView)mWrapperView.findViewById(R.id.lock_screen_call_display);
-            ImageView iv = (ImageView)mWrapperView.findViewById(R.id.lock_screen_background_view);
+            mBackgroundView = (ImageView)mWrapperView.findViewById(R.id.lock_screen_background_view);
+            mBackgroundProgress = (ProgressBar)mWrapperView.findViewById(R.id.lock_screen_background_progress);
         } catch (ClassCastException e) {
             Log.e(TAG, "Layout incompatible with this activity for failing to have proper Views.");
             onFatalError();
@@ -106,6 +129,10 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             /*throw new ClassCastException(this.toString()
                     + " must use appropriate XML layout with correct IDs and correct types.");*/
         }
+
+        mBackgroundView.setVisibility(View.GONE);
+        setActivityBackground(mBackgroundView);
+        //setActivityBackground((ImageView) mWrapperView.findViewById(R.id.lock_screen_background_view));
 
         try {
             instantiateOptionalViewsInView();
@@ -116,6 +143,8 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         }
 
         mBackgroundSetFlag = false;
+
+
 
         // begin the phone state service to listen to phone call information; supposedly only one service of a kind can exist
         startService(new Intent(this, PhoneStateService.class));
@@ -134,9 +163,15 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
     }
 
     @Override
-    public void onResume(){
+    protected void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    protected void onResume(){
         // if there is still a phone call active, we need to set the display to handle that
-        //Log.d(TAG, "onResume() called.");
+        Log.d(TAG, "onResume() called.");
         super.onResume();
         try {
             if (mPhoneCallActiveFlag) {
@@ -146,15 +181,32 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 disableCallViewsInView();
                 enableOptionalViewsInView();
             }
-            if (!mBackgroundSetFlag) {
+            /*if (!mBackgroundSetFlag) {
+                Log.d(TAG, "Resetting background in onResume()");
                 setActivityBackground(
                         (ImageView) mWrapperView.findViewById(R.id.lock_screen_background_view));
-            }
+            }*/
+
+
         } catch (CallHandlerException e) {
             Log.e(TAG, "Layout renders activity unable to handle calls", e);
             onFatalError();
         }
 
+        /*if (!mBackgroundSetFlag & mBackgroundBitmap != null) {
+            ImageView view = (ImageView) mWrapperView.findViewById(R.id.lock_screen_background_view);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {  // Only available in Kitkat and above
+                Log.d(TAG, "Conducting background fade transition");
+                try {
+                    Fade fade = new Fade(Fade.IN);
+                    TransitionManager.beginDelayedTransition((ViewGroup) view.getParent(), fade);
+                } catch (ClassCastException e) {
+                    Log.e(TAG, "Error in casing ViewGroup to parent of image view background in making transition", e);
+                }
+            }
+            view.setImageBitmap(mBackgroundBitmap);
+            mBackgroundSetFlag = true;
+        }*/
     }
 
     @Override
@@ -170,7 +222,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         mContactNameOnCall = savedInstanceState.getString("contactNameOnCall");
         mPhoneNumOnCall = savedInstanceState.getString("phoneNumOnCall");
         mPhoneTypeOnCall = savedInstanceState.getString("phoneTypeOnCall");
-        mBackgroundSetFlag = savedInstanceState.getBoolean("backgroundSetFlag");
+        //mBackgroundSetFlag = savedInstanceState.getBoolean("backgroundSetFlag");  //TODO: if set to true, need to reset mBackgroundBitmap
     }
 
     @Override
@@ -187,7 +239,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         if (mPhoneTypeOnCall != null) {
             outState.putString("phoneTypeOnCall", mPhoneTypeOnCall);
         }
-        outState.putBoolean("backgroundSetFlag", mBackgroundSetFlag);
+        //outState.putBoolean("backgroundSetFlag", mBackgroundSetFlag);
     }
 
     /**
@@ -236,7 +288,6 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             // Currently requires no implementation
             return;
         }
-
     }
 
     @Override
@@ -247,13 +298,17 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
     // Implemented to use TYPE_SYSTEM_ERROR hack
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy called");
+        //Log.d(TAG, "onDestroy called");
         super.onDestroy();
 
         // TODO: is there a way to animate this?
         mWindowManager.removeView(mWrapperView);
         ((ImageView) mWrapperView.findViewById(R.id.lock_screen_background_view)).setImageBitmap(null);  // Probably not necessary
         mWrapperView.removeAllViews();
+
+        /*if (mBackgroundBitmap != null) {
+            mBackgroundBitmap.recycle();
+        }*/
 
         if (mHandler != null && mRunnable != null) {
             mHandler.removeCallbacks(mRunnable);
@@ -571,7 +626,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
     }
 
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        Log.d(TAG, "lock screen speed dial toggle button pressed");
+        //Log.d(TAG, "lock screen speed dial toggle button pressed");
         try {
             TextView tv = (TextView) mWrapperView.findViewById(
                     R.id.lock_screen_speed_dial_toggle_text);
@@ -591,11 +646,12 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                     e);
         }
     }
+
     /**
      * Simple method that handles logic when the correct passcode is entered
      */
     protected void onCorrectPasscode() {
-        Log.d(TAG, "Finishing activity, clearing service.");
+        //Log.d(TAG, "Finishing activity, clearing service.");
         //unregisterReceiver(mReceiver);
         stopService(new Intent(this, PhoneStateService.class));
         finish();
@@ -619,6 +675,11 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
 
 
     private void setActivityBackground(ImageView view) {
+        /*if (mBackgroundBitmap != null) { // if we already have an instantiated background, return
+            Log.d(TAG, "setActivityBackground() called when background already set");
+            return;
+        }*/
+
         SharedPreferences prefs = getSharedPreferences(
                 getString(R.string.background_file_key),
                 MODE_PRIVATE);
@@ -630,37 +691,142 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             file = new File(filePath);
         }
 
-        if (color != -1) { // since color is set, we just set the background to that
+        if (color != -1) { // since color is set, we just set the background to that and return null
             Log.d(TAG, "setting activity to a color");
-            view.setImageBitmap(null);
+            //view.setImageBitmap(null);
             view.setBackgroundColor(color);
             mBackgroundSetFlag = true;
+            return;
+
         } else if (filePath == null) { // then we have the default image situation
             Log.d(TAG, "setting activity to default image");
+
+
             Bitmap bitmap = BitmapFactory.decodeResource(
                     getResources(), R.drawable.background_default);
-            view.setImageBitmap(bitmap);
+            mBackgroundView.setImageBitmap(bitmap);
+            //mBackgroundBitmap = bitmap;
             mBackgroundSetFlag = true;
+
         } else if (file != null && file.exists()){ //now we must retrieve and set up the stored picture
-            Log.d(TAG, "getting image from stored data");
-            Display display = getWindowManager().getDefaultDisplay();
-            Bitmap bitmap;
-            int w, h;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-                Point size = new Point();
-                display.getSize(size);
-                w = size.x;
-                h = size.y;
-            } else {
-                w = display.getWidth();
-                h = display.getHeight();
+            if (!mBackgroundSetFlag) {
+                Log.d(TAG, "setting background image from stored data");
+                Display display = getWindowManager().getDefaultDisplay();
+                Bitmap bitmap = null;
+
+                // Get the right screen size in manner depending on version
+                int w, h;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                    Point size = new Point();
+                    display.getSize(size);
+                    w = size.x;
+                    h = size.y;
+                    if (w > h) {
+                        //meaning that the values were possibly obtained in landscape mode, which we
+                        // don't want.  May not ever be invoked, because this could return values based on
+                        // my portrait-only setting ! :/
+                        Log.d(TAG, "Screen detected in landscape mode.");
+                        int swap = w;
+                        w = h;
+                        h = swap;
+                    }
+                } else {
+                    w = display.getWidth();
+                    h = display.getHeight();
+                }
+
+                BitmapToViewHelper.assignBitmapWithData(this, filePath, orientation, w, h);  // Calls getBitmapFromTask interface method below to set mBackgroundBitmap
+                //view.setImageBitmap(mBackgroundBitmap);
+                //BitmapToViewHelper.assignViewWithBitmap(view, filePath, orientation, w, h);
+                //mBackgroundBitmap = ((BitmapDrawable) view.getDrawable()).getBitmap();
             }
-            BitmapToViewHelper.go(view, filePath, orientation, w, h);
-            mBackgroundSetFlag = true;
-        } else {
-            Log.e(TAG, "no background information to load for lock screen; neither file nor color exist");
+        } else { // this should be an error -- no data for background and no color and no default?
+            Log.e(TAG, "Fatal error in assigning background");
+            onFatalError();
         }
     }
+
+    /**
+     * Interface from BitmapToViewHelper
+     * There is a strange error.  If we try to set the imageview background in this method, the
+     * findViewByID method will return null.  We suspect that the call here, which is made from a
+     * task, will have different resources available to it that when these methods are typically
+     * called from Android.  So, for that reason, we do not instantiate the view from here.
+     */
+    public void getBitmapFromTask(Bitmap bitmap) {
+        //mBackgroundBitmap = bitmap;
+
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {  // Only available in Kitkat and above
+            Log.d(TAG, "Conducting background fade transition in interface");
+
+            ViewGroup sceneRoot;
+            ImageView view = new ImageView(this);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                    RelativeLayout.LayoutParams.MATCH_PARENT,
+                    RelativeLayout.LayoutParams.MATCH_PARENT);
+            params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+            params.addRule(RelativeLayout.CENTER_HORIZONTAL, RelativeLayout.TRUE);
+            view.setLayoutParams(params);
+            view.setId(R.id.lock_screen_background_view);
+            view.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            view.setImageBitmap(bitmap);
+
+            try {
+                sceneRoot = (ViewGroup)mBackgroundView.getParent();
+            } catch (ClassCastException e) {
+                Log.e(TAG, "Parent of background view not of type ViewGroup");
+                onFatalError();
+                return;
+            }
+
+            TransitionManager.beginDelayedTransition(sceneRoot);
+            sceneRoot.removeView(mBackgroundView);
+            sceneRoot.addView(view);
+            mBackgroundView = view;*/
+        mBackgroundView.setImageBitmap(bitmap);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+            crossfadeViews(mBackgroundProgress, mBackgroundView);
+        } else {
+            mBackgroundView.setVisibility(View.VISIBLE);
+            mBackgroundProgress.setVisibility(View.GONE);
+        }
+        mBackgroundSetFlag = true;
+        /*try {
+            ImageView view = (ImageView) mWrapperView.findViewById(R.id.lock_screen_background_view);
+            view.setImageBitmap(bitmap);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Unable to access image view in interface method.", e);
+            Log.d(TAG, "mWrapperView = " + mWrapperView.toString());
+        }*/
+    }
+
+    /**
+     * Crossfades from "a" to "b"
+     * @param a
+     * @param b
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
+    protected void crossfadeViews (final View a, final View b) {
+        int animationTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        b.setAlpha(0f);
+        b.setVisibility(View.VISIBLE);
+
+        b.animate()
+                .alpha(1f)
+                .setDuration(animationTime)
+                .setListener(null);
+
+        a.animate()
+                .alpha(0f)
+                .setDuration(animationTime)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        a.setVisibility(View.GONE);
+                    }
+                });
+    }
+
 
     protected boolean isSpeedDialEnabled() {
         ToggleButton toggle = (ToggleButton)mWrapperView.findViewById(

@@ -34,8 +34,15 @@ public final class BitmapToViewHelper {
      * @param height - the height of the view that it is to be set to
      */
 
-    public static void go(ImageView view, String filePath, int orientation, int width, int height) {
-        BitmapWorkerTask task = new BitmapWorkerTask(view, filePath);
+    public static void assignViewWithBitmap (ImageView view, String filePath, int orientation,
+                                          int width, int height) {
+        BitmapToViewTask task = new BitmapToViewTask(view, filePath);
+        task.execute(orientation, width, height);
+    }
+
+    public static void assignBitmapWithData (GetBitmapFromTaskInterface activityInterface,
+                                             String filePath, int orientation, int width, int height) {
+        DataToBitmapTask task = new DataToBitmapTask(activityInterface, filePath);
         task.execute(orientation, width, height);
     }
 
@@ -128,14 +135,21 @@ public final class BitmapToViewHelper {
         return orientation;
     }
 
-    private static class BitmapWorkerTask extends AsyncTask<Integer, Void, Bitmap> {
+    /**
+     * Interface assists an activity in obtaining a bitmap from the async task
+     */
+    public interface GetBitmapFromTaskInterface {
+        public void getBitmapFromTask(Bitmap bitmap);
+    }
+
+    private static class BitmapToViewTask extends AsyncTask<Integer, Void, Bitmap> {
         private final WeakReference<ImageView> imageViewReference;
         private final WeakReference<String> filePathReference;
         private int orientation = 0;
         private int width = 0;
         private int height = 0;
 
-        public BitmapWorkerTask(ImageView imageView, String filePath) {
+        public BitmapToViewTask(ImageView imageView, String filePath) {
             // Use a WeakReference to ensure the ImageView can't be garbage collected
             imageViewReference = new WeakReference<ImageView>(imageView);
             filePathReference = new WeakReference<String>(filePath);
@@ -170,6 +184,45 @@ public final class BitmapToViewHelper {
                 Log.e(TAG, "Async received null bitmap onPostExecute");
             }
 
+        }
+    }
+
+    private static class DataToBitmapTask extends AsyncTask<Integer, Void, Bitmap> {  // TODO: implement onProgressUpdate setting second generic type to integer?
+        private final WeakReference<GetBitmapFromTaskInterface> activityInterfaceReference;
+        private final WeakReference<String> filePathReference;
+        private int orientation = 0;
+        private int width = 0;
+        private int height = 0;
+
+        public DataToBitmapTask(GetBitmapFromTaskInterface activityInterface, String filePath) {
+            activityInterfaceReference = new WeakReference<GetBitmapFromTaskInterface>(activityInterface);
+            filePathReference = new WeakReference<String>(filePath);
+        }
+
+        // Decode image in background.
+        @Override
+        protected Bitmap doInBackground(Integer... params) {
+
+            orientation = params[0];
+            width = params[1];
+            height = params[2];
+            if (filePathReference.get() == null) {
+                return null;
+            }
+            return decodeSampledBitmapFromFile(filePathReference.get(), orientation, width, height);
+        }
+
+        // Once complete, see if ImageView is still around and set bitmap.
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+
+            if (bitmap != null) {
+                activityInterfaceReference.get().getBitmapFromTask(bitmap);
+            }
+            else {
+                Log.d(TAG, "Bitmap calculations undertaken to produce null value");
+            }
+            //activityInterface = null; // necessary?
         }
     }
 }

@@ -9,7 +9,7 @@ import android.os.IBinder;
 
 public class LockScreenService extends Service {
 
-    private LockScreenEventReceiver mReceiver;
+    private static LockScreenEventReceiver mReceiver;  // TODO: consider making this static?
     public static final String ACTION_NAME = "com.vitaminbacon.lockscreendialer.LockScreenService";
 
     public LockScreenService() {
@@ -22,10 +22,8 @@ public class LockScreenService extends Service {
 
     @Override
     public void onCreate() {
-
         super.onCreate();
 
-        // TODO: implement keyguardmanager.keyguardlock
         KeyguardManager km = (KeyguardManager)getSystemService(KEYGUARD_SERVICE);
         KeyguardManager.KeyguardLock keyguardLock = km.newKeyguardLock("IN");
         keyguardLock.disableKeyguard();

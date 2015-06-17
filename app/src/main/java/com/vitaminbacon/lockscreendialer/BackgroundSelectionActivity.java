@@ -249,7 +249,7 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
                 w = display.getWidth();
                 h = display.getHeight();
             }
-            BitmapToViewHelper.go(bg, path, orientation, w, h);
+            BitmapToViewHelper.assignViewWithBitmap(bg, path, orientation, w, h);
             /*BitmapWorkerTask task = new BitmapWorkerTask(mCurrentBackgroundView, path);
             task.execute(orientation, w, h);*/
             //return bitmap;
