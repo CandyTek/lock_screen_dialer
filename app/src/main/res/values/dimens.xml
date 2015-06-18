@@ -8,6 +8,8 @@
     <dimen name="settings_toggle_width">44dp</dimen>
     <dimen name="settings_toggle_height">22dp</dimen>
 
+    <dimen name="lock_screen_pattern_button_diameter">80dp</dimen>
+
 
 
 </resources>

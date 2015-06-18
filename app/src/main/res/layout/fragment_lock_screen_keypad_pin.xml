@@ -299,12 +299,9 @@
             android:layout_weight="1"
             android:visibility="invisible">
 
-            <ImageButton
+            <View
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:id="@+id/lock_screen_end_call_button"
-                android:src="@drawable/ic_call_end_white_48dp"
-                android:background="@drawable/selector_end_call"/>
+                android:layout_height="fill_parent"/>
 
         </RelativeLayout>
 
