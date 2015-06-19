@@ -142,33 +142,13 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         outState.putInt("numTries", mNumTries);
     }
 
-
-/*    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        Log.d(TAG, "Called onConfigurationChanged.");
-
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE
-                || newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            Log.d(TAG, "Landscape/Portrait parameter sent.");
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
-    }*/
-
-/*    @Override
-    public void onDestroy() {
-
-        super.onDestroy();
-
-    }*/
-
     @Override
     public void onClick (View view) {
         super.onClick(view); // Need to call the super to catch click of end call button
 
+        // If this method was called by virtue of someone invoking a long press, we swallow it
         if (mLongPressFlag) {
             mLongPressFlag = false;
-            //Log.d(TAG, "onClick() calling resetPinEntry() on long click");
             resetPinEntry(getString(R.string.lock_screen_pin_default_display));
             return;
         }
@@ -231,7 +211,7 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
             case MotionEvent.ACTION_DOWN:
                 if (mHandler == null) { // means there is no pending handler
                     mHandler = new Handler();
-                    mRunnable = new DialerRunnable(getSpeedDialButtonPressed(v.getId(), -1));
+                    mRunnable = new DialerRunnable(this, getSpeedDialButtonPressed(v.getId(), -1));
                     mHandler.postDelayed(
                             mRunnable,
                             getResources().getInteger(R.integer.lock_screen_pin_long_press_delay));

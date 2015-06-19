@@ -20,6 +20,7 @@ import android.os.RemoteException;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -194,18 +195,18 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         // if there is still a phone call active, we need to set the display to handle that
         Log.d(TAG, "onResume() called.");
         super.onResume();
-        try {
+        /*try {
             if (mPhoneCallActiveFlag) {
                 enableCallViewsInView(mPhoneNumOnCall, mContactNameOnCall, mPhoneTypeOnCall);
                 disableOptionalViewsInView();
-            } /*else {
+            } *//*else {
                 disableCallViewsInView(false);
                 enableOptionalViewsInView();
-            }*/
+            }*//*
         } catch (CallHandlerException e) {
             Log.e(TAG, "Layout renders activity unable to handle calls", e);
             onFatalError();
-        }
+        }*/
 
         // For backwards compatibility, we need to manually set the "clock" text view
         // to the current time
@@ -344,7 +345,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      * @param name - a string to display the contact's name
      * @param type - a string to display the phone number type
      */
-    private void enableCallViewsInView(String telNum, String name, String type){
+    private void enableCallViewsInView(String telNum, String name, String type, String thumbUri){
         Log.d(TAG, "enableCallViewsInView() called");
         //TextView dialInfoView;
 
@@ -371,6 +372,25 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             }
             phoneCallNum.setText(telNum);
 
+            if (thumbUri != null) { // block that sets the thumbnail, if it exists
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    phoneCallThumb.setImageURI(Uri.parse(thumbUri));
+                }
+                else {
+                    final Uri contactUri = Uri.withAppendedPath(
+                            ContactsContract.Contacts.CONTENT_URI, thumbUri);
+                    phoneCallThumb.setImageURI(Uri.withAppendedPath(
+                            contactUri,
+                            ContactsContract.Contacts.Photo.CONTENT_DIRECTORY
+                    ));
+                }
+                if (phoneCallThumb.getDrawable() == null) {
+                    Log.d(TAG, "Thumb drawable null");
+                }
+            } else {
+                phoneCallThumb.setImageResource(R.drawable.default_contact_image);
+            }
             // Get the phone button views
             phoneButtons = (ViewGroup) mWrapperView.findViewById(R.id.lock_screen_phone_buttons);
             widgets = (ViewGroup) mWrapperView.findViewById(R.id.lock_screen_additional_widgets);
@@ -521,20 +541,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             return;
         }
 
-
-        /*try {
-            ImageButton endCallBtn = (ImageButton) mWrapperView.
-                    findViewById(R.id.lock_screen_end_call_button);
-            RelativeLayout rl = (RelativeLayout) endCallBtn.getParent();
-            endCallBtn.setVisibility(View.INVISIBLE);
-            rl.setVisibility(View.INVISIBLE);
-
-            mWrapperView.findViewById(R.id.lock_screen_call_display).setVisibility(View.GONE);
-        } catch (ClassCastException e) {
-            Log.e(TAG, "Layout incompatible with this activity - CCE in disableCallViewsInView()", e);
-        } catch (NullPointerException e) {
-            Log.e(TAG, "Layout incompatible with this activity - NPE in disableCallViewsInView()", e);
-        }*/
     }
 
     private void enableOptionalViewsInView() throws CallHandlerException {
@@ -779,14 +785,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     public void onClick (View view) {
         switch (view.getId()) {
             case R.id.lock_screen_end_call_button:
-                /*disableCallViewsInView(true);
-                try {
-                    enableOptionalViewsInView();
-                } catch (CallHandlerException e) {
-                    Log.e(TAG, "Exception to activity handling calls", e);
-                    onFatalError();
-                }*/
-                endPhoneCall();
+                endPhoneCall();  // We have the generation of a phone intent handle the logic in onNewIntent()
                 break;
             case R.id.lock_screen_speaker_call_button:
                 try {
@@ -1028,14 +1027,28 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             }
         }
     }
+
+    private Uri getPhotoThumbnailUri (String data) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            return Uri.parse(data);
+        }
+
+        return Uri.withAppendedPath(
+                Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, data),
+                ContactsContract.Contacts.Photo.CONTENT_DIRECTORY
+        );
+    }
     /**
      * Runnable class that initiates the phone call on a long press
      */
     protected class DialerRunnable implements Runnable {
         private int num; // the ID of the button pressed
+        private Context context;
 
-        public DialerRunnable(int num) {
+        public DialerRunnable(Context context, int num) {
             this.num = num;
+            this.context = context;
         }
 
         public void run() {
@@ -1051,17 +1064,16 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             }
 
             String telNum = sharedPref.getString(
-                    getString(R.string.key_number_store_prefix_phone) + num,
-                    null);
+                    getString(R.string.key_number_store_prefix_phone) + num, null);
             String name = sharedPref.getString(
-                    getString(R.string.key_number_store_prefix_name) + num,
-                    "Unknown");
+                    getString(R.string.key_number_store_prefix_name) + num, "Unknown");
             String type = sharedPref.getString(
-                    getString(R.string.key_number_store_prefix_type) + num,
-                    "Phone");
+                    getString(R.string.key_number_store_prefix_type) + num, "Phone");
+            String thumbUri = sharedPref.getString(
+                    getString(R.string.key_number_store_prefix_thumb) + num, null);
 
             if (telNum == null) {
-                Log.e(TAG, "Error in obtaining phone number");
+                Log.e(TAG, "Unable to make call because phone number invalid");
                 return;
             }
 
@@ -1069,8 +1081,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 Intent intent = new Intent(Intent.ACTION_CALL);
                 intent.setData(Uri.parse("tel:" + (telNum.trim())));
                 startActivity(intent);
-
-                enableCallViewsInView(telNum, name, type);
+                stopService(new Intent(context, LockScreenService.class));   //Don't need to feed new intents to the lock screen during a phone call
+                enableCallViewsInView(telNum, name, type, thumbUri);
                 try {
                     disableOptionalViewsInView();
                 } catch (CallHandlerException e) {
