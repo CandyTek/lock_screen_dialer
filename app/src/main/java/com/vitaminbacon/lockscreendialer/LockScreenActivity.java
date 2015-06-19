@@ -20,6 +20,7 @@ import android.os.RemoteException;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.os.Bundle;
+import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Display;
@@ -43,8 +44,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -110,7 +113,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         if (mWrapperView.findViewById(R.id.lock_screen_end_call_button) == null ||
                 mWrapperView.findViewById(R.id.lock_screen_speaker_call_button) == null ||
                 mWrapperView.findViewById(R.id.lock_screen_phone_buttons) == null ||
-                mWrapperView.findViewById(R.id.lock_screen_call_display) == null ||
+                // mWrapperView.findViewById(R.id.lock_screen_call_display) == null ||
+                mWrapperView.findViewById(R.id.drawer_lock_screen_call_display) == null ||
                 mWrapperView.findViewById(R.id.lock_screen_background_progress) == null ||
                 mWrapperView.findViewById(R.id.lock_screen_background_view) == null ||
                 mWrapperView.findViewById(R.id.lock_screen_fragment_container) == null) {
@@ -118,10 +122,11 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             onFatalError();
             return;
         }
+        //  Check that the layout elements are of the right type
         try {
             ImageButton b = (ImageButton)mWrapperView.findViewById(R.id.lock_screen_end_call_button);
             RelativeLayout rl = (RelativeLayout) b.getParent(); // ensures the correct encapsulating layout is there
-            TextView v = (TextView)mWrapperView.findViewById(R.id.lock_screen_call_display);
+            // TextView v = (TextView)mWrapperView.findViewById(R.id.lock_screen_call_display);
             mBackgroundView = (ImageView)mWrapperView.findViewById(R.id.lock_screen_background_view);
             mBackgroundProgress = (ProgressBar)mWrapperView.findViewById(R.id.lock_screen_background_progress);
             mScreenText = mWrapperView.findViewById(R.id.lock_screen_interaction_container);
@@ -147,6 +152,11 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     .inflate(getFragmentLayout(), null);
             FrameLayout container = (FrameLayout) mWrapperView
                     .findViewById(R.id.lock_screen_fragment_container);
+            if (pinActivityFragment == null) {
+                Log.e(TAG, "Null fragment provided by subclass.");
+                onFatalError();
+                return;
+            }
             container.addView(pinActivityFragment);
         } catch (NullPointerException e) {
             Log.e(TAG, "Layout does not have container into which to enter this lock screen's layout", e);
@@ -336,47 +346,89 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      */
     private void enableCallViewsInView(String telNum, String name, String type){
         Log.d(TAG, "enableCallViewsInView() called");
-
-        ImageButton endCallBtn, spkrBtn;
-        TextView dialInfoView;
-        final ViewGroup phoneButtons, widgets;
+        //TextView dialInfoView;
 
         try {
+            final ImageButton endCallBtn, spkrBtn;
+            final ViewGroup phoneButtons, widgets;
+            final TextView phoneCallName, phoneCallDescr, phoneCallNum;
+            final ImageView phoneCallThumb;
+            final View drawer;
+
+            // Get the info views
+            drawer = mWrapperView.findViewById(R.id.drawer_lock_screen_call_display);
+            phoneCallThumb = (ImageView) mWrapperView.findViewById(R.id.drawer_phone_call_thumb);
+            phoneCallName = (TextView) mWrapperView.findViewById(R.id.drawer_phone_call_name);
+            phoneCallDescr = (TextView) mWrapperView.findViewById(R.id.drawer_phone_call_description);
+            phoneCallNum = (TextView) mWrapperView.findViewById(R.id.drawer_phone_call_number);
+            phoneCallName.setText(name);
+            phoneCallDescr.setText("Calling at " + type + "...");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+                phoneCallNum.setText(PhoneNumberUtils.formatNumber(telNum, tm.getSimCountryIso()));
+            } else {
+                phoneCallNum.setText(PhoneNumberUtils.formatNumber(telNum));
+            }
+            phoneCallNum.setText(telNum);
+
+            // Get the phone button views
             phoneButtons = (ViewGroup) mWrapperView.findViewById(R.id.lock_screen_phone_buttons);
             widgets = (ViewGroup) mWrapperView.findViewById(R.id.lock_screen_additional_widgets);
             endCallBtn = (ImageButton) mWrapperView.findViewById(R.id.lock_screen_end_call_button);
             spkrBtn = (ImageButton) mWrapperView.findViewById(R.id.lock_screen_speaker_call_button);
-            dialInfoView = (TextView) mWrapperView.findViewById(R.id.lock_screen_call_display);
 
+            /*dialInfoView = (TextView) mWrapperView.findViewById(R.id.lock_screen_call_display);
             dialInfoView.setText(getDialInfoViewText(telNum, name, type));
-            dialInfoView.setVisibility(View.VISIBLE);
+            dialInfoView.setVisibility(View.VISIBLE);*/
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-                // Position the phone buttons
-                int distance = phoneButtons.getWidth();
-                phoneButtons.setTranslationX(distance);
+                // First, animate the display drawer at the top
+                final int dDistance = drawer.getHeight();
+                drawer.setTranslationY(dDistance * -1);
+                drawer.setVisibility(View.VISIBLE);
+                final int bDistance = phoneButtons.getWidth();
+                phoneButtons.setTranslationX(bDistance);
                 phoneButtons.setVisibility(View.VISIBLE);
                 endCallBtn.setVisibility(View.VISIBLE);
                 spkrBtn.setVisibility(View.VISIBLE);
                 ((ViewGroup) endCallBtn.getParent()).setVisibility(View.VISIBLE); // Must make parent explicitly visible now then set click listener
-                endCallBtn.setOnClickListener(this);
-                spkrBtn.setOnClickListener(this);
 
-
-                // Start the animation
-                phoneButtons.animate().translationX(0);
-                widgets.animate()
-                        .translationX(distance * -1)
+                // Now start the drawer animation
+                drawer.animate()
+                        .translationY(0)
                         .setListener(new AnimatorListenerAdapter() {
-                            @SuppressLint("NewApi")
+                            @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
                             @Override
                             public void onAnimationEnd(Animator animation) {
                                 super.onAnimationEnd(animation);
-                                /*widgets.setVisibility(View.INVISIBLE);
-                                widgets.setTranslationX(0);*/
+                                try {
+                                    View infoBlock = mWrapperView
+                                            .findViewById(R.id.lock_screen_info_block);
+                                    infoBlock.setVisibility(View.INVISIBLE);
+                                } catch (NullPointerException e) {
+                                    Log.e(TAG, "Layout lacks necessary view to complete animation", e);
+                                    onFatalError();
+                                }
+
+                                // Now chain the animation
+                                phoneButtons.animate().translationX(0).setListener(null);
+                                widgets.animate().translationX(bDistance * -1);
                             }
                         });
+
+                endCallBtn.setOnClickListener(this);
+                spkrBtn.setOnClickListener(this);
+
             } else {
+                drawer.setVisibility(View.VISIBLE);
+                try {
+                    View infoBlock = mWrapperView.findViewById(R.id.lock_screen_info_block);
+                    infoBlock.setVisibility(View.INVISIBLE);
+                } catch (NullPointerException e) {
+                    Log.e(TAG, "Layout lacks necessary view to complete animation", e);
+                    onFatalError();
+                }
+
                 phoneButtons.setVisibility(View.VISIBLE);
                 endCallBtn.setVisibility(View.VISIBLE);
                 spkrBtn.setVisibility(View.VISIBLE);
@@ -394,66 +446,68 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             onFatalError();
             return;
         }
-
-        /*try {
-            endCallBtn = (ImageButton) mWrapperView.findViewById(R.id.lock_screen_end_call_button);
-            rl = (RelativeLayout) endCallBtn.getParent();
-            dialInfoView = (TextView) mWrapperView.findViewById(R.id.lock_screen_call_display);
-        } catch (ClassCastException e) {
-            Log.e(TAG, "Layout incompatible with this activity - enableCallViewsInView().", e);
-            onFatalError();
-            return;
-        }
-
-        try {
-            rl.setVisibility(View.VISIBLE);  // Needed to set both the parent and child to get the layout to play nice
-            endCallBtn.setVisibility(View.VISIBLE);
-            endCallBtn.setOnClickListener(this);
-
-            //Display the information regarding the number we are dialing
-            dialInfoView.setText(getDialInfoViewText(telNum, name, type));
-            dialInfoView.setVisibility(View.VISIBLE);
-        } catch (NullPointerException e) {
-            Log.e(TAG, "Layout incompatible with this activity - enableCallViewsInView()", e);
-            onFatalError();
-            return;
-        }*/
     }
 
     private void disableCallViewsInView(boolean animationFlag) {
         Log.d(TAG, "disableCallViewsInView() called");
         ImageButton endCallBtn;
-        TextView dialInfoView;
+        //TextView dialInfoView;
         final ViewGroup phoneButtons, widgets;  // Declared final for anonymous function purpose
+        final View drawer;
 
         try {
+            drawer = mWrapperView.findViewById(R.id.drawer_lock_screen_call_display);
             phoneButtons = (ViewGroup) mWrapperView.findViewById(R.id.lock_screen_phone_buttons);
             widgets = (ViewGroup) mWrapperView.findViewById(R.id.lock_screen_additional_widgets);
             //endCallBtn = (ImageButton) mWrapperView.findViewById(R.id.lock_screen_end_call_button);
-            dialInfoView = (TextView) mWrapperView.findViewById(R.id.lock_screen_call_display);
-
-            dialInfoView.setVisibility(View.GONE);
+            //dialInfoView = (TextView) mWrapperView.findViewById(R.id.lock_screen_call_display);
+            //dialInfoView.setVisibility(View.GONE);
 
             if (animationFlag && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
                 // Position the widgets
-                int distance = widgets.getWidth();
-                widgets.setTranslationX(distance * -1);
+                int bDistance = widgets.getWidth();
+                widgets.setTranslationX(bDistance * -1);
                 widgets.setVisibility(View.VISIBLE);
 
                 // Start the animation
                 widgets.animate().translationX(0);
                 phoneButtons.animate()
-                        .translationX(distance)
+                        .translationX(bDistance)
                         .setListener(new AnimatorListenerAdapter() {
                             @SuppressLint("NewApi")
                             @Override
                             public void onAnimationEnd(Animator animation) {
                                 super.onAnimationEnd(animation);
-                                //phoneButtons.setVisibility(View.INVISIBLE);
-                                //phoneButtons.setTranslationX(0);
+                                int dDistance = drawer.getHeight();
+                                drawer.animate()
+                                        .translationY(dDistance * -1)
+                                        .setListener(new AnimatorListenerAdapter() {
+                                            @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+                                            @Override
+                                            public void onAnimationEnd(Animator animation) {
+                                                super.onAnimationEnd(animation);
+                                                drawer.setVisibility(View.INVISIBLE);
+                                                drawer.setTranslationY(0);
+                                            }
+                                        });
+                                try {
+                                    View infoBlock = mWrapperView.findViewById(R.id.lock_screen_info_block);
+                                    infoBlock.setVisibility(View.VISIBLE);
+                                } catch (NullPointerException e) {
+                                    Log.e(TAG, "Layout lacks necessary view to complete animation", e);
+                                    onFatalError();
+                                }
                             }
                         });
             } else {
+                drawer.setVisibility(View.INVISIBLE);
+                try {
+                    View infoBlock = mWrapperView.findViewById(R.id.lock_screen_info_block);
+                    infoBlock.setVisibility(View.VISIBLE);
+                } catch (NullPointerException e) {
+                    Log.e(TAG, "Layout lacks necessary view to complete animation", e);
+                    onFatalError();
+                }
                 phoneButtons.setVisibility(View.INVISIBLE);
                 widgets.setVisibility(View.VISIBLE);
             }
@@ -528,7 +582,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
             // access to SharedPrefs throws a class cast exception if stored type is not as sought - FYI
             switch (view.getId()) {
-                /*case R.id.lock_screen_clock:
+                case R.id.lock_screen_clock:
                     if (prefs.getBoolean(keys.getString(i), false)) {
                         view.setVisibility(value);
                     }
@@ -537,7 +591,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     if (prefs.getBoolean(keys.getString(i), false)) {
                         view.setVisibility(value);
                     }
-                    break;*/
+                    break;
                 case R.id.lock_screen_info:
                     if (!prefs.getString(keys.getString(i), "").equals("")) {
                         view.setVisibility(value);
@@ -948,6 +1002,32 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         return toggle.isChecked();
     }
 
+    /**
+     * Sets a view and all subviews to a particular visibility parameter
+     *
+     */
+    final protected void setVisibilityOnView (View v, int visibility) {
+        if (visibility != View.GONE || visibility != View.INVISIBLE || visibility != View.VISIBLE) {
+            Log.e (TAG, "Attempt to set view and view's children with improper visibility value");
+            return;
+        }
+
+        List<View> unvisited = new ArrayList<View>();
+        unvisited.add(v);
+
+        while (!unvisited.isEmpty()) {
+            View child = unvisited.remove(0);
+            child.setVisibility(visibility);
+            if (!(child instanceof ViewGroup)) {
+                continue;
+            }
+            ViewGroup group = (ViewGroup) child;
+            final int childCount = group.getChildCount();
+            for (int i=0; i<childCount; i++) {
+                unvisited.add(group.getChildAt(i));
+            }
+        }
+    }
     /**
      * Runnable class that initiates the phone call on a long press
      */

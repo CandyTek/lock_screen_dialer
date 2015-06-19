@@ -10,7 +10,7 @@
         android:id="@+id/phone_selector_list_item_pic"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/ic_action_call"
+        android:src="@drawable/ic_call_grey600_36dp"
 
         android:layout_margin="5dp"
         />

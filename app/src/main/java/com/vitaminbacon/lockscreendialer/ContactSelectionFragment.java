@@ -55,7 +55,7 @@ public class ContactSelectionFragment extends Fragment implements
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
                     "(" + Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?) AND " +
                     "(" + Contacts.DISPLAY_NAME_PRIMARY + " IS NOT NULL) AND" +
-                    "(" + Contacts.HAS_PHONE_NUMBER + " = 1)":
+                    "(" + Contacts.HAS_PHONE_NUMBER + " = 1)" :
 
                     "(" + Contacts.DISPLAY_NAME + " LIKE ?) AND " +
                     "(" + Contacts.DISPLAY_NAME + " IS NOT NULL)" +
@@ -227,7 +227,6 @@ public class ContactSelectionFragment extends Fragment implements
 
             public void onTextChanged(CharSequence s, int start, int count, int after){
                 mSearchString = s.toString();
-                Log.d("Text Listener", mSearchString);
 
                 // This if statement functions to avoid a contact list update when search
                 // string is null or just a blank space.

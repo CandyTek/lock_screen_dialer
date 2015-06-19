@@ -195,4 +195,26 @@
         <item name="android:shadowDy">1</item>
         <item name="android:background">@drawable/selector_background_activity</item>
     </style>
+
+    <style name="typeface_phone_call_info">
+        <item name="android:typeface">sans</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/typeface_phone_call_info_text_size</item>
+        <item name="android:layout_marginTop">@dimen/typeface_phone_call_info_text_margin</item>
+        <item name="android:layout_marginLeft">@dimen/typeface_phone_call_info_text_margin</item>
+    </style>
+
+    <style name="typeface_phone_call_description">
+        <item name="android:typeface">sans</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/typeface_phone_call_description_text_size</item>
+        <item name="android:layout_marginLeft">@dimen/typeface_phone_call_info_text_margin</item>
+        <item name="android:textStyle">italic</item>
+    </style>
+    <style name="lock_screen_padding">
+        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingTop">@dimen/activity_vertical_margin</item>
+        <item name="android:paddingBottom">@dimen/activity_vertical_margin</item>
+    </style>
 </resources>
