@@ -24,7 +24,7 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
     private static final String TAG = "KeypadPatternConfig";
     private TextView mKeyPadEntryInstructions;
     private Button[] mPatternBtns;
-    private DrawView mCanvasView;
+    private DrawView mPatternDrawView, mTouchDrawView;
     private int mLastBtnTouchedNum;
     private String mPatternEntered, mPatternStored;
 
@@ -40,7 +40,8 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
 
         mKeyPadEntryInstructions = (TextView) this.findViewById(R.id.keypad_pin_config_instruction);
         mPatternBtns = getPatternButtons();
-        mCanvasView = (DrawView) this.findViewById(R.id.lock_screen_pattern_canvas);
+        mPatternDrawView = (DrawView) this.findViewById(R.id.lock_screen_pattern_canvas);
+        mTouchDrawView = (DrawView) this.findViewById(R.id.lock_screen_touch_canvas);
 
         for (int i = 0; i < 9; i++) {
             mPatternBtns[i].setOnTouchListener(this);
@@ -88,8 +89,8 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
         mPatternEntered = "";  //Can test for this to see if Activity is in re-enter PIN state.
         mPatternStored = null;
         resetPatternButtons();
-        mCanvasView.clearLines();
-        mCanvasView.invalidate();
+        mPatternDrawView.clearLines();
+        mPatternDrawView.invalidate();
     }
 
     /**
@@ -102,8 +103,8 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
         mPatternStored = pattern;
         mPatternEntered = "";
         resetPatternButtons();
-        mCanvasView.clearLines();
-        mCanvasView.invalidate();
+        mPatternDrawView.clearLines();
+        mPatternDrawView.invalidate();
     }
 
     private Button[] getPatternButtons() {
@@ -182,6 +183,9 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
                         coord[1] + last.getHeight());
                 if (!r.contains((int) event.getRawX(), (int) event.getRawY())) { // outside last button
 
+                    // Flag to determine whether to draw a line to user touch
+                    boolean drawToTouch = true;
+
                     // Brute force, but over 9 elements hardly a problem
                     for (int i = 0; i < 9; i++) {
                         if (i == index) { // means it is the "last" button
@@ -217,16 +221,38 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
                                 int[] endCoord = new int[2];
                                 last.getLocationOnScreen(startCoord);
                                 b.getLocationOnScreen(endCoord);
-                                mCanvasView.addLineWithAbsoluteCoords(
+                                mPatternDrawView.addLineWithAbsoluteCoords(
                                         startCoord[0] + last.getWidth() / 2f,
                                         startCoord[1] + last.getHeight() / 2f,
                                         endCoord[0] + b.getWidth() / 2f,
                                         endCoord[1] + b.getHeight() / 2f,
                                         p);
-                                mCanvasView.invalidate();
+                                mPatternDrawView.invalidate();
+                                mTouchDrawView.clearLines();
+                                mTouchDrawView.invalidate();
+                                drawToTouch = false;
                                 break;
                             }
                         }
+                    }
+                    if (drawToTouch) {
+                        Paint p = new Paint();
+                        p.setColor(getResources().getColor(R.color.lava_red));
+                        p.setStrokeWidth(3f);
+
+                        int[] startCoord = new int[2];
+                        last.getLocationOnScreen(startCoord);
+                        mTouchDrawView.clearLines();
+                        mTouchDrawView.addLineWithAbsoluteCoords(
+                                startCoord[0] + last.getWidth() / 2f,
+                                startCoord[1] + last.getHeight() / 2f,
+                                event.getRawX(),
+                                event.getRawY(),
+                                p);
+                        mTouchDrawView.invalidate();
+                        Log.d(TAG, "(" + (startCoord[0] + last.getWidth() / 2f)
+                                + ", " + (startCoord[1] + last.getHeight() / 2f)
+                                + ") --> (" + event.getRawX() + ", " + event.getRawY() + ")");
                     }
                 }
         }

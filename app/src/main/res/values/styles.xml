@@ -122,7 +122,7 @@
     </style>
 
     <style name="general_instruction">
-        <item name="android:padding">30dp</item>
+        <item name="android:padding">15dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
