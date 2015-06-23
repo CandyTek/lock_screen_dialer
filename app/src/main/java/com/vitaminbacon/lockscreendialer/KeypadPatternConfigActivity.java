@@ -3,6 +3,7 @@ package com.vitaminbacon.lockscreendialer;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,12 +16,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.vitaminbacon.lockscreendialer.helpers.DrawView;
+
 
 public class KeypadPatternConfigActivity extends ActionBarActivity implements View.OnTouchListener {
 
     private static final String TAG = "KeypadPatternConfig";
     private TextView mKeyPadEntryInstructions;
     private Button[] mPatternBtns;
+    private DrawView mCanvasView;
     private int mLastBtnTouchedNum;
     private String mPatternEntered, mPatternStored;
 
@@ -36,6 +40,7 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
 
         mKeyPadEntryInstructions = (TextView) this.findViewById(R.id.keypad_pin_config_instruction);
         mPatternBtns = getPatternButtons();
+        mCanvasView = (DrawView) this.findViewById(R.id.lock_screen_pattern_canvas);
 
         for (int i = 0; i < 9; i++) {
             mPatternBtns[i].setOnTouchListener(this);
@@ -82,6 +87,9 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
         mKeyPadEntryInstructions.setText(text);
         mPatternEntered = "";  //Can test for this to see if Activity is in re-enter PIN state.
         mPatternStored = null;
+        resetPatternButtons();
+        mCanvasView.clearLines();
+        mCanvasView.invalidate();
     }
 
     /**
@@ -93,6 +101,9 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
         mKeyPadEntryInstructions.setText(getString(R.string.keypad_pattern_config_instructions_2));
         mPatternStored = pattern;
         mPatternEntered = "";
+        resetPatternButtons();
+        mCanvasView.clearLines();
+        mCanvasView.invalidate();
     }
 
     private Button[] getPatternButtons() {
@@ -120,6 +131,15 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
         return patternButtons;
     }
 
+    private void resetPatternButtons() {
+        if (mPatternBtns == null) {
+            return;
+        }
+        for (int i = 0; i < 9; i++) {
+            mPatternBtns[i].setPressed(false);
+        }
+    }
+
     public boolean onTouch(View v, MotionEvent event) {
 
         switch (event.getAction()) {
@@ -135,6 +155,7 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
                         return false;
                     } else {
                         mPatternEntered += mLastBtnTouchedNum;
+                        b.setPressed(true);
                         Log.d(TAG, "Pattern now = " + mPatternEntered);
                     }
                 } catch (ClassCastException e) {
@@ -152,17 +173,18 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
                 // Check if user has left last button
                 int index = mLastBtnTouchedNum - 1;
                 int[] coord = new int[2];
-                mPatternBtns[index].getLocationOnScreen(coord);
+                Button last = mPatternBtns[index];
+                last.getLocationOnScreen(coord);
                 Rect r = new Rect(
                         coord[0],
                         coord[1],
-                        coord[0] + mPatternBtns[index].getWidth(),
-                        coord[1] + mPatternBtns[index].getHeight());
+                        coord[0] + last.getWidth(),
+                        coord[1] + last.getHeight());
                 if (!r.contains((int) event.getRawX(), (int) event.getRawY())) { // outside last button
 
                     // Brute force, but over 9 elements hardly a problem
                     for (int i = 0; i < 9; i++) {
-                        if (i == index) {
+                        if (i == index) { // means it is the "last" button
                             continue;
                         }
                         mPatternBtns[i].getLocationOnScreen(coord);
@@ -175,15 +197,33 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
                             /*mLastBtnTouchedNum = Integer
                                     .getInteger(mPatternBtns[i].getText().toString());*/
                             Button b = (Button) mPatternBtns[i];
-                            mLastBtnTouchedNum = Integer.parseInt(b.getText().toString());
+
                             if (mLastBtnTouchedNum < 1 || mLastBtnTouchedNum > 9) {
                                 Log.e(TAG, "Pattern button contains improper digit");
                                 finish();
                                 return false;
                             } else if (!mPatternEntered.contains(mPatternBtns[i].getText().toString())) {
                                 // Makes sure the digit doesn't already exist in the pattern entered
+                                mLastBtnTouchedNum = Integer.parseInt(b.getText().toString());
                                 mPatternEntered += mLastBtnTouchedNum;
-                                Log.d(TAG, "Pattern now = " + mPatternEntered);
+                                //Log.d(TAG, "Pattern now = " + mPatternEntered);
+                                b.setPressed(true);
+
+                                Paint p = new Paint();
+                                p.setColor(getResources().getColor(R.color.green));
+                                p.setStrokeWidth(3f);
+
+                                int[] startCoord = new int[2];
+                                int[] endCoord = new int[2];
+                                last.getLocationOnScreen(startCoord);
+                                b.getLocationOnScreen(endCoord);
+                                mCanvasView.addLineWithAbsoluteCoords(
+                                        startCoord[0] + last.getWidth() / 2f,
+                                        startCoord[1] + last.getHeight() / 2f,
+                                        endCoord[0] + b.getWidth() / 2f,
+                                        endCoord[1] + b.getHeight() / 2f,
+                                        p);
+                                mCanvasView.invalidate();
                                 break;
                             }
                         }
