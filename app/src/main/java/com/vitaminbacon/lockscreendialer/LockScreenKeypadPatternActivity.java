@@ -2,6 +2,7 @@ package com.vitaminbacon.lockscreendialer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +12,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.vitaminbacon.lockscreendialer.helpers.DrawView;
 
 
 public class LockScreenKeypadPatternActivity extends LockScreenActivity
@@ -27,13 +30,11 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
     // variables relating to the logic of the lockscreen
     private String mPatternStored;
     private String mPatternEntered;
-    private boolean mPatternInvalidDisplayFlag;
     private int mNumTries;
-    //private Rect[] mPatternDimens;
     private Button[] mPatternBtns;
-    //private boolean mIsDrawingPattern;
-    //private Button mLastTouchedBtn;
     private int mLastBtnTouchedNum;
+    private DrawView mPatternDrawView, mTouchDrawView;
+    private boolean mPhoneCallInterruptFlag;
 
 
     @Override
@@ -47,15 +48,21 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
         // Initialize some basic variables
         mNumTries = 0;  // Possibly modified later by onRestoreInstanceState
         mPatternStored = getStoredPattern();
-        mPatternInvalidDisplayFlag = false;
+        mPatternEntered = "";
 
         // In case returning to this display from elsewhere, want to reset
         // Will also catch error when there is improper layout
         //Log.d(TAG, "onCreate() calling resetPinEntry()");
-        resetPatternEntry(getString(R.string.lock_screen_pin_default_display));
+        resetPatternEntry(getString(R.string.lock_screen_keypad_pattern_instruction_1));
 
         mPatternBtns = getPatternButtons(wrapperView);
-        //mPatternDimens = new Rect[9];
+        try {
+            mPatternDrawView = (DrawView) wrapperView.findViewById(R.id.lock_screen_pattern_canvas);
+            mTouchDrawView = (DrawView) wrapperView.findViewById(R.id.lock_screen_touch_canvas);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Layout has improper elements for this activity", e);
+            onFatalError();
+        }
 
         // Set the onClickListeners to the appropriate views
         SharedPreferences sharedPref = getSharedPreferences(
@@ -64,38 +71,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
 
         for (int i = 0; i < 9; i++) {
             mPatternBtns[i].setOnTouchListener(this);
-            try {
-                String filename = getString(R.string.key_number_store_prefix_phone) + (i + 1);
-
-                if (sharedPref == null) {
-                    Log.w(TAG, "Unable to access shared preferences file "
-                            + getString(R.string.speed_dial_preference_file_key) + "; returned null.");
-                    continue;
-                } else if (sharedPref.getString(filename, null) != null) { //only set the long click where necessary
-                    //Log.d(TAG, "Setting long click on key " + i);
-
-                    /*int[] coord = new int[2];
-                    mPatternBtns[i].getLocationOnScreen(coord);
-                    mPatternDimens[i] = new Rect(
-                            coord[0],
-                            coord[1],
-                            coord[0] + mPatternBtns[i].getWidth(),
-                            coord[1] + mPatternBtns[i].getHeight());*/
-                }
-            } catch (NullPointerException e) {
-                Log.e(TAG, "Keypad button " + (i + 1) + " is invalid.", e);
-                onFatalError();
-                return;
-            }
         }
-
-        /*try {
-            View touchContainer = wrapperView.findViewById(R.id.lock_screen_pattern_touch_area);
-            touchContainer.setOnTouchListener(this);
-        } catch (NullPointerException e) {
-            Log.e(TAG, "Layout does not contain a touch area for this lock screen.", e);
-            onFatalError();
-        }*/
 
         if (mPatternStored == null) {
             Log.e(TAG, "Stored pattern is null.");
@@ -116,59 +92,11 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
         outState.putInt("numTries", mNumTries);
     }
 
-    /*@Override
-    public void onClick (View view) {
-        super.onClick(view); // Need to call the super to catch click of end call button
+    @Override
+    int getFragmentLayout() {
 
-        // If this method was called by virtue of someone invoking a long press, we swallow it
-        if (mLongPressFlag) {
-            mLongPressFlag = false;
-            resetPatternEntry(getString(R.string.lock_screen_pin_default_display));
-            return;
-        }
-        int num = getSpeedDialButtonPressed(view.getId(), -1);
-        if (num == -1) { //Not a speed dial number
-            switch (view.getId()) {
-                case R.id.lock_screen_pin_button_OK:
-                    if (mPatternEntered.length() != 0){ // We don't care if the OK button was pressed without any PIN entered
-                        //wrongPatternEntered();  // Because our functionality will automatically accept a PIN when it is entered, we can assume error
-                    }
-                    break;
-                case R.id.lock_screen_pin_button_delete:
-                    //Log.d(TAG, "onClick() calling resetPinEntry() on delete button pressed.");
-                    resetPatternEntry(getString(R.string.lock_screen_keypad_pattern_instruction_1));
-                    break;
-            }
-            return;
-        }
-
-        mPatternEntered += num;
-
-        //Log.d(TAG, "onClick() -- digit " + num + "entered, pin display tag is " + mPinInvalidDisplayFlag);
-        // Display a new "digit" on the text view
-        if (!mPatternInvalidDisplayFlag) {// meaning the display is not taken by displaying an invalid pin message
-            TextView pinDisplayView = getPinDisplayView(getWrapperView());
-            try {
-                if (pinDisplayView.getText().toString().
-                        equals(getString(R.string.lock_screen_pin_default_display))) {
-                    pinDisplayView.setText("*");
-                } else if (pinDisplayView.getText().length() <=
-                        getResources().getInteger(R.integer.lock_screen_pin_max_pin_display)){  // TODO: put a cap on the PIN -- implemented in settings as well
-                    pinDisplayView.setText(pinDisplayView.getText().toString() + "*");
-                }
-            } catch (NullPointerException e) {
-                Log.e(TAG, "pin display text view invalid.", e);
-                onFatalError();
-                return;
-            }
-        }
-
-        //  Now check whether the PIN entered so far matches the stored PIN
-        //Log.d(TAG, mPinEntered + " vs " + mPinStored);
-        if (mPatternEntered.equals(mPatternStored)) {
-            onCorrectPasscode();
-        }
-    }*/
+        return R.layout.fragment_lock_screen_pattern;
+    }
 
     /**
      * Method that implements a longer-press version of onLongClick. Method works by creating
@@ -184,23 +112,46 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                // Event only happens once at beginning, so good place to initialize this variable
-                //mIsDrawingPattern = false;
+                // Check if phone call is active for the interrupt flag logic
+                if (!getPhoneCallActiveFlag()) {
+                    mPhoneCallInterruptFlag = true;
+                } else {
+                    mPhoneCallInterruptFlag = false;
+                }
                 try {
-                    mHandler = new Handler();
-                    mRunnable = new DialerRunnable(this, getSpeedDialButtonPressed(v.getId(), -1));
-                    mHandler.postDelayed(
-                            mRunnable,
-                            getResources().getInteger(R.integer.lock_screen_pattern_long_press_delay));
-                    mLastBtnTouchedNum = Integer.getInteger(((Button) v).getText().toString());
+                    // Check to see if we set a dialer runnable
+                    Button b = (Button) v;
+                    SharedPreferences sharedPref = getSharedPreferences(
+                            getString(R.string.speed_dial_preference_file_key),
+                            Context.MODE_PRIVATE);
+                    String filename = getString(R.string.key_number_store_prefix_phone)
+                            + getSpeedDialButtonPressed(b.getId(), -1);
+                    //Log.d(TAG, "Setting dialer runnable click on key " + b.getText());
+                    if (sharedPref.getString(filename, null) != null) { //only set the long click where necessary
+                        //Log.d(TAG, "Setting dialer runnable click on key " + b.getText());
+                        mHandler = new Handler();
+                        mRunnable = new DialerRunnable(this, getSpeedDialButtonPressed(v.getId(), -1));
+                        mHandler.postDelayed(
+                                mRunnable,
+                                getResources().getInteger(R.integer.lock_screen_pattern_long_press_delay));
+                    }
+
+                    // Now handle pattern logic
+                    mLastBtnTouchedNum = Integer.parseInt(b.getText().toString());
                     if (mLastBtnTouchedNum < 1 || mLastBtnTouchedNum > 9) {
                         Log.e(TAG, "Pattern button contains improper digit");
                         onFatalError();
+                        return false;
                     } else {
                         mPatternEntered += mLastBtnTouchedNum;
+                        b.setPressed(true);
+                        Log.d(TAG, "Pattern now = " + mPatternEntered);
                     }
                 } catch (ClassCastException e) {
-                    Log.e(TAG, "Unable to case Button to view to get value.", e);
+                    Log.e(TAG, "Unable to cast Button to view to get value.", e);
+                    onFatalError();
+                } catch (NullPointerException e) {
+                    Log.e(TAG, "Shared preference variable had invalid input");
                     onFatalError();
                 }
                 break;
@@ -214,7 +165,14 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                 if (mPatternEntered.equals(mPatternStored)) {
                     onCorrectPasscode();
                 } else {
-                    onWrongPatternEntered();
+                    Log.d(TAG, "Entered = " + mPatternEntered + ", stored = " + mPatternStored);
+                    if (getPhoneCallActiveFlag() && mPhoneCallInterruptFlag) {
+                        // Phone=inactive when pattern started, and phone=active after pattern end
+                        onWrongPatternEntered(false);  // No error message
+                    } else {
+                        // Phone=active when pattern started, or phone=inactive now
+                        onWrongPatternEntered(true);
+                    }
                 }
                 break;
 
@@ -223,22 +181,25 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                 // Check if user has left last button
                 int index = mLastBtnTouchedNum - 1;
                 int[] coord = new int[2];
-                mPatternBtns[index].getLocationOnScreen(coord);
+                Button last = mPatternBtns[index];
+                last.getLocationOnScreen(coord);
                 Rect r = new Rect(
                         coord[0],
                         coord[1],
-                        coord[0] + mPatternBtns[index].getWidth(),
-                        coord[1] + mPatternBtns[index].getHeight());
+                        coord[0] + last.getWidth(),
+                        coord[1] + last.getHeight());
                 if (!r.contains((int) event.getRawX(), (int) event.getRawY())) { // outside last button
-
-                    if (mHandler != null) { // Means first onTouch call outside of button
+                    if (mHandler != null) {
                         mHandler.removeCallbacks(mRunnable);
+                        mHandler = null;
+                        mRunnable = null;
                     }
+                    // Flag to determine whether to draw a line to user touch
+                    boolean drawToTouch = true;
 
-                    // Now check if touch is in other buttons
                     // Brute force, but over 9 elements hardly a problem
                     for (int i = 0; i < 9; i++) {
-                        if (i == index) {
+                        if (i == index) { // means it is the "last" button
                             continue;
                         }
                         mPatternBtns[i].getLocationOnScreen(coord);
@@ -248,17 +209,59 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                                 coord[0] + mPatternBtns[i].getWidth(),
                                 coord[1] + mPatternBtns[i].getHeight());
                         if (r.contains((int) event.getRawX(), (int) event.getRawY())) {
-                            mLastBtnTouchedNum = Integer
-                                    .getInteger(mPatternBtns[i].getText().toString());
+                            Button b = mPatternBtns[i];
+
                             if (mLastBtnTouchedNum < 1 || mLastBtnTouchedNum > 9) {
                                 Log.e(TAG, "Pattern button contains improper digit");
                                 onFatalError();
+                                return false;
                             } else if (!mPatternEntered.contains(mPatternBtns[i].getText().toString())) {
                                 // Makes sure the digit doesn't already exist in the pattern entered
+                                mLastBtnTouchedNum = Integer.parseInt(b.getText().toString());
                                 mPatternEntered += mLastBtnTouchedNum;
+                                //Log.d(TAG, "Pattern now = " + mPatternEntered);
+                                b.setPressed(true);
+
+                                Paint p = new Paint();
+                                p.setColor(getResources().getColor(R.color.green));
+                                p.setStrokeWidth(3f);
+
+                                int[] startCoord = new int[2];
+                                int[] endCoord = new int[2];
+                                last.getLocationOnScreen(startCoord);
+                                b.getLocationOnScreen(endCoord);
+                                mPatternDrawView.addLineWithAbsoluteCoords(
+                                        startCoord[0] + last.getWidth() / 2f,
+                                        startCoord[1] + last.getHeight() / 2f,
+                                        endCoord[0] + b.getWidth() / 2f,
+                                        endCoord[1] + b.getHeight() / 2f,
+                                        p);
+                                mPatternDrawView.invalidate();
+                                mTouchDrawView.clearLines();
+                                mTouchDrawView.invalidate();
+                                drawToTouch = false;
                                 break;
                             }
                         }
+                    }
+                    if (drawToTouch) {
+                        Paint p = new Paint();
+                        p.setColor(getResources().getColor(R.color.lava_red));
+                        p.setStrokeWidth(3f);
+
+                        int[] startCoord = new int[2];
+                        last.getLocationOnScreen(startCoord);
+                        mTouchDrawView.clearLines();
+                        mTouchDrawView.addLineWithAbsoluteCoords(
+                                startCoord[0] + last.getWidth() / 2f,
+                                startCoord[1] + last.getHeight() / 2f,
+                                event.getRawX(),
+                                event.getRawY(),
+                                p);
+                        mTouchDrawView.invalidate();
+                        /*Log.d(TAG, "(" + (startCoord[0] + last.getWidth() / 2f)
+                                + ", " + (startCoord[1] + last.getHeight() / 2f)
+                                + ") --> (" + event.getRawX() + ", " + event.getRawY() + ")");*/
                     }
                 }
         }
@@ -290,27 +293,6 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
         return patternButtons;
     }
 
-    private TextView getPinDisplayView(View wrapperView) {
-        TextView t;
-        try {
-            t = (TextView) wrapperView.findViewById(R.id.lock_screen_pin_display);
-        } catch (NullPointerException e) {
-            Log.e(TAG, "Wrapper view could not be located in this activity.", e);
-            onFatalError();  // TODO: find way to gracefully handle these exceptions
-            return null;
-        } catch (ClassCastException e) {
-            Log.e(TAG, "Incompatible layout used with this activity.", e);
-            onFatalError();
-            return null;
-        }
-
-        if (t == null) {
-            Log.e(TAG, "Incompatible layout use with this activity - pin display view null.");
-            onFatalError();
-        }
-        return t;
-    }
-
     private String getStoredPattern() {
         SharedPreferences sharedPref = getSharedPreferences(
                 getString(R.string.lock_screen_type_file_key),
@@ -321,7 +303,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
     }
 
 
-    private void onWrongPatternEntered() {
+    private void onWrongPatternEntered(boolean displayErrorMessage) {
         // TODO: implement switch statement below
         /*int delay;
         String message;
@@ -333,75 +315,80 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
             case 1:
 
         }*/
-        resetPatternEntry(getString(R.string.lock_screen_wrong_pattern_entered));
-        mPatternInvalidDisplayFlag = true;
-        mNumTries++;
-        SetTextInViewRunnable r = new SetTextInViewRunnable(
-                getString(R.string.lock_screen_keypad_pattern_instruction_1),
-                getPinDisplayView(getWrapperView()));
-        Handler h = new Handler();
-        h.postDelayed(r, getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay));
+        if (displayErrorMessage) {
+            resetPatternEntry(getString(R.string.lock_screen_wrong_pattern_entered));
+        } else {
+            resetPatternEntry(getString(R.string.lock_screen_keypad_pattern_instruction_1));
+        }
 
-        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        v.vibrate(200);
+        mNumTries++;
+        mPatternEntered = "";
+        mPatternDrawView.clearLines();
+        mPatternDrawView.invalidate();
+        mTouchDrawView.clearLines();
+        mTouchDrawView.invalidate();
+
+        for (int i = 0; i < 9; i++) {
+            mPatternBtns[i].setPressed(false);
+        }
+
+        try {
+            SetTextInViewRunnable r = new SetTextInViewRunnable(
+                    getString(R.string.lock_screen_keypad_pattern_instruction_1),
+                    (TextView) getWrapperView().findViewById(R.id.lock_screen_pattern_display));
+            Handler h = new Handler();
+            h.postDelayed(r, getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay));
+
+            if (displayErrorMessage) {
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                v.vibrate(200);
+            }
+        } catch (ClassCastException e) {
+            Log.e(TAG, "Layout element of wrong type to implement pattern display", e);
+            onFatalError();
+        }
+
     }
 
     /**
-     * Method that resets the Pin Entry
+     * Method that resets the Pattern Entry
      */
     private void resetPatternEntry(String displayText) {
-        TextView pinDisplayView = getPinDisplayView(getWrapperView());
+        TextView tv = (TextView) getWrapperView().findViewById(R.id.lock_screen_pattern_display);
         try {
-            pinDisplayView.setText(displayText);
-            pinDisplayView.setTransformationMethod(null);
-            pinDisplayView.setTextScaleX(1.0f);
+            tv.setText(displayText);
         } catch (NullPointerException e) {
             Log.e(TAG, "Incompatible layout with this activity.", e);
             onFatalError();
         }
-        //Log.d(TAG, "pinDisplayView text is reset to " + pinDisplayView.getText());
-        mPatternEntered = "";
     }
 
-    private void resetPinInvalidDisplayFlag() {
-        mPatternInvalidDisplayFlag = false;
-    }
 
     private int getSpeedDialButtonPressed(int id, int defaultReturn) {
         switch (id) {
-            case R.id.lock_screen_pin_button_0:
-                return 0;
-            case R.id.lock_screen_pin_button_1:
+            case R.id.lock_screen_pattern_button_1:
                 return 1;
-            case R.id.lock_screen_pin_button_2:
+            case R.id.lock_screen_pattern_button_2:
                 return 2;
-            case R.id.lock_screen_pin_button_3:
+            case R.id.lock_screen_pattern_button_3:
                 return 3;
-            case R.id.lock_screen_pin_button_4:
+            case R.id.lock_screen_pattern_button_4:
                 return 4;
-            case R.id.lock_screen_pin_button_5:
+            case R.id.lock_screen_pattern_button_5:
                 return 5;
-            case R.id.lock_screen_pin_button_6:
+            case R.id.lock_screen_pattern_button_6:
                 return 6;
-            case R.id.lock_screen_pin_button_7:
+            case R.id.lock_screen_pattern_button_7:
                 return 7;
-            case R.id.lock_screen_pin_button_8:
+            case R.id.lock_screen_pattern_button_8:
                 return 8;
-            case R.id.lock_screen_pin_button_9:
+            case R.id.lock_screen_pattern_button_9:
                 return 9;
             default:
                 return defaultReturn;
         }
     }
 
-    private int getPinEnteredLength() {
-        return mPatternEntered.length();
-    }
-
-    @Override
-    int getFragmentLayout() {
-        return R.layout.fragment_lock_screen_keypad_pin;
-    }
 
     private class SetTextInViewRunnable implements Runnable {
         private String text;
@@ -413,19 +400,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
         }
 
         public void run() {
-            int i = getPinEnteredLength();
-            if (i == 0) {
-                view.setText(text);
-                //Log.d(TAG, "Runnable has set pinDisplayView to " + text);
-            } else { // we need to set the string to the appropriate length
-                String s = "";
-                for (int j = 0; j < i; j++) {
-                    s += "*";
-                }
-                view.setText(s);
-                //Log.d(TAG, "Runnable has set pinDisplayVyew to " + s);
-            }
-            resetPinInvalidDisplayFlag();
+            view.setText(text);
         }
     }
 

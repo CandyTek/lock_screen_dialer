@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -91,6 +92,8 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
         resetPatternButtons();
         mPatternDrawView.clearLines();
         mPatternDrawView.invalidate();
+        mTouchDrawView.clearLines();
+        mTouchDrawView.invalidate();
     }
 
     /**
@@ -105,6 +108,8 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
         resetPatternButtons();
         mPatternDrawView.clearLines();
         mPatternDrawView.invalidate();
+        mTouchDrawView.clearLines();
+        mTouchDrawView.invalidate();
     }
 
     private Button[] getPatternButtons() {
@@ -200,7 +205,7 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
                         if (r.contains((int) event.getRawX(), (int) event.getRawY())) {
                             /*mLastBtnTouchedNum = Integer
                                     .getInteger(mPatternBtns[i].getText().toString());*/
-                            Button b = (Button) mPatternBtns[i];
+                            Button b = mPatternBtns[i];
 
                             if (mLastBtnTouchedNum < 1 || mLastBtnTouchedNum > 9) {
                                 Log.e(TAG, "Pattern button contains improper digit");
@@ -269,6 +274,8 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
                 Handler h = new Handler();
                 h.postDelayed(r, getResources()
                         .getInteger(R.integer.lock_screen_pattern_wrong_entry_delay));
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                v.vibrate(200);
                 return;
             }
             setActivityToSecondState(mPatternEntered);
@@ -300,6 +307,8 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
                 Handler h = new Handler();
                 h.postDelayed(r, getResources()
                         .getInteger(R.integer.lock_screen_pattern_wrong_entry_delay));
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                v.vibrate(200);
                 return;
             }
 

@@ -10,5 +10,7 @@
 
     <string name="lock_screen_pattern_entry_not_matching">Patterns do not match</string>
 
+    <string name="title_activity_lock_screen_keypad_pattern">Lock Screen Keypad Pattern Activity</string>
+
 
 </resources>

@@ -1053,7 +1053,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      * Runnable class that initiates the phone call on a long press
      */
     protected class DialerRunnable implements Runnable {
-        private int num; // the ID of the button pressed
+        private int num; // the digit of the button pressed
         private Context context;
 
         public DialerRunnable(Context context, int num) {

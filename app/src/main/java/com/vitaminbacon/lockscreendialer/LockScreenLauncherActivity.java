@@ -4,11 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.WindowManager;
 
 /**
@@ -36,13 +33,20 @@ public class LockScreenLauncherActivity extends Activity {
                 getString(R.string.lock_screen_type_value_key),
                 null);
 
-        if(lockScreenType != null &&
-                lockScreenType.equals(getString(R.string.lock_screen_type_value_keypad_pin))){ // Now enable the correct lock screen
-            intent = new Intent (this, LockScreenKeypadPinActivity.class);
-        } //TODO: enable other lock screen types
-        else { //An error of some kind
-            Log.d(TAG, "No value for key " + getString(R.string.lock_screen_type_value_key));
-            intent = new Intent (this, ErrorPageActivity.class);
+        if (lockScreenType != null) {
+
+            if (lockScreenType.equals(getString(R.string.lock_screen_type_value_keypad_pin))) { // Now enable the correct lock screen
+                intent = new Intent(this, LockScreenKeypadPinActivity.class);
+            } else if (lockScreenType.equals(getString(R.string.lock_screen_type_value_keypad_pattern))) {
+                intent = new Intent(this, LockScreenKeypadPatternActivity.class);
+            } else { //An error of some kind
+                Log.d(TAG, "No value for key " + getString(R.string.lock_screen_type_value_key));
+                intent = new Intent(this, ErrorPageActivity.class);
+            }
+        } else {
+            Log.e(TAG, "Unable to get the lock screen type from shared preferences.");
+            finish();
+            return;
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // necessary to add to android's stack of things to do
         intent.addFlags(WindowManager.LayoutParams.TYPE_SYSTEM_ERROR); //this allows the activity to be placed on top of everything -- UGLY HACK??

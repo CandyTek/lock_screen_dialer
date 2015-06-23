@@ -110,6 +110,13 @@
             android:theme="@style/Theme.NoBackground" >
         </activity>
         <activity
+            android:name=".LockScreenKeypadPatternActivity"
+            android:configChanges="orientation"
+            android:label="@string/title_activity_lock_screen_keypad_pattern"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.NoBackground"></activity>
+        <activity
             android:name=".ErrorPageActivity"
             android:label="@string/title_activity_error_page" >
         </activity>
