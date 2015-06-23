@@ -2,15 +2,14 @@ package com.vitaminbacon.lockscreendialer;
 
 import android.app.KeyguardManager;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
 
 public class LockScreenService extends Service {
 
-    private static LockScreenEventReceiver mReceiver;  // TODO: consider making this static?
     public static final String ACTION_NAME = "com.vitaminbacon.lockscreendialer.LockScreenService";
+    private static ScreenEventReceiver mReceiver;  // TODO: consider making this static?
 
     public LockScreenService() {
     }
@@ -31,7 +30,7 @@ public class LockScreenService extends Service {
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_BOOT_COMPLETED);
-        mReceiver = new LockScreenEventReceiver();
+        mReceiver = new ScreenEventReceiver();
         registerReceiver(mReceiver, filter);
 
     }

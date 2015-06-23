@@ -1,149 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lock_screen_interaction_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="5dp"
     android:layout_weight="1"
-    android:id="@+id/lock_screen_interaction_container"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:orientation="vertical">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp">
         <TextView
+            android:id="@+id/lock_screen_pattern_display"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/lock_screen_pattern_display"
-            android:text="@string/lock_screen_keypad_pattern_instruction_1"
-            android:textColor="@color/white"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="25dp"
+            android:layout_marginRight="5dp"
             android:shadowColor="#000000"
             android:shadowDx="3"
             android:shadowDy="3"
             android:shadowRadius="5"
-            android:textSize="25dp"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="25dp"
-            android:layout_marginRight="5dp"
-            android:layout_centerVertical="true"/>
+            android:text="@string/lock_screen_keypad_pattern_instruction_1"
+            android:textColor="@color/white"
+            android:textSize="25dp" />
     </RelativeLayout>
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-        <View
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight=".5"/>
+        android:id="@+id/lock_screen_pattern_touch_area"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/lock_screen_pattern_button_1"
-            android:text="1"
-            style="@style/pattern_buttons_lock_screen"/>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"/>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight=".5" />
 
-        <Button
-            android:id="@+id/lock_screen_pattern_button_2"
-            android:text="2"
-            style="@style/pattern_buttons_lock_screen" />
+            <Button
+                android:id="@+id/lock_screen_pattern_button_1"
+                style="@style/pattern_buttons_lock_screen"
+                android:text="1" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"/>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/lock_screen_pattern_button_3"
-            android:text="3"
-            style="@style/pattern_buttons_lock_screen" />
+            <Button
+                android:id="@+id/lock_screen_pattern_button_2"
+                style="@style/pattern_buttons_lock_screen"
+                android:text="2" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight=".5"/>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/lock_screen_pattern_button_3"
+                style="@style/pattern_buttons_lock_screen"
+                android:text="3" />
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-        <View
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight=".5"/>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight=".5" />
 
-        <Button
-            android:id="@+id/lock_screen_pattern_button_4"
-            android:text="4"
-            style="@style/pattern_buttons_lock_screen"/>
+        </LinearLayout>
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"/>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/lock_screen_pattern_button_5"
-            android:text="5"
-            style="@style/pattern_buttons_lock_screen" />
+            <View
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight=".5" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"/>
+            <Button
+                android:id="@+id/lock_screen_pattern_button_4"
+                style="@style/pattern_buttons_lock_screen"
+                android:text="4" />
 
-        <Button
-            android:id="@+id/lock_screen_pattern_button_6"
-            android:text="6"
-            style="@style/pattern_buttons_lock_screen" />
+            <View
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight=".5"/>
+            <Button
+                android:id="@+id/lock_screen_pattern_button_5"
+                style="@style/pattern_buttons_lock_screen"
+                android:text="5" />
 
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-        <View
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight=".5"/>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/lock_screen_pattern_button_7"
-            android:text="7"
-            style="@style/pattern_buttons_lock_screen"/>
+            <Button
+                android:id="@+id/lock_screen_pattern_button_6"
+                style="@style/pattern_buttons_lock_screen"
+                android:text="6" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"/>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight=".5" />
 
-        <Button
-            android:id="@+id/lock_screen_pattern_button_8"
-            android:text="8"
-            style="@style/pattern_buttons_lock_screen" />
+        </LinearLayout>
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"/>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/lock_screen_pattern_button_9"
-            android:text="9"
-            style="@style/pattern_buttons_lock_screen" />
+            <View
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight=".5" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight=".5"/>
+            <Button
+                android:id="@+id/lock_screen_pattern_button_7"
+                style="@style/pattern_buttons_lock_screen"
+                android:text="7" />
 
+            <View
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/lock_screen_pattern_button_8"
+                style="@style/pattern_buttons_lock_screen"
+                android:text="8" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/lock_screen_pattern_button_9"
+                style="@style/pattern_buttons_lock_screen"
+                android:text="9" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_weight=".5" />
+
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

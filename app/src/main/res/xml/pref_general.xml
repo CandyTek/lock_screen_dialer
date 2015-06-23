@@ -1,29 +1,39 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <CheckBoxPreference
+        android:defaultValue="false"
         android:key="@string/key_toggle_lock_screen"
-        android:title="@string/pref_title_toggle_lock_screen"
-        android:summary="@string/pref_description_toggle_lock_screen"
-        android:defaultValue="false" />
+        android:summaryOff="@string/pref_description_off_toggle_lock_screen"
+        android:summaryOn="@string/pref_description_on_toggle_lock_screen"
+        android:title="@string/pref_title_toggle_lock_screen" />
+
+    <com.vitaminbacon.lockscreendialer.helpers.MyListPreference
+        android:defaultValue="@string/pref_default_value_lock_screen_type"
+        android:dialogTitle="@string/pref_dialog_title_select_lock_screen_type"
+        android:entries="@array/pref_entries_lock_screen_type"
+        android:entryValues="@array/pref_values_lock_screen_type"
+        android:key="@string/key_select_lock_screen_type"
+        android:summary="@string/pref_description_select_lock_screen_type"
+        android:title="@string/pref_title_select_lock_screen_type" />
 
     <CheckBoxPreference
+        android:defaultValue="true"
         android:key="@string/key_toggle_speed_dial_enabled"
-        android:title="@string/pref_title_toggle_speed_dial_enabled"
         android:summary="@string/pref_description_toggle_speed_dial_enabled"
-        android:defaultValue="true" />
+        android:title="@string/pref_title_toggle_speed_dial_enabled" />
 
     <!-- A preference that directs you to a new activity to select speed dial contacts -->
     <Preference
         android:key="@string/key_assign_speed_dial_contacts"
-        android:title="@string/pref_title_assign_speed_dial_contacts"
-        android:summary="@string/pref_description_assign_speed_dial_contacts" >
+        android:summary="@string/pref_description_assign_speed_dial_contacts"
+        android:title="@string/pref_title_assign_speed_dial_contacts">
         <intent
             android:action="android.intent.action.MAIN"
-            android:targetPackage="com.vitaminbacon.lockscreendialer"
-            android:targetClass="com.vitaminbacon.lockscreendialer.SpeedDialSelectionActivity" />
+            android:targetClass="com.vitaminbacon.lockscreendialer.SpeedDialSelectionActivity"
+            android:targetPackage="com.vitaminbacon.lockscreendialer" />
     </Preference>
 
-    <!-- A list of available lock screen mechanisms to bypass to access phone -->
+    <!-- A list of available lock screen mechanisms to bypass to access phone
     <Preference
         android:key="@string/key_select_lock_screen_type"
         android:title="@string/pref_title_select_screen_lock_type"
@@ -33,6 +43,8 @@
             android:targetPackage="com.vitaminbacon.lockscreendialer"
             android:targetClass="com.vitaminbacon.lockscreendialer.LockScreenSelectionActivity" />
     </Preference>
+    -->
+
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
     <!-- Commenting out default generated content

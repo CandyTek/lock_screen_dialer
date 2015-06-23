@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="lock_screen_keypad_pattern_instruction_1">Enter pattern</string>
+    <string name="lock_screen_keypad_pattern_instruction_1">Enter pattern.</string>
+
+    <string name="lock_screen_wrong_pattern_entered">Invalid pattern.</string>
+
+    <string name="keypad_pattern_config_instructions_2">Confirm pattern.</string>
+
+    <string name="lock_screen_pattern_entry_error_too_short">Invalid: pattern is too short.</string>
+
+    <string name="lock_screen_pattern_entry_not_matching">Patterns do not match.  Try again!</string>
+
+
 </resources>

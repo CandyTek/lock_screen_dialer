@@ -9,12 +9,12 @@
     tools:context="com.vitaminbacon.lockscreendialer.KeypadPinConfigActivity">
 
     <TextView
+        android:id="@+id/keypad_pin_config_instruction"
+        style="@style/general_instruction"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Instruction"
         android:gravity="center_horizontal"
-        android:id="@+id/keypad_pin_config_instruction"
-        style="@style/general_instruction"/>
+        android:text="Instruction" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -26,8 +26,8 @@
 
         <Button
             android:id="@+id/lock_screen_pattern_button_1"
-            android:text="1"
-            style="@style/pattern_buttons_lock_screen"/>
+            style="@style/pattern_buttons_lock_screen"
+            android:text="1" />
 
         <View
             android:layout_width="0dp"
@@ -36,8 +36,8 @@
 
         <Button
             android:id="@+id/lock_screen_pattern_button_2"
-            android:text="2"
-            style="@style/pattern_buttons_lock_screen" />
+            style="@style/pattern_buttons_lock_screen"
+            android:text="2" />
 
         <View
             android:layout_width="0dp"
@@ -46,8 +46,8 @@
 
         <Button
             android:id="@+id/lock_screen_pattern_button_3"
-            android:text="3"
-            style="@style/pattern_buttons_lock_screen" />
+            style="@style/pattern_buttons_lock_screen"
+            android:text="3" />
 
         <View
             android:layout_width="0dp"
@@ -71,8 +71,8 @@
 
         <Button
             android:id="@+id/lock_screen_pattern_button_4"
-            android:text="4"
-            style="@style/pattern_buttons_lock_screen"/>
+            style="@style/pattern_buttons_lock_screen"
+            android:text="4" />
 
         <View
             android:layout_width="0dp"
@@ -81,8 +81,8 @@
 
         <Button
             android:id="@+id/lock_screen_pattern_button_5"
-            android:text="5"
-            style="@style/pattern_buttons_lock_screen" />
+            style="@style/pattern_buttons_lock_screen"
+            android:text="5" />
 
         <View
             android:layout_width="0dp"
@@ -91,8 +91,8 @@
 
         <Button
             android:id="@+id/lock_screen_pattern_button_6"
-            android:text="6"
-            style="@style/pattern_buttons_lock_screen" />
+            style="@style/pattern_buttons_lock_screen"
+            android:text="6" />
 
         <View
             android:layout_width="0dp"
@@ -114,8 +114,8 @@
 
         <Button
             android:id="@+id/lock_screen_pattern_button_7"
-            android:text="7"
-            style="@style/pattern_buttons_lock_screen"/>
+            style="@style/pattern_buttons_lock_screen"
+            android:text="7" />
 
         <View
             android:layout_width="0dp"
@@ -124,8 +124,8 @@
 
         <Button
             android:id="@+id/lock_screen_pattern_button_8"
-            android:text="8"
-            style="@style/pattern_buttons_lock_screen" />
+            style="@style/pattern_buttons_lock_screen"
+            android:text="8" />
 
         <View
             android:layout_width="0dp"
@@ -134,8 +134,8 @@
 
         <Button
             android:id="@+id/lock_screen_pattern_button_9"
-            android:text="9"
-            style="@style/pattern_buttons_lock_screen" />
+            style="@style/pattern_buttons_lock_screen"
+            android:text="9" />
 
         <View
             android:layout_width="0dp"
@@ -147,34 +147,5 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-
-        <Button
-            android:id="@+id/btn_keypad_pattern_config_submit"
-            android:onClick="submitButtonClicked"
-            android:textAllCaps="false"
-
-            style="@style/dialog_buttons"/>
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            style="@style/key_pad_dividers"/>
-
-        <Button
-            android:id="@+id/contact_assigned_remove"
-            android:text="@string/btn_keypad_pin_config_cancel"
-            android:onClick="cancelButtonClicked"
-            android:textAllCaps="false"
-
-            style="@style/dialog_buttons"/>
-
-    </LinearLayout>
-
-
-
-
 
 </LinearLayout>

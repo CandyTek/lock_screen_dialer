@@ -16,10 +16,11 @@ import android.graphics.Point;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
 import android.os.RemoteException;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
-import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
@@ -36,14 +37,15 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.android.internal.telephony.ITelephony;
 import com.vitaminbacon.lockscreendialer.exceptions.CallHandlerException;
+import com.vitaminbacon.lockscreendialer.helpers.BitmapToViewHelper;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,35 +54,27 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import android.os.Handler;
-import android.widget.ToggleButton;
-
 
 public abstract class LockScreenActivity extends Activity implements View.OnClickListener,
         CompoundButton.OnCheckedChangeListener, BitmapToViewHelper.GetBitmapFromTaskInterface {
 
     private final static String TAG = "LSActivity";
-
-
+    // Timer to handle on long clicks using the ontouchlistener -- this will presumably be used by all instances
+    protected Handler mHandler;
+    protected DialerRunnable mRunnable;
+    protected boolean mLongPressFlag;
     // Variables to implement TYPE_SYSTEM_ERROR stuff
     private WindowManager mWindowManager;
     private RelativeLayout mWrapperView;
+    //private Bitmap mBackgroundBitmap;
     private ImageView mBackgroundView;
     private ProgressBar mBackgroundProgress;
     private View mScreenText;  // So far, entirely for animation sequence
-    //private Bitmap mBackgroundBitmap;
-
     // Variables to utilize phone state service and handle phone calls
     private boolean mPhoneCallActiveFlag;
     private String mPhoneNumOnCall;
     private String mPhoneTypeOnCall;
     private String mContactNameOnCall;
-
-    // Timer to handle on long clicks using the ontouchlistener -- this will presumably be used by all instances
-    protected Handler mHandler;
-    protected DialerRunnable mRunnable;
-    protected boolean mLongPressFlag;
-
     private boolean mBackgroundSetFlag;
     //protected int mLayoutId;
 
@@ -881,6 +875,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             Log.d(TAG, "setting activity to a color");
             //view.setImageBitmap(null);
             view.setBackgroundColor(color);
+            view.setVisibility(View.VISIBLE);
+            mBackgroundProgress.setVisibility(View.GONE);
             mBackgroundSetFlag = true;
             return;
 
@@ -891,6 +887,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             Bitmap bitmap = BitmapFactory.decodeResource(
                     getResources(), R.drawable.background_default);
             mBackgroundView.setImageBitmap(bitmap);
+            view.setVisibility(View.VISIBLE);
+            mBackgroundProgress.setVisibility(View.GONE);
             //mBackgroundBitmap = bitmap;
             mBackgroundSetFlag = true;
 
@@ -1039,6 +1037,18 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 ContactsContract.Contacts.Photo.CONTENT_DIRECTORY
         );
     }
+
+    /**
+     * Abstract function that just returns the resource Id of the subclass's fragment layout view
+     */
+    abstract int getFragmentLayout();
+
+    /**
+     * ---------------------------------------------------------------------------------------------
+     * ABSTRACT METHODS
+     * ---------------------------------------------------------------------------------------------
+     */
+
     /**
      * Runnable class that initiates the phone call on a long press
      */
@@ -1097,15 +1107,5 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
         }
     }
-
-    /**
-     * ---------------------------------------------------------------------------------------------
-     * ABSTRACT METHODS
-     * ---------------------------------------------------------------------------------------------
-     */
-    /**
-     * Abstract function that just returns the resource Id of the subclass's fragment layout view
-     */
-    abstract int getFragmentLayout();
 }
 

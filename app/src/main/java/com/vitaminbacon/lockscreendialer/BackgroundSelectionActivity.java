@@ -2,17 +2,13 @@ package com.vitaminbacon.lockscreendialer;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.graphics.Point;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
-import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -23,7 +19,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.lang.ref.WeakReference;
+import com.vitaminbacon.lockscreendialer.helpers.BitmapToViewHelper;
 
 import yuku.ambilwarna.AmbilWarnaDialog;
 

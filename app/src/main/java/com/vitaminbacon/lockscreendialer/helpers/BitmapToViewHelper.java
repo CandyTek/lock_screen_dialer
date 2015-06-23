@@ -1,4 +1,4 @@
-package com.vitaminbacon.lockscreendialer;
+package com.vitaminbacon.lockscreendialer.helpers;
 
 import android.content.Context;
 import android.database.Cursor;

@@ -3,17 +3,15 @@ package com.vitaminbacon.lockscreendialer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
-import android.view.WindowManager;
 
-public class LockScreenEventReceiver extends BroadcastReceiver {
+public class ScreenEventReceiver extends BroadcastReceiver {
 
     private static final String TAG = "LSEventRecevier";
 
     public static boolean wasScreenOn = true;
 
-    public LockScreenEventReceiver() {
+    public ScreenEventReceiver() {
     }
 
     @Override

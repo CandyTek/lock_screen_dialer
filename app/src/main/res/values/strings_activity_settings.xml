@@ -62,7 +62,7 @@
 
     <string name="pref_description_assign_speed_dial_contacts">Assign contacts to your speed dial</string>
 
-    <string name="pref_title_select_screen_lock_type">Choose lock screen type</string>
+
 
     <string-array name="pref_screen_lock_types_titles">
         <item>Keypad PIN</item>
@@ -132,5 +132,31 @@
         <item>boolean</item>
     </array>
 
+    <string name="pref_description_off_toggle_lock_screen">The lock screen is currently OFF</string>
+    <string name="pref_description_on_toggle_lock_screen">The lock screen is currently ON</string>
 
+    <string name="pref_dialog_title_select_lock_screen_type">Select lock screen type:</string>
+    <string name="pref_default_value_lock_screen_type">@string/lock_screen_type_value_none</string>
+    <string name="pref_title_select_lock_screen_type">Select unlocking method</string>
+    <string name="pref_description_select_lock_screen_type">The lock screen type (e.g., PIN or pattern)</string>
+    <array name="pref_entries_lock_screen_type">
+        <item>None</item>
+        <item>Keypad PIN</item>
+        <item>Keypad pattern</item>
+    </array>
+
+    <array name="pref_values_lock_screen_type">
+        <item>@string/lock_screen_type_value_none</item>
+        <item>@string/lock_screen_type_value_keypad_pin</item>
+        <item>@string/lock_screen_type_value_keypad_pattern</item>
+    </array>
+
+    <string name="toast_lock_screen_type_not_selected">No lock screen type selected</string>
+    <string name="lock_screen_type_file_key">com.vitaminbacon.lockscreendialer.LOCK_SCREEN_TYPE_FILE</string>
+    <string name="lock_screen_type_value_key">LOCK_SCREEN_TYPE</string>
+    <string name="lock_screen_type_value_keypad_pin">KEYPAD_PIN</string>
+    <string name="lock_screen_passcode_value_key">PASSCODE</string>
+
+    <string name="lock_screen_type_value_keypad_pattern">KEYPAD_PATTERN</string>
+    <string name="lock_screen_type_value_none">NONE</string>
 </resources>

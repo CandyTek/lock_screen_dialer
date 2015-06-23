@@ -2,13 +2,11 @@ package com.vitaminbacon.lockscreendialer;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-//import android.app.LoaderManager;
-//import android.content.Loader;
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -21,12 +19,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.provider.ContactsContract;
 
 import static android.provider.ContactsContract.Contacts;
+
+//import android.app.LoaderManager;
+//import android.content.Loader;
 
 public class ContactSelectionFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
@@ -40,7 +38,9 @@ public class ContactSelectionFragment extends Fragment implements
     private static final String[] PROJECTION = {
             Contacts._ID,
             Contacts.LOOKUP_KEY,
-            Contacts.PHOTO_THUMBNAIL_URI,
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
+                    Contacts.PHOTO_THUMBNAIL_URI :
+                    Contacts.PHOTO_ID,
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
                     Contacts.DISPLAY_NAME_PRIMARY :
                     Contacts.DISPLAY_NAME
@@ -58,7 +58,7 @@ public class ContactSelectionFragment extends Fragment implements
                     "(" + Contacts.HAS_PHONE_NUMBER + " = 1)" :
 
                     "(" + Contacts.DISPLAY_NAME + " LIKE ?) AND " +
-                    "(" + Contacts.DISPLAY_NAME + " IS NOT NULL)" +
+                            "(" + Contacts.DISPLAY_NAME + " IS NOT NULL) AND " +
                     "(" + Contacts.HAS_PHONE_NUMBER + " = 1)";
 
 
@@ -70,59 +70,51 @@ public class ContactSelectionFragment extends Fragment implements
                     "((" + ContactsContract.Contacts.DISPLAY_NAME + " NOTNULL) AND ("
                             + ContactsContract.Contacts.HAS_PHONE_NUMBER + "=1) AND ("
                             + ContactsContract.Contacts.DISPLAY_NAME + " != '' ))"; //" LIKE ?";*/
-
-    // Defines an array to hold values that replace the "?" in the SELECTION
-    private String[] mSelectionArgs;
-
     /**
      * Defines an array that contains column names to move from the Cursor to the ListView
      */
-    @SuppressLint("InlinedApi")
     private final static String[] FROM_COLUMNS = {
-            Contacts.PHOTO_THUMBNAIL_URI,  // Thumbnail-sized photo
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
+                    Contacts.PHOTO_THUMBNAIL_URI :
+                    Contacts.PHOTO_ID, // Thumbnail-sized photo
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
                     Contacts.DISPLAY_NAME_PRIMARY :
                     Contacts.DISPLAY_NAME
     };
-
     /**
      * Defines an array that contains resource ids for the layout views
      * that get inflated with the Cursor column contents.
      */
     private final static int[] TO_IDS = { R.id.contact_selector_list_item_pic,
             R.id.contact_selector_list_item_name };
-
-
     // The column indices for the columns you substantiated in the PROJECTION
     private static final int CONTACT_ID_INDEX = 0;
     private static final int CONTACT_LOOKUP_KEY_INDEX = 1;
     private static final int PHOTO_THUMBNAIL_URI_INDEX = 2;
     private static final int CONTACT_DISPLAY_NAME_INDEX = 3;
-
-
-    // The search filter to weed through the contacts
-    private String mSearchString;
-
     // Define the ListView object that will bind to the cursorAdapter
     ListView mContactsList;
-
-    // The view encapsulating the search text
-    private EditText mEditText;
-
     // Define variables for the contact the user selects
     // The contact's _ID value
     long mContactId;
-
     // The contact's LOOKUP_KEY
     String mContactKey;
-
     // A content URI for the selected contact
     Uri mContactUri;
-
+    // Defines an array to hold values that replace the "?" in the SELECTION
+    private String[] mSelectionArgs;
+    // The search filter to weed through the contacts
+    private String mSearchString;
+    // The view encapsulating the search text
+    private EditText mEditText;
     // An adapter that binds the result Cursor to the ListView
     private ContactsCursorAdapter mCursorAdapter;
 
     private OnContactSelectedListener mListener;  // Requires implementation in parent activity
+
+    public ContactSelectionFragment() {
+        // Required empty public constructor
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -132,10 +124,6 @@ public class ContactSelectionFragment extends Fragment implements
     public static ContactSelectionFragment newInstance(String param1, String param2) {
         ContactSelectionFragment fragment = new ContactSelectionFragment();
         return fragment;
-    }
-
-    public ContactSelectionFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -188,21 +176,6 @@ public class ContactSelectionFragment extends Fragment implements
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnContactSelectedListener {
-        public void onContactSelected(String lookupKey);
-        public void onContactSelected(String lookupKey, String displayName, String thumbnailUriString);
     }
 
     @Override
@@ -371,6 +344,22 @@ public class ContactSelectionFragment extends Fragment implements
                 Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, data),
                 ContactsContract.Contacts.Photo.CONTENT_DIRECTORY
             );
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p/>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnContactSelectedListener {
+        public void onContactSelected(String lookupKey);
+
+        public void onContactSelected(String lookupKey, String displayName, String thumbnailUriString);
     }
 
 

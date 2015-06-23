@@ -3,16 +3,17 @@ package com.vitaminbacon.lockscreendialer;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,12 +23,11 @@ import android.widget.Toast;
 
 public class KeypadPinConfigActivity extends ActionBarActivity {
 
+    private static final String TAG = "KeypadPinConfig";
     private TextView mKeyPadEntryInstructions;
     private EditText mEditText;
     private Button mSubmitButton;
     private String mPinEntered;
-
-    private static final String TAG = "KeypadPinConfig";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,23 +156,42 @@ public class KeypadPinConfigActivity extends ActionBarActivity {
 
                 makeToast(getString(R.string.keypad_pin_config_success));
 
-                // Finish up and go back to settings with a clear stack.
+                // Finish up with result.
+                Intent returnIntent = new Intent();
+                setResult(RESULT_OK, returnIntent);
                 finish();
-                Intent intent = new Intent(this, SettingsActivity.class);
+                /*Intent intent = new Intent(this, SettingsActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                startActivity(intent);*/
             }
         }
 
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(RESULT_CANCELED, returnIntent);
+        finish();
+        super.onBackPressed();
+    }
+
     public void cancelButtonClicked(View view) {
+        Intent returnIntent = new Intent();
+        setResult(RESULT_CANCELED, returnIntent);
         finish();
     }
 
     private void makeToast(String text) {
-        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.TOP,0,0);
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(
+                R.layout.toast_custom,
+                (ViewGroup) findViewById(R.id.toast_custom));
+        TextView textView = (TextView) layout.findViewById(R.id.toast_text);
+        textView.setText(text);
+        Toast toast = new Toast(getApplicationContext());
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setView(layout);
         toast.show();
     }
 

@@ -1,41 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    android:id="@+id/dialog_parent"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:id="@+id/dialog_parent">
+    android:orientation="vertical">
     <TextView
+        android:id="@+id/contact_dialog_instruction"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/contact_dialog_instruction"
-        android:text="@string/contact_selected_instruction"
-        android:textSize="20sp"
         android:background="@color/gunmetal"
+        android:padding="20dp"
+        android:text="@string/contact_selected_instruction"
         android:textColor="@color/white"
-        android:padding="20dp"/>
+        android:textSize="20sp" />
     <ImageView
+        android:id="@+id/contact_selected_thumbnail"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:layout_below="@id/contact_dialog_instruction"
         android:layout_margin="10dp"
-        android:id="@+id/contact_selected_thumbnail"
-        android:layout_below="@id/contact_dialog_instruction"/>
+        android:src="@drawable/default_contact_image" />
     <TextView
+        android:id="@+id/contact_selected_display_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/contact_selected_display_name"
-        android:ellipsize="none"
-        android:maxLines="4"
-        android:scrollHorizontally="false"
-        android:textSize="24sp"
-        android:layout_toRightOf="@id/contact_selected_thumbnail"
         android:layout_below="@id/contact_dialog_instruction"
+        android:layout_toRightOf="@id/contact_selected_thumbnail"
+        android:ellipsize="none"
         android:inputType="textPersonName"
+        android:maxLines="4"
         android:padding="5dp"
+        android:scrollHorizontally="false"
+        android:text="Display Name"
+        android:textSize="24sp"
         />
 
     <ListView
+        android:id="@+id/contact_selected_phone_num_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/contact_selected_phone_num_list"
         android:layout_below="@id/contact_selected_thumbnail"/>
 </RelativeLayout>

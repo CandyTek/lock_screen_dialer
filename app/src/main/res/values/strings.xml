@@ -70,10 +70,7 @@
     <string name="err_keypad_pin_config_too_short">The PIN must be at least 4 numbers.</string>
     <string name="err_keypad_pin_config_not_matching">The PINs you entered do not match.</string>
     <string name="keypad_pin_config_success">Keypad PIN lock screen enabled.</string>
-    <string name="lock_screen_type_file_key">com.vitaminbacon.lockscreendialer.LOCK_SCREEN_TYPE_FILE</string>
-    <string name="lock_screen_type_value_key">LOCK_SCREEN_TYPE</string>
-    <string name="lock_screen_type_value_keypad_pin">KEYPAD_PIN</string>
-    <string name="lock_screen_passcode_value_key">PASSCODE</string>
+
 
     <string name="lock_screen_pin_default_display">Enter PIN</string>
     <string name="lock_screen_wrong_pin_entered">Invalid PIN</string>

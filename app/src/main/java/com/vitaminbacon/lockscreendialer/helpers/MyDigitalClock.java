@@ -1,4 +1,4 @@
-package com.vitaminbacon.lockscreendialer;
+package com.vitaminbacon.lockscreendialer.helpers;
 
 /*
  * Copyright (C) 2006 The Android Open Source Project
@@ -40,18 +40,15 @@ public class MyDigitalClock extends TextView {
 
     // proportional fonts don't shake rendering
 
-    Calendar mCalendar;
     private final static String m12 = "h:mm aa";
     private final static String m24 = "k:mm";
+    Calendar mCalendar;
+    String mFormat;
     @SuppressWarnings("FieldCanBeLocal") // We must keep a reference to this observer
     private FormatChangeObserver mFormatChangeObserver;
-
     private Runnable mTicker;
     private Handler mHandler;
-
     private boolean mTickerStopped = false;
-
-    String mFormat;
 
     public MyDigitalClock(Context context) {
         super(context);
@@ -119,17 +116,6 @@ public class MyDigitalClock extends TextView {
         }
     }
 
-    private class FormatChangeObserver extends ContentObserver {
-        public FormatChangeObserver() {
-            super(new Handler());
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            setFormat();
-        }
-    }
-
     @Override
     public void onInitializeAccessibilityEvent(AccessibilityEvent event) {
         super.onInitializeAccessibilityEvent(event);
@@ -145,5 +131,16 @@ public class MyDigitalClock extends TextView {
             info.setClassName(MyDigitalClock.class.getName());
         }
 
+    }
+
+    private class FormatChangeObserver extends ContentObserver {
+        public FormatChangeObserver() {
+            super(new Handler());
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            setFormat();
+        }
     }
 }
