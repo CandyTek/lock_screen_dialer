@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:background="@color/blue_diamond">
+    android:background="@drawable/drawer_call_background"
+    android:orientation="horizontal"
+    android:paddingTop="@dimen/activity_vertical_margin">
     <ImageView
+        android:id="@+id/drawer_phone_call_thumb"
         android:layout_width="@dimen/contact_image_size"
         android:layout_height="@dimen/contact_image_size"
         android:layout_margin="@dimen/contact_image_margin"
-        android:src="@drawable/default_contact_image"
         android:background="@color/gray_goose"
-        android:id="@+id/drawer_phone_call_thumb"/>
+        android:src="@drawable/default_contact_image" />
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical">
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/drawer_phone_call_name"
             style="@style/typeface_phone_call_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Callee"/>
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/drawer_phone_call_description"
             style="@style/typeface_phone_call_description"
-            android:text="Calling at home"/>
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Calling at home"/>
+        <TextView
             android:id="@+id/drawer_phone_call_number"
             style="@style/typeface_phone_call_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="(310) 867-5309"/>
     </LinearLayout>
 

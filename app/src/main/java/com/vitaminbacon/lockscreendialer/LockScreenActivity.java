@@ -1052,7 +1052,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
                             // Here we can slide in the text view information stuff
-                            Log.d(TAG, "screenText translationX is " + mScreenText.getTranslationX());
+                            //Log.d(TAG, "screenText translationX is " + mScreenText.getTranslationX());
                             mScreenText.animate().translationX(0);
                         }
                     });
