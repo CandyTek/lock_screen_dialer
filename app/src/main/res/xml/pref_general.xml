@@ -13,7 +13,7 @@
         android:entries="@array/pref_entries_lock_screen_type"
         android:entryValues="@array/pref_values_lock_screen_type"
         android:key="@string/key_select_lock_screen_type"
-        android:summary="@string/pref_description_select_lock_screen_type"
+        android:summary="%s"
         android:title="@string/pref_title_select_lock_screen_type" />
 
     <CheckBoxPreference
