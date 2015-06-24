@@ -83,6 +83,29 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         //Log.d(TAG, "onCreate() called.");
         super.onCreate(savedInstanceState);
 
+        int phoneState = getIntent().getIntExtra(PhoneStateReceiver.EXTRA_PHONE_STATE, 0);
+        if (phoneState == PhoneStateReceiver.PHONE_STATE_IDLE) {
+            //mPhoneCallActiveFlag = false;
+            Log.d(TAG, "onCreate received intent with phone state idle; starting screen service and exiting");
+            startService(new Intent(this, LockScreenService.class)); // Means lock screen was unlocked, but phone call ended, so resume screen service
+        } else if (phoneState == PhoneStateReceiver.PHONE_STATE_RINGING) {
+            //mPhoneCallActiveFlag = true;
+            Log.d(TAG, "onCreate received intent with phone state ringing; stopping screen service and exiting");
+            stopService(new Intent(this, LockScreenService.class));  // Means lock screen was unlocked, but phone call was received
+            finish();
+            return;
+        } else if (phoneState == 0) { // Activity initialized not by the phone state receiver
+            // begin the phone state service to listen to phone call information; supposedly only one service of a kind can exist
+            startService(new Intent(this, PhoneStateService.class));
+        }/*else if (isCallActive()) {
+            mPhoneCallActiveFlag = true;  // we can handle the display stuff in onResume
+        } else {
+            mPhoneCallActiveFlag = false; // Possibly revised later by onResumeInstanceState
+        }*/
+
+
+        mPhoneCallActiveFlag = false;
+
         //mWrapperView = new RelativeLayout(getBaseContext());
 
         // Implement some of the WindowManager TYPE_SYSTEM_ERROR hocus pocus
@@ -165,21 +188,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         mBackgroundView.setVisibility(View.GONE);
         setActivityBackground(mBackgroundView);
         mBackgroundSetFlag = false;
-
-        // begin the phone state service to listen to phone call information; supposedly only one service of a kind can exist
-        startService(new Intent(this, PhoneStateService.class));
-
-        // Check if this activity was passed any extra data
-        int phoneState = getIntent().getIntExtra(PhoneStateReceiver.EXTRA_PHONE_STATE, 0);
-        if (phoneState == PhoneStateReceiver.PHONE_STATE_IDLE) {
-            mPhoneCallActiveFlag = false;
-            startService(new Intent(this, LockScreenService.class)); // Could just call this outside if stmt, but probably more efficient here
-        }
-        else if (isCallActive()) {
-            mPhoneCallActiveFlag = true;  // we can handle the display stuff in onResume
-        } else {
-            mPhoneCallActiveFlag = false; // Possibly revised later by onResumeInstanceState
-        }
     }
 
 
@@ -187,7 +195,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     @Override
     protected void onResume(){
         // if there is still a phone call active, we need to set the display to handle that
-        Log.d(TAG, "onResume() called.");
+        //Log.d(TAG, "onResume() called.");
         super.onResume();
         /*try {
             if (mPhoneCallActiveFlag) {
@@ -269,7 +277,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         Log.d(TAG, "onNewIntent called, phoneState = " + phoneState);
 
         if (phoneState == PhoneStateReceiver.PHONE_STATE_IDLE) {
-            // Phone was just hung up
+            // Phone was just hung up and activity is instantiated
+            Log.d(TAG, "onNewIntent received intent with phone state idle; starting screen service");
             mPhoneCallActiveFlag = false;
             mContactNameOnCall = mPhoneNumOnCall = mPhoneTypeOnCall = null;
             disableCallViewsInView(true);
@@ -283,7 +292,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             startService(new Intent(this, LockScreenService.class)); // reenable the off-screen receiver
         }
         else if (phoneState == PhoneStateReceiver.PHONE_STATE_RINGING) { // a call has been received, we should handle lock screen in case user returns there
-
+            Log.d(TAG, "onNewIntent received intent with phone state ringing; stopping screen service");
             // This implementation ends the lock screen, but it should be recalled by the receiver once the call is over
             stopService(new Intent(this, LockScreenService.class));  // don't want the lock screen to keep popping up during a phone call in this implementation
             finish();
@@ -611,6 +620,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             return;
         }
     }
+
     private void enableOptionalViewsInView() throws CallHandlerException {
         //Log.d(TAG, "Enabling Optional Views");
         setOptionalViewsInView(View.VISIBLE);
@@ -1140,7 +1150,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             SharedPreferences sharedPref = getSharedPreferences(
                     getString(R.string.speed_dial_preference_file_key),
                     Context.MODE_PRIVATE);
-            String preferenceKeyPrefix = getString(R.string.key_number_store_prefix_phone);
 
             if (num == -1) { //error handling
                 Log.d(TAG, "Error in finding view id.");
@@ -1176,7 +1185,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 Intent intent = new Intent(Intent.ACTION_CALL);
                 intent.setData(Uri.parse("tel:" + (telNum.trim())));
                 startActivity(intent);
-                stopService(new Intent(context, LockScreenService.class));   //Don't need to feed new intents to the lock screen during a phone call
+                //stopService(new Intent(context, LockScreenService.class));   //This caused errors when unlocking the screen during the call
                 enableCallViewsInView(telNum, name, type, thumbUri);
                 try {
                     disableOptionalViewsInView();

@@ -3,7 +3,6 @@ package com.vitaminbacon.lockscreendialer;
 import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Binder;
 import android.os.IBinder;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -58,7 +57,12 @@ public class PhoneStateService extends Service {
     @Override
     public void onDestroy() {
 
-        unregisterReceiver(mReceiver);
+        try {
+            unregisterReceiver(mReceiver);
+        } catch (IllegalArgumentException e) {
+            Log.w(TAG, "Attempt to unregister PhoneStateReceiver failed; receiver was already unregistered", e);
+            mReceiver = null;
+        }
         //Log.d(TAG, "Service called onDestroy().");
         super.onDestroy();
     }

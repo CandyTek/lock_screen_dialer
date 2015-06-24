@@ -3,11 +3,12 @@ package com.vitaminbacon.lockscreendialer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 public class ScreenEventReceiver extends BroadcastReceiver {
 
-    private static final String TAG = "LSEventRecevier";
+    private static final String TAG = "ScreenEventRecevier";
 
     public static boolean wasScreenOn = true;
 
@@ -38,9 +39,16 @@ public class ScreenEventReceiver extends BroadcastReceiver {
         if ( intent.getAction().equals(Intent.ACTION_SCREEN_OFF) ||
                 intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
             //Log.d(TAG, "onReceive() received ACTION_SCREEN_OFF or ACTION_BOOT_COMPLETED");
-            Intent lockScreenIntent = new Intent (context, LockScreenLauncherActivity.class);
-            lockScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(lockScreenIntent);
+            TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            // Don't lock while on the phone TODO: handle situation where screen stays black after phone call, or just get rid of this
+            if (tm.getCallState() != TelephonyManager.CALL_STATE_OFFHOOK &&
+                    tm.getCallState() != TelephonyManager.CALL_STATE_RINGING) {
+                Intent lockScreenIntent = new Intent(context, LockScreenLauncherActivity.class);
+                lockScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(lockScreenIntent);
+            } else {
+                Log.d(TAG, "Screen service could not be implemented because phone call active = " + tm.getCallState());
+            }
 
         }
 /*        if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {

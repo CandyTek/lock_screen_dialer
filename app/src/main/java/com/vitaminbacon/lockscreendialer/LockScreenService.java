@@ -5,11 +5,13 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
+import android.util.Log;
 
 public class LockScreenService extends Service {
 
     public static final String ACTION_NAME = "com.vitaminbacon.lockscreendialer.LockScreenService";
-    private static ScreenEventReceiver mReceiver;  // TODO: consider making this static?
+    private static String TAG = "LockScreenService";
+    private static ScreenEventReceiver mReceiver;
 
     public LockScreenService() {
     }
@@ -37,7 +39,12 @@ public class LockScreenService extends Service {
 
     @Override
     public void onDestroy() {
-        unregisterReceiver (mReceiver);
+        try {
+            unregisterReceiver(mReceiver);
+            Log.d(TAG, "Screen receiver unregistered");
+        } catch (IllegalStateException e) {
+            Log.w(TAG, "Lock screen receiver already unregistered", e);
+        }
         super.onDestroy();
     }
 

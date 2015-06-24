@@ -1,11 +1,12 @@
 package com.vitaminbacon.lockscreendialer;
 
-import java.lang.reflect.Method;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+
+import java.lang.reflect.Method;
 
 public class PhoneStateReceiver extends BroadcastReceiver {
 
@@ -27,6 +28,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.d(TAG, "Phone state receiver onReceive called");
         if (intent.getAction().equals("android.intent.action.PHONE_STATE")) {
             String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
             Log.d(TAG, "PhoneStateReceiver**Call State=" + state);
