@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/lava_red"
+    android:orientation="horizontal"
+    android:paddingTop="@dimen/activity_vertical_margin">
+
+    <ImageView
+        android:id="@+id/drawer_phone_call_fail_thumb"
+        android:layout_width="@dimen/contact_image_size"
+        android:layout_height="@dimen/contact_image_size"
+        android:layout_margin="@dimen/contact_image_margin"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_signal_cellular_connected_no_internet_2_bar_white_48dp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/drawer_phone_call_fail_title"
+            style="@style/typeface_phone_call_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Error: Roaming" />
+
+        <TextView
+            android:id="@+id/drawer_phone_call_fail_description"
+            style="@style/typeface_phone_call_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cannot initiate call while roaming." />
+    </LinearLayout>
+
+</LinearLayout>

@@ -11,30 +11,30 @@
             android:layout_height="fill_parent"
             android:background="@color/gunmetal" />
         <ImageView
+            android:id="@+id/lock_screen_background_view"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:id="@+id/lock_screen_background_view"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
 
-            tools:ignore="ContentDescription"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop"
+            tools:ignore="ContentDescription" />
         <ProgressBar
+            android:id="@+id/lock_screen_background_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/lock_screen_background_progress"
-            android:background="@color/gunmetal"
-
             android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true" />
+
+            android:layout_centerVertical="true"
+            android:background="@color/gunmetal" />
         />
 
     </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/lock_screen_interaction_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/lock_screen_interaction_container"
         android:orientation="vertical"
         tools:context="com.vitaminbacon.lockscreendialer.LockScreenActivity">
 
@@ -45,42 +45,47 @@
             <include layout="@layout/block_lock_screen_info" />
 
             <include
+                android:id="@+id/drawer_lock_screen_call_display"
                 layout="@layout/drawer_lock_screen_call"
-                android:visibility="invisible"
-                android:id="@+id/drawer_lock_screen_call_display"/>
+                android:visibility="invisible" />
+
+            <include
+                android:id="@+id/drawer_lock_screen_call_fail_display"
+                layout="@layout/drawer_lock_screen_call_fail"
+                android:visibility="invisible" />
 
 
 
         </RelativeLayout>
 
         <FrameLayout
+            android:id="@+id/lock_screen_fragment_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/lock_screen_fragment_container"
             android:layout_weight="1"/>
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/activity_vertical_margin"
             android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingBottom="@dimen/activity_vertical_margin">
+            android:paddingRight="@dimen/activity_horizontal_margin">
 
             <LinearLayout
+                android:id="@+id/lock_screen_additional_widgets"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/lock_screen_additional_widgets"
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/lock_screen_emergency"
+                    style="@style/lock_screen_additional_widgets"
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:id="@+id/lock_screen_emergency"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Emergency Dial"
 
-                    style="@style/lock_screen_additional_widgets"/>
+                    android:text="Emergency Dial" />
                 <View
                     android:layout_width="0dp"
                     android:layout_height="0dp"
@@ -94,24 +99,24 @@
                         android:id="@+id/lock_screen_speed_dial_toggle"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/white"
-                        android:textSize="18dp"
-                        android:textOn=""
-                        android:textOff=""
+                        android:background="@drawable/selector_toggle_button"
                         android:minHeight="50dp"
                         android:textAllCaps="false"
-                        android:background="@drawable/selector_toggle_button"/>
+                        android:textColor="@color/white"
+                        android:textOff=""
+                        android:textOn=""
+                        android:textSize="18dp" />
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true">
                         <TextView
+                            android:id="@+id/lock_screen_speed_dial_toggle_text"
+                            style="@style/lock_screen_additional_widgets"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:id="@+id/lock_screen_speed_dial_toggle_text"
-                            android:gravity="center"
-                            style="@style/lock_screen_additional_widgets"/>
+                            android:gravity="center" />
                     </LinearLayout>
 
 
@@ -121,9 +126,9 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/lock_screen_phone_buttons"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/lock_screen_phone_buttons"
                 android:orientation="horizontal"
                 android:visibility="invisible">
 
@@ -133,11 +138,11 @@
                     android:layout_weight="1">
 
                     <ImageButton
+                        android:id="@+id/lock_screen_end_call_button"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/lock_screen_end_call_button"
-                        android:src="@drawable/ic_call_end_white_48dp"
-                        android:background="@drawable/selector_end_call"/>
+                        android:background="@drawable/selector_end_call"
+                        android:src="@drawable/ic_call_end_white_48dp" />
 
                 </RelativeLayout>
                 <RelativeLayout
@@ -157,11 +162,11 @@
                     android:layout_weight="1">
 
                     <ImageButton
+                        android:id="@+id/lock_screen_speaker_call_button"
                         android:layout_width="fill_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/lock_screen_speaker_call_button"
-                        android:src="@drawable/ic_volume_up_white_48dp"
-                        android:background="@drawable/selector_spkr_phone"/>
+                        android:background="@drawable/selector_spkr_phone"
+                        android:src="@drawable/ic_volume_up_white_48dp" />
 
                 </RelativeLayout>
 

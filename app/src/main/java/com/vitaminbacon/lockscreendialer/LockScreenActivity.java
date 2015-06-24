@@ -537,6 +537,80 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
     }
 
+    private void enableErrorViewsinView() {
+        final View drawer;
+
+        try {
+            drawer = mWrapperView.findViewById(R.id.drawer_lock_screen_call_fail_display);
+            final int dDistance = drawer.getHeight();
+            drawer.setTranslationY(dDistance * -1);
+            drawer.setVisibility(View.VISIBLE);
+            // Now start the drawer animation
+            drawer.animate()
+                    .translationY(0)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            try {
+                                View infoBlock = mWrapperView
+                                        .findViewById(R.id.lock_screen_info_block);
+                                infoBlock.setVisibility(View.INVISIBLE);
+                            } catch (NullPointerException e) {
+                                Log.e(TAG, "Layout lacks necessary view to complete animation", e);
+                                onFatalError();
+                            }
+                        }
+                    });
+        } catch (ClassCastException e) {
+            Log.e(TAG, "Layout types incompatible with this activity - enableCallViewsInView().", e);
+            onFatalError();
+            return;
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Layout missing views and incompatible with this activity - enableCallViewsInView()", e);
+            onFatalError();
+            return;
+        }
+    }
+
+    private void disableErrorViewsInView() {
+        final View drawer;
+        try {
+            drawer = mWrapperView.findViewById(R.id.drawer_lock_screen_call_fail_display);
+            final int dDistance = drawer.getHeight();
+            try {
+                View infoBlock = mWrapperView
+                        .findViewById(R.id.lock_screen_info_block);
+                infoBlock.setVisibility(View.INVISIBLE);
+            } catch (NullPointerException e) {
+                Log.e(TAG, "Layout lacks necessary view to complete animation", e);
+                onFatalError();
+            }
+
+            // Now start the drawer animation
+            drawer.animate()
+                    .translationY(dDistance * -1)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            drawer.setVisibility(View.INVISIBLE);
+                            drawer.setTranslationY(0);
+
+                        }
+                    });
+        } catch (ClassCastException e) {
+            Log.e(TAG, "Layout types incompatible with this activity - enableCallViewsInView().", e);
+            onFatalError();
+            return;
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Layout missing views and incompatible with this activity - enableCallViewsInView()", e);
+            onFatalError();
+            return;
+        }
+    }
     private void enableOptionalViewsInView() throws CallHandlerException {
         //Log.d(TAG, "Enabling Optional Views");
         setOptionalViewsInView(View.VISIBLE);
@@ -1087,7 +1161,18 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 return;
             }
 
-            if (!getPhoneCallActiveFlag() && isSpeedDialEnabled()) {  //Only want to initiate the call if line is idle and speed dial enabled
+            // Check for roaming
+            TelephonyManager telephony = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            if (telephony.isNetworkRoaming()) {
+                enableErrorViewsinView();
+                Handler h = new Handler();
+                h.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        disableErrorViewsInView();
+                    }
+                }, getResources().getInteger(R.integer.lock_screen_phone_error_display_length));
+            } else if (!getPhoneCallActiveFlag() && isSpeedDialEnabled()) {  //Only want to initiate the call if line is idle and speed dial enabled
                 Intent intent = new Intent(Intent.ACTION_CALL);
                 intent.setData(Uri.parse("tel:" + (telNum.trim())));
                 startActivity(intent);

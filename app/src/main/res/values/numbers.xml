@@ -5,5 +5,5 @@
     <integer name="lock_screen_pin_long_press_delay">1000</integer>
     <integer name="lock_screen_pin_max_pin_display">12</integer>
     <integer name="lock_screen_pattern_long_press_delay">1500</integer>
-
+    <integer name="lock_screen_phone_error_display_length">2500</integer>
 </resources>
