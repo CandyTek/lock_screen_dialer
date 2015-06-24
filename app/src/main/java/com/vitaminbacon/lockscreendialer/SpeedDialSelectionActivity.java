@@ -2,10 +2,9 @@ package com.vitaminbacon.lockscreendialer;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,11 +17,9 @@ import java.util.Arrays;
 public class SpeedDialSelectionActivity extends ActionBarActivity {
 
     private static final String TAG = "SpeedDialSelAct";
+    private static final int SELECTED_COLOR_ID = R.color.platinum;
     private Button[] mkeypadButtons;
     private Boolean[] mkeypadAssignedTracker;
-    private static final int SELECTED_COLOR_ID = R.color.platinum;
-    private static final int TRANSPARENT_COLOR = 0x00000000;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,12 +66,58 @@ public class SpeedDialSelectionActivity extends ActionBarActivity {
             Log.d(TAG, "Attempting to access " + filename);
             if (sharedPref.getString(filename, null) != null) {
                 Log.d(TAG, "Setting shaded background on key " + keyNum);
-                mkeypadButtons[i].setBackgroundColor(getResources().getColor(SELECTED_COLOR_ID));
+                //mkeypadButtons[i].setBackgroundColor(getResources().getColor(SELECTED_COLOR_ID));
+                mkeypadButtons[i].setBackgroundResource(R.drawable.selector_speed_dial_highlighted);
+                /*mkeypadButtons[i].setBackgroundDrawable(
+                        getResources().getDrawable(R.drawable.selector_speed_dial_highlighted));
+                mkeypadButtons[i].invalidate();*/
+
+                /*View buttonBackground;
+                switch (keyNum) {
+                    case 1:
+                        buttonBackground = findViewById(R.id.speed_dial_selection_bkgrd_1);
+                        break;
+                    case 2:
+                        buttonBackground = findViewById(R.id.speed_dial_selection_bkgrd_2);
+                        break;
+                    case 3:
+                        buttonBackground = findViewById(R.id.speed_dial_selection_bkgrd_3);
+                        break;
+                    case 4:
+                        buttonBackground = findViewById(R.id.speed_dial_selection_bkgrd_4);
+                        break;
+                    case 5:
+                        buttonBackground = findViewById(R.id.speed_dial_selection_bkgrd_5);
+                        break;
+                    case 6:
+                        buttonBackground = findViewById(R.id.speed_dial_selection_bkgrd_6);
+                        break;
+                    case 7:
+                        buttonBackground = findViewById(R.id.speed_dial_selection_bkgrd_7);
+                        break;
+                    case 8:
+                        buttonBackground = findViewById(R.id.speed_dial_selection_bkgrd_8);
+                        break;
+                    case 9:
+                        buttonBackground = findViewById(R.id.speed_dial_selection_bkgrd_9);
+                        break;
+                    default:
+                        buttonBackground = null;
+                }
+                if (buttonBackground != null) {
+                    buttonBackground.setBackgroundColor(getResources().getColor(SELECTED_COLOR_ID));
+                    buttonBackground.invalidate();
+                } else {
+                    Log.e(TAG, "Could not obtain button background view");
+                }*/
                 mkeypadAssignedTracker[i] = true;
+            } else {
+                Log.d(TAG, "Setting standard selector background on key = " + keyNum);
+                mkeypadButtons[i].setBackgroundResource(R.drawable.selector_speed_dial);
             }
-            else {
+            /*else {
                 mkeypadButtons[i].setBackgroundColor(TRANSPARENT_COLOR);
-            }
+            }*/
         }
 
     }
@@ -107,21 +150,43 @@ public class SpeedDialSelectionActivity extends ActionBarActivity {
      */
     public void assignSpeedDialContact (View view) {
 
-        Button button = (Button)view;
+        String keyNumPressed;
+        switch (view.getId()) {
+            case R.id.speed_dial_selection_1:
+                keyNumPressed = "1";
+                break;
+            case R.id.speed_dial_selection_2:
+                keyNumPressed = "2";
+                break;
+            case R.id.speed_dial_selection_3:
+                keyNumPressed = "3";
+                break;
+            case R.id.speed_dial_selection_4:
+                keyNumPressed = "4";
+                break;
+            case R.id.speed_dial_selection_5:
+                keyNumPressed = "5";
+                break;
+            case R.id.speed_dial_selection_6:
+                keyNumPressed = "6";
+                break;
+            case R.id.speed_dial_selection_7:
+                keyNumPressed = "7";
+                break;
+            case R.id.speed_dial_selection_8:
+                keyNumPressed = "8";
+                break;
+            case R.id.speed_dial_selection_9:
+                keyNumPressed = "9";
+                break;
+            default:
+                Log.e(TAG, "Invalid view sent to assignSpeedDialContact");
+                return;
+        }
 
         // Prepare an intent for the new activity that will allow the user to select
         Intent intent = new Intent(this, ContactSelectionActivity.class);
-        String keyNumPressed = button.getText().toString();
-
-        // The next activity will need to know which number was pressed!
         intent.putExtra(getString(R.string.key_number_to_assign), keyNumPressed);
-
-        // The next activity will want to know whether this key number has already been assigned
-/*        intent.putExtra(
-                getString(R.string.is_key_number_already_assigned),
-                mkeypadAssignedTracker[Integer.parseInt(keyNumPressed)]
-        );*/
-
         startActivity(intent);
     }
 
