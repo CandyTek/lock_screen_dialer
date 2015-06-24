@@ -1,32 +1,25 @@
 package com.vitaminbacon.lockscreendialer;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
 public class ContactSelectionActivity extends ActionBarActivity
         implements ContactSelectionFragment.OnContactSelectedListener,
-        ContactDialogFragment.OnPhoneNumSelectionListener,
-        ContactAssignedDialogFragment.ReassignSpeedDialInterface {
+        ContactDialogFragment.OnPhoneNumSelectionListener {
 
-    private String mkeyNumberSelected;
     //private Boolean mkeyNumberAlreadyAssigned; -- phased out, check for this cleaner by checking if data exists for assignment
     private static final String TAG = "ContactsSelectionAct";
-
+    private String mkeyNumberSelected;
     private ContactAssignedDialogFragment mAssignedDialogFragment;
 
     @Override
@@ -66,44 +59,6 @@ public class ContactSelectionActivity extends ActionBarActivity
             // Add the fragment to the fragment container
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.contact_list_container, fragment).commit();
-
-            //TODO: Would it be better UI experience to have the below dialog appear in SpeedDialSelectionActivity?
-
-            // Check to see whether we need to open up the assigned contact dialog to reassign or clear the contact
-            SharedPreferences sharedPref = this.getSharedPreferences(
-                    getString(R.string.speed_dial_preference_file_key),
-                    Context.MODE_PRIVATE);
-
-            if (sharedPref.getString( // Checks that value exists for the key number selected
-                    getString(R.string.key_number_store_prefix_phone) + mkeyNumberSelected,
-                    null) != null) {
-                // get the stored values
-
-                String phoneNum = sharedPref.getString(
-                        getString(R.string.key_number_store_prefix_phone) + mkeyNumberSelected,
-                        null);
-                String displayName = sharedPref.getString(
-                        getString(R.string.key_number_store_prefix_name) + mkeyNumberSelected,
-                        null);
-                if (displayName ==null){
-                    displayName = "Unknown";
-                }
-                String thumbUri = sharedPref.getString(
-                        getString(R.string.key_number_store_prefix_thumb) + mkeyNumberSelected,
-                        null);
-                String phoneType = sharedPref.getString(
-                        getString(R.string.key_number_store_prefix_type) + mkeyNumberSelected,
-                        null);
-
-                mAssignedDialogFragment =
-                        ContactAssignedDialogFragment.newInstance(displayName,
-                                thumbUri,
-                                phoneNum,
-                                phoneType,
-                                mkeyNumberSelected);
-
-                mAssignedDialogFragment.show(getSupportFragmentManager(), "fragment_contact_dialog");
-            }
         }
     }
 
@@ -135,7 +90,7 @@ public class ContactSelectionActivity extends ActionBarActivity
     public void onContactSelected(String lookupKey){
 
         ContactDialogFragment dialog = new ContactDialogFragment();
-        dialog.show( getSupportFragmentManager(), "fragment_contact_dialog" );
+        dialog.show(getSupportFragmentManager(), "fragment_contact_dialog");
     }
 
     public void onContactSelected(String lookupKey, String displayName, String thumbnailUriString) {
@@ -177,97 +132,24 @@ public class ContactSelectionActivity extends ActionBarActivity
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);*/
         finish();
-        Toast.makeText(getApplicationContext(),
-                displayName + " "
-                        + getString(R.string.toast_contact_assigned)
-                        + mkeyNumberSelected,
-                Toast.LENGTH_SHORT
-        ).show();
+        showCustomToast(displayName + " "
+                + getString(R.string.toast_contact_assigned)
+                + mkeyNumberSelected);
 
     }
 
 
-/*    public void reassignButtonClicked(View view) {
-        reassignSpeedDial(true); //User clicks "Reassign" speed dial
+    private void showCustomToast(String text) {
+        LayoutInflater inflater = getLayoutInflater();
+        View layout = inflater.inflate(
+                R.layout.toast_custom,
+                (ViewGroup) findViewById(R.id.toast_custom));
+        TextView textView = (TextView) layout.findViewById(R.id.toast_text);
+        textView.setText(text);
+        Toast toast = new Toast(getApplicationContext());
+        toast.setDuration(Toast.LENGTH_SHORT);
+        toast.setView(layout);
+        toast.show();
     }
 
-    public void cancelButtonClicked(View view) {
-        reassignSpeedDial(false); //User clicks "Cancel"
-    }*/
-
-    public void reassignSpeedDial (int viewId) {
-
-        // Regardless, dismiss the dialog fragment
-        if (mAssignedDialogFragment != null) {
-            mAssignedDialogFragment.dismiss();
-        }
-
-        switch (viewId) {
-
-            case R.id.contact_assigned_reassign: // Reassign button pressed
-                deleteContactFromSpeedDial();
-                Toast.makeText(getApplicationContext(),
-                        getString(R.string.toast_contact_reassign_cleared) + mkeyNumberSelected,
-                        Toast.LENGTH_SHORT
-                ).show();
-                break;
-
-            case R.id.contact_assigned_cancel: // Cancel "x" pressed
-                Toast.makeText(getApplicationContext(),
-                        getString(R.string.toast_contact_reassign_cancelled),
-                        Toast.LENGTH_SHORT
-                ).show();
-                finish();
-                break;
-
-            case R.id.contact_assigned_remove: // Remove button pressed
-                deleteContactFromSpeedDial();
-                Toast.makeText(getApplicationContext(),
-                        getString(R.string.toast_contact_reassign_cleared) + mkeyNumberSelected,
-                        Toast.LENGTH_SHORT
-                ).show();
-                finish();
-                break;
-            default:
-                break;
-        }
-    }
-
-    /**
-     * Method that deletes the stored information for the key specified by mkeyNumberSelected
-     */
-    public void deleteContactFromSpeedDial(){
-        //  Delete the stored contact information
-        SharedPreferences sharedPref = this.getSharedPreferences(
-                getString(R.string.speed_dial_preference_file_key),
-                Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-
-        editor.remove(getString(R.string.key_number_store_prefix_name) + mkeyNumberSelected);
-        editor.remove(getString(R.string.key_number_store_prefix_phone) + mkeyNumberSelected);
-        editor.remove(getString(R.string.key_number_store_prefix_thumb) + mkeyNumberSelected);
-        editor.remove(getString(R.string.key_number_store_prefix_type) + mkeyNumberSelected);
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD){ //.apply() is faster, but only supported on API 9
-            editor.apply();
-        }
-        else {
-            editor.commit();
-        }
-    }
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_contact_selection, container, false);
-            return rootView;
-        }
-    }
 }

@@ -1,13 +1,11 @@
 package com.vitaminbacon.lockscreendialer;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,9 +36,12 @@ public class ContactAssignedDialogFragment extends DialogFragment
     private TextView mInstructionView;
     private Button mReassignButton;
     private Button mRemoveButton;
-    private Button mCancelButton;
+    /*private Button mCancelButton;*/
 
 
+    public ContactAssignedDialogFragment() {
+        // Required empty public constructor
+    }
 
     public static ContactAssignedDialogFragment newInstance(String displayName, String thumbUri,
                                                             String phoneNum, String phoneType,
@@ -55,10 +56,6 @@ public class ContactAssignedDialogFragment extends DialogFragment
         args.putString("keyNumSelected", keyNumSelected);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public ContactAssignedDialogFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -114,16 +111,16 @@ public class ContactAssignedDialogFragment extends DialogFragment
         mphoneTypeView = (TextView) rootView.findViewById(R.id.contact_assigned_phone_type);
         mphoneTypeView.setText(mphoneType);
 
-        mInstructionView = (TextView) rootView.findViewById(R.id.contact_assigned_instruction);
-        mInstructionView.setText("#" + mkeyNumSelected + " "
-                + getString(R.string.contact_assigned_instruction));
-
+        /*mInstructionView = (TextView) rootView.findViewById(R.id.contact_assigned_instruction);
+        mInstructionView.setText(getString(R.string.contact_assigned_instruction));*/
+        TextView numView = (TextView) rootView.findViewById(R.id.contact_assigned_number);
+        numView.setText(mkeyNumSelected);
         mReassignButton = (Button) rootView.findViewById(R.id.contact_assigned_reassign);
         mReassignButton.setOnClickListener(this);
         mRemoveButton = (Button) rootView.findViewById(R.id.contact_assigned_remove);
         mRemoveButton.setOnClickListener(this);
-        mCancelButton = (Button) rootView.findViewById(R.id.contact_assigned_cancel);
-        mCancelButton.setOnClickListener(this);
+        /*mCancelButton = (Button) rootView.findViewById(R.id.contact_assigned_cancel);*/
+        /*mCancelButton.setOnClickListener(this);*/
 
 
         // Inflate the layout for this fragment
@@ -136,7 +133,7 @@ public class ContactAssignedDialogFragment extends DialogFragment
      * @param v
      */
     public void onClick(View v) {
-        mListener.reassignSpeedDial(v.getId());
+        mListener.reassignSpeedDial(v.getId(), mkeyNumSelected);
     }
 
     /*
@@ -176,7 +173,7 @@ public class ContactAssignedDialogFragment extends DialogFragment
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface ReassignSpeedDialInterface {
-        public void reassignSpeedDial(int viewId);
+        public void reassignSpeedDial(int viewId, String keyNumberSelected);
     }
 
 }

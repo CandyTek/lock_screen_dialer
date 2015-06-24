@@ -11,26 +11,27 @@
         android:layout_alignParentTop="true"
         android:orientation="horizontal">
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:background="@color/gunmetal"
+            android:src="@drawable/ic_dialpad_white_36dp" />
+
+        <TextView
+            android:id="@+id/contact_assigned_number"
+            style="@style/dialog_title_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:text="4" />
+
+
         <TextView
             android:id="@+id/contact_assigned_instruction"
             style="@style/dialog_title_bar"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="Title Bar" />
-
-        <View
-            style="@style/key_pad_dividers"
-            android:layout_width="1dp"
-            android:layout_height="match_parent" />
-
-        <Button
-            android:id="@+id/contact_assigned_cancel"
-            style="@style/dialog_title_bar_close"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/selector_dialog_buttons"
-            android:text="x" />
+            android:text="" />
         </LinearLayout>
 
 
