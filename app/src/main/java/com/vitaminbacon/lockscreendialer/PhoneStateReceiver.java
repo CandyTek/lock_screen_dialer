@@ -42,6 +42,8 @@ public class PhoneStateReceiver extends BroadcastReceiver {
                 lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PHONE_STATE_IDLE);
                 context.startActivity(lockScreenIntent);
+
+                // Now
             }
 
             else if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {

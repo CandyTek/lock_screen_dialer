@@ -145,7 +145,6 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                     } else {
                         mPatternEntered += mLastBtnTouchedNum;
                         b.setPressed(true);
-                        Log.d(TAG, "Pattern now = " + mPatternEntered);
                     }
                 } catch (ClassCastException e) {
                     Log.e(TAG, "Unable to cast Button to view to get value.", e);
@@ -165,7 +164,6 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                 if (mPatternEntered.equals(mPatternStored)) {
                     onCorrectPasscode();
                 } else {
-                    Log.d(TAG, "Entered = " + mPatternEntered + ", stored = " + mPatternStored);
                     if (getPhoneCallActiveFlag() && mPhoneCallInterruptFlag) {
                         // Phone=inactive when pattern started, and phone=active after pattern end
                         onWrongPatternEntered(false);  // No error message
