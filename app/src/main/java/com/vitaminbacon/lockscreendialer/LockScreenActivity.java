@@ -923,6 +923,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             view.setVisibility(View.VISIBLE);
             mBackgroundProgress.setVisibility(View.GONE);
             mBackgroundSetFlag = true;
+            doSheathTextAnimation(-1);
             return;
 
         } else if (filePath == null) { // then we have the default image situation
@@ -936,6 +937,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             mBackgroundProgress.setVisibility(View.GONE);
             //mBackgroundBitmap = bitmap;
             mBackgroundSetFlag = true;
+            doSheathTextAnimation(-1);
 
         } else if (file != null && file.exists()) { //now we must retrieve and set up the stored picture
             if (!mBackgroundSetFlag) {

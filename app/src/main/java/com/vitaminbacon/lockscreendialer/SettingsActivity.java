@@ -269,14 +269,19 @@ public class SettingsActivity extends PreferenceActivity
     public boolean onPreferenceChange(final Preference preference, final Object newValue) {
         if (preference.getKey().equals(getString(R.string.key_toggle_lock_screen))) {
             Log.d(TAG, "onPreferenceChange called on toggle lock screen");
-            SharedPreferences prefs = getSharedPreferences(
-                    getString(R.string.key_select_lock_screen_type), MODE_PRIVATE);
-            String lockScreenType = prefs.getString(
+            /*SharedPreferences prefs = getSharedPreferences(
+                    getString(R.string.key_select_lock_screen_type), MODE_PRIVATE);*/
+
+            /*String lockScreenType = prefs.getString(
                     getString(R.string.key_select_lock_screen_type),
-                    getString(R.string.pref_default_value_lock_screen_type));
-            Log.d(TAG, lockScreenType);
+                    getString(R.string.pref_default_value_lock_screen_type));*/
+
+            MyListPreference pref = (MyListPreference)
+                    findPreference(getString(R.string.key_select_lock_screen_type));
+
+            Log.d(TAG, pref.getValue());
             // Where no lock screen type has been selected
-            if (lockScreenType.equals(getString(R.string.lock_screen_type_value_none))) {
+            if (pref.getValue().equals(getString(R.string.lock_screen_type_value_none))) {
                 //Set toast
                 LayoutInflater inflater = getLayoutInflater();
                 View layout = inflater.inflate(
@@ -290,8 +295,6 @@ public class SettingsActivity extends PreferenceActivity
                 toast.show();
 
                 // Show the lock screen selection dialog
-                MyListPreference pref = (MyListPreference)
-                        findPreference(getString(R.string.key_select_lock_screen_type));
                 pref.show();
                 return false;
             }
