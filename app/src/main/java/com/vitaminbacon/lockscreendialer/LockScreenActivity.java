@@ -43,7 +43,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.android.internal.telephony.ITelephony;
-import com.vitaminbacon.lockscreendialer.exceptions.CallHandlerException;
+import com.vitaminbacon.lockscreendialer.exceptions.IllegalLayoutException;
 import com.vitaminbacon.lockscreendialer.helpers.BitmapToViewHelper;
 
 import java.io.File;
@@ -63,16 +63,20 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         BitmapToViewHelper.GetBitmapFromTaskInterface {
 
     private final static String TAG = "LSActivity";
+
     // Timer to handle on long clicks using the ontouchlistener -- this will presumably be used by all instances
     protected Handler mHandler;
     protected DialerRunnable mRunnable;
     protected boolean mLongPressFlag;
+
     // Variables to implement TYPE_SYSTEM_ERROR stuff
     private WindowManager mWindowManager;
     private RelativeLayout mWrapperView;
-    //private Bitmap mBackgroundBitmap;
+
+    // Variables for the backgrounds
     private ImageView mBackgroundView;
     private ProgressBar mBackgroundProgress;
+
     // Variables to utilize phone state service and handle phone calls
     private boolean mPhoneCallActiveFlag;
     private String mPhoneNumOnCall;
@@ -80,6 +84,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     private String mContactNameOnCall;
     private boolean mBackgroundSetFlag;
 
+    // Sheath screen related variables
     private GestureDetectorCompat mDetector;
     private float mLastMoveCoord;
     private boolean mFlinged;
@@ -128,39 +133,18 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                         false);
         mWindowManager.addView(mWrapperView, localLayoutParams);
 
-        // Check that the layout has the requisite phone-related elements for this activity to function
-        if (mWrapperView.findViewById(R.id.lock_screen_end_call_button) == null ||
-                mWrapperView.findViewById(R.id.lock_screen_speaker_call_button) == null ||
-                mWrapperView.findViewById(R.id.lock_screen_phone_buttons) == null ||
-                // mWrapperView.findViewById(R.id.lock_screen_call_display) == null ||
-                mWrapperView.findViewById(R.id.drawer_lock_screen_call_display) == null ||
-                mWrapperView.findViewById(R.id.lock_screen_background_progress) == null ||
-                mWrapperView.findViewById(R.id.lock_screen_background_view) == null ||
-                mWrapperView.findViewById(R.id.lock_screen_interaction_container) == null ||
-                mWrapperView.findViewById(R.id.lock_screen_fragment_container) == null) {
-            Log.e(TAG, "Layout incompatible with this activity for failing to have proper Views.");
-            onFatalError();
-            return;
-        }
-        //  Check that the layout elements are of the right type
         try {
-            ImageButton b = (ImageButton)mWrapperView.findViewById(R.id.lock_screen_end_call_button);
-            RelativeLayout rl = (RelativeLayout) b.getParent(); // ensures the correct encapsulating layout is there
-            // TextView v = (TextView)mWrapperView.findViewById(R.id.lock_screen_call_display);
-            mBackgroundView = (ImageView)mWrapperView.findViewById(R.id.lock_screen_background_view);
-            mBackgroundProgress = (ProgressBar)mWrapperView.findViewById(R.id.lock_screen_background_progress);
-        } catch (ClassCastException e) {
-            Log.e(TAG, "Layout incompatible with this activity for failing to have proper Views.");
+            validateLayout();
+        } catch (IllegalLayoutException e) {
+            Log.e(TAG, e.getMessage(), e);
             onFatalError();
             return;
-            /*throw new ClassCastException(this.toString()
-                    + " must use appropriate XML layout with correct IDs and correct types.");*/
         }
 
         try {
             instantiateOptionalViewsInView();
-        } catch (CallHandlerException e) {
-            Log.e(TAG, "Layout renders activity unable to handle calls", e);
+        } catch (IllegalLayoutException e) {
+            Log.e(TAG, e.getMessage(), e);
             onFatalError();
             return;
         }
@@ -180,6 +164,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         } catch (NullPointerException e) {
             Log.e(TAG, "Layout does not have container into which to enter this lock screen's layout", e);
             onFatalError();
+            return;
         }
 
         // Determine if the sheath screen is enabled and prepare the display
@@ -205,32 +190,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         if (mSheathScreenOn) {
             prepareSheathScreenAnimation();
         }
-        // Check the "sheath" screen status and enable/disable
-        // Set up the animation for when the background is set and there is no SheathScreen
-
-        /*try {
-            View sheathScreen = mWrapperView.findViewById(R.id.lock_screen_sheath_container);
-            View interactionScreen = mWrapperView.findViewById(R.id.lock_screen_interaction_container);
-            if (mSheathScreenOn) {
-                Log.d(TAG, "Sheath screen active.");
-                sheathScreen.setVisibility(View.VISIBLE);
-                sheathScreen.setTranslationY(0);
-                //interactionScreen.setVisibility(View.INVISIBLE);
-                sheathScreen.setOnTouchListener(this);
-
-                // Need to set up the proper translation position for interactionScreen
-                interactionScreen.setVisibility(View.VISIBLE);
-                interactionScreen.setTranslationY(interactionScreen.getHeight());
-            } else {
-                Log.d(TAG, "Sheath screen inactive");
-                sheathScreen.setVisibility(View.INVISIBLE);
-                interactionScreen.setVisibility(View.VISIBLE);
-            }
-
-        } catch (NullPointerException e) {
-            Log.e(TAG, "Layout has improper views; unable to find sheath screen or interaction screen", e);
-            onFatalError();
-        }*/
 
         // For backwards compatibility, we need to manually set the "clock" text view
         // to the current time
@@ -306,7 +265,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             disableCallViewsInView(true);
             try {
                 enableOptionalViewsInView();
-            } catch (CallHandlerException e) {
+            } catch (IllegalLayoutException e) {
                 Log.e(TAG, "Layout renders activity unable to handle calls", e);
                 onFatalError();
             }
@@ -424,17 +383,18 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 .findViewById(R.id.lock_screen_sheath_instruction);
 
         if (alpha < 0) {
-            sheathInstruction.setAlpha(0.05f);
+            sheathInstruction
+                    .setAlpha(getResources().getFraction(R.fraction.sheath_text_alpha_min, 1, 1));
             sheathInstruction.setVisibility(View.VISIBLE);
             sheathInstruction.animate()
-                    .alpha(1f)
+                    .alpha(getResources().getFraction(R.fraction.sheath_text_alpha_max, 1, 1))
                     .setDuration(longAnimTime)
                     .setListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
                             sheathInstruction.animate()
-                                    .alpha(0.5f)
+                                    .alpha(getResources().getFraction(R.fraction.sheath_text_alpha_static, 1, 1))
                                     .setDuration(longAnimTime)
                                     .setListener(null);
                         }
@@ -745,12 +705,12 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         }
     }
 
-    private void enableOptionalViewsInView() throws CallHandlerException {
+    private void enableOptionalViewsInView() throws IllegalLayoutException {
         //Log.d(TAG, "Enabling Optional Views");
         setOptionalViewsInView(View.VISIBLE);
     }
 
-    private void disableOptionalViewsInView() throws CallHandlerException {
+    private void disableOptionalViewsInView() throws IllegalLayoutException {
         //Log.d(TAG, "Disabling Optional Views");
         setOptionalViewsInView(View.GONE);
     }
@@ -760,7 +720,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      * typically either View.GONE or View.VISIBILE
      * @param value
      */
-    private void setOptionalViewsInView (int value) throws CallHandlerException {
+    private void setOptionalViewsInView(int value) throws IllegalLayoutException {
 
         if (value != View.GONE && value != View.VISIBLE && value != View.INVISIBLE) {
             Log.e(TAG, "Invalid argument passed to setOptionalViewsInView");
@@ -772,7 +732,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
         if (keys.length() != ids.length()) {  // TODO: excpetion?
             //Log.e(TAG, "XML arrays for keys and ids to optional views mismatched.");
-            throw new CallHandlerException(this.toString()
+            throw new IllegalLayoutException(this.toString()
                     + "XML arrays for keys and ids to optional views mismatched.");
         }
 
@@ -811,9 +771,9 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
     /**
      * Initiates the values of the optional views
-     * @throws CallHandlerException
+     * @throws IllegalLayoutException
      */
-    private void instantiateOptionalViewsInView() throws CallHandlerException {
+    private void instantiateOptionalViewsInView() throws IllegalLayoutException {
         TypedArray keys = getResources().obtainTypedArray(R.array.optional_display_view_file_keys);
         TypedArray ids = getResources().obtainTypedArray(R.array.optional_display_view_layout_ids);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -822,7 +782,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
         if (keys.length() != ids.length()) {
             //Log.e(TAG, "XML arrays for keys and ids to optional views mismatched.");
-            throw new CallHandlerException(this.toString()
+            throw new IllegalLayoutException(this.toString()
                     + "XML arrays for keys and ids to optional views mismatched.");
         }
 
@@ -1020,7 +980,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     mDetector.onTouchEvent(event);
                     mLastMoveCoord = event.getRawY();
                     mFlinged = false;
-                    doSheathTextAnimation(1f);
+                    doSheathTextAnimation(
+                            getResources().getFraction(R.fraction.sheath_text_alpha_max, 1, 1));
                     Log.d(TAG, "Action Down " + event.toString());
                     break;
                 case MotionEvent.ACTION_MOVE:
@@ -1044,13 +1005,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     } else if (!mFlinged) {
                         // Return
                         doSheathScreenAnimation(false);
-                        doSheathTextAnimation(0.5f);
-                        /*view.animate()
-                                .translationY(0)
-                                .setListener(null);
-
-                        interactionScreen.animate()
-                                .translationY(interactionScreen.getHeight());*/
+                        doSheathTextAnimation(getResources().getFraction(
+                                R.fraction.sheath_text_alpha_static, 1, 1));
                     }
 
                     break;
@@ -1170,6 +1126,37 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      * HELPER METHODS
      * ---------------------------------------------------------------------------------------------
      */
+
+    private void validateLayout() throws IllegalLayoutException {
+        // Check that the layout has the requisite phone-related elements for this activity to function
+        if (mWrapperView.findViewById(R.id.lock_screen_end_call_button) == null ||
+                mWrapperView.findViewById(R.id.lock_screen_speaker_call_button) == null ||
+                mWrapperView.findViewById(R.id.lock_screen_phone_buttons) == null ||
+                mWrapperView.findViewById(R.id.drawer_lock_screen_call_display) == null ||
+                mWrapperView.findViewById(R.id.lock_screen_background_progress) == null ||
+                mWrapperView.findViewById(R.id.lock_screen_background_view) == null ||
+                mWrapperView.findViewById(R.id.lock_screen_interaction_container) == null ||
+                mWrapperView.findViewById(R.id.lock_screen_sheath_container) == null ||
+                mWrapperView.findViewById(R.id.lock_screen_fragment_container) == null) {
+            throw new IllegalLayoutException("Layout does not have one or more required view ids");
+        }
+        //  Check that the layout elements are of the right type
+        try {
+            ImageButton b = (ImageButton) mWrapperView.findViewById(R.id.lock_screen_end_call_button);
+            RelativeLayout rl = (RelativeLayout) b.getParent(); // ensures the correct encapsulating layout is there
+            // TextView v = (TextView)mWrapperView.findViewById(R.id.lock_screen_call_display);
+            mBackgroundView = (ImageView)
+                    mWrapperView.findViewById(R.id.lock_screen_background_view);
+            mBackgroundProgress = (ProgressBar)
+                    mWrapperView.findViewById(R.id.lock_screen_background_progress);
+            TextView sheathText = (TextView)
+                    mWrapperView.findViewById(R.id.lock_screen_sheath_instruction);
+        } catch (ClassCastException e) {
+            throw new IllegalLayoutException("Layout does not have the requisite view classes");
+        }
+
+    }
+
     private String getDialInfoViewText(String telNum, String name, String type) {
         if (name != null && type != null) {
             return "Call with " + name + " on " + type.toLowerCase() + "....";
@@ -1397,7 +1384,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 enableCallViewsInView(telNum, name, type, thumbUri);
                 try {
                     disableOptionalViewsInView();
-                } catch (CallHandlerException e) {
+                } catch (IllegalLayoutException e) {
                     Log.e(TAG, "Activity unable to handle calls", e);
                     onFatalError();
                 }

@@ -11,4 +11,7 @@
     <integer name="swipe_percent_move_tolerance">40</integer>
     <integer name="sheath_text_long_animation">800</integer>
     <integer name="sheath_text_short_animation">500</integer>
+    <fraction name="sheath_text_alpha_static">40%</fraction>
+    <fraction name="sheath_text_alpha_min">5%</fraction>
+    <fraction name="sheath_text_alpha_max">100%</fraction>
 </resources>
