@@ -58,7 +58,7 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
 
-    <string name="pref_title_assign_speed_dial_contacts">Configure your speed dial contacts</string>
+    <string name="pref_title_assign_speed_dial_contacts">Configure speed dial contacts</string>
 
     <string name="pref_description_assign_speed_dial_contacts">Assign or remove contacts to your speed dial</string>
 
@@ -75,13 +75,21 @@
     <string name="pref_title_select_lock_screen_background">Choose background</string>
     <string name="pref_description_select_lock_screen_background"> Select a lock screen background from your phone</string>
 
-    <string name="pref_title_toggle_clock">Display clock</string>
+    <string name="pref_title_toggle_lock_clock">Display lock clock</string>
 
-    <string name="pref_description_toggle_clock">Shows the current time on the lock screen</string>
+    <string name="pref_description_toggle_lock_clock">Shows the current time on the lock screen</string>
 
-    <string name="pref_title_toggle_date">Display date</string>
+    <string name="pref_title_toggle_lock_date">Display lock date</string>
 
-    <string name="pref_description_toggle_date">Shows the date on the lock screen</string>
+    <string name="pref_description_toggle_lock_date">Shows the date on the lock screen</string>
+
+    <string name="pref_title_toggle_sheath_clock">Display sheath clock</string>
+
+    <string name="pref_description_toggle_sheath_clock">Shows the current time on the sheath screen</string>
+
+    <string name="pref_title_toggle_sheath_date">Display sheath date</string>
+
+    <string name="pref_description_toggle_sheath_date">Shows the date on the sheath screen</string>
 
     <string name="pref_title_toggle_speed_dial_button">Embed speed dial toggle button</string>
 
@@ -114,6 +122,8 @@
     <string name="key_toggle_speed_dial_button">key_toggle_speed_dial_button</string>
     <string name="key_toggle_speed_dial_enabled">key_toggle_speed_dial_enabled</string>
     <string name="key_toggle_sheath_screen">key_toggle_sheath_screen</string>
+    <string name="key_toggle_sheath_clock_display">key_toggle_sheath_clock_display</string>
+    <string name="key_toggle_sheath_date_display">key_toggle_sheath_date_display</string>
 
     <string name="date_format">E d MMM yyyy</string>
 
@@ -123,17 +133,23 @@
         <item>@string/key_toggle_date_display</item>
         <item>@string/key_toggle_info_display</item>
         <item>@string/key_toggle_speed_dial_button</item>
+        <item>@string/key_toggle_sheath_clock_display</item>
+        <item>@string/key_toggle_sheath_date_display</item>
     </array>
     <array name="optional_display_view_layout_ids">
         <item>@id/lock_screen_clock</item>
         <item>@id/lock_screen_date</item>
         <item>@id/lock_screen_info</item>
         <item>@id/lock_screen_speed_dial_toggle</item>
+        <item>@id/sheath_screen_clock</item>
+        <item>@id/sheath_screen_date</item>
     </array>
     <array name="optional_display_view_data_types">
         <item>boolean</item>
         <item>boolean</item>
         <item>string</item>
+        <item>boolean</item>
+        <item>boolean</item>
         <item>boolean</item>
     </array>
 

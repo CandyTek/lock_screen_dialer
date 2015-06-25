@@ -45,7 +45,8 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 public class SettingsActivity extends PreferenceActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener,
-        Preference.OnPreferenceClickListener, MyListPreference.ListItemClickListener {
+        Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener,
+        MyListPreference.ListItemClickListener {
     static final int PICK_LOCK_SCREEN_PIN = 1;
     static final int PICK_LOCK_SCREEN_PATTERN = 2;
     /**
@@ -168,7 +169,9 @@ public class SettingsActivity extends PreferenceActivity
     protected void onResume() {
         super.onResume();
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-        getPreferenceScreen().setOnPreferenceClickListener(this);
+        Preference p = getPreferenceScreen().findPreference(getString(R.string.key_toggle_lock_screen));
+        p.setOnPreferenceClickListener(this);
+        p.setOnPreferenceChangeListener(this);
 
         MyListPreference listPref = (MyListPreference)
                 findPreference(getString(R.string.key_select_lock_screen_type));
@@ -202,26 +205,6 @@ public class SettingsActivity extends PreferenceActivity
         fakeHeader.setTitle(R.string.pref_header_display);  // Changed from template
         getPreferenceScreen().addPreference(fakeHeader);
         addPreferencesFromResource(R.xml.pref_display);  //Changed from template
-
-/*        //Change the summary of the lock screen type to display the currently selected type
-        ListPreference lockScreenTypePreference =
-                (ListPreference) findPreference(getString(R.string.key_select_lock_screen_type));
-        String[] lockScreenTypeValues = getResources().getStringArray(R.array.pref_screen_lock_types_titles);
-        lockScreenTypePreference.setSummary(lockScreenTypePreference.getValue());*/
-
-        // Add 'data and sync' preferences, and a corresponding header.
-        //fakeHeader = new PreferenceCategory(this);
-        //fakeHeader.setTitle(R.string.pref_header_data_sync);select wallpaper
-        //getPreferenceScreen().addPreference(fakeHeader);
-        //addPreferencesFromResource(R.xml.pref_data_sync);
-
-        // Bind the summaries of EditText/List/Dialog/Ringtone preferences to
-        // their values. When their values change, their summaries are updated
-        // to reflect the new value, per the Android Design guidelines.
-        //bindPreferenceSummaryToValue(findPreference("example_text"));
-        //bindPreferenceSummaryToValue(findPreference("example_list"));
-        //bindPreferenceSummaryToValue(findPreference("notifications_new_message_ringtone"));
-        //bindPreferenceSummaryToValue(findPreference("sync_frequency"));
     }
 
     /**
@@ -250,6 +233,7 @@ public class SettingsActivity extends PreferenceActivity
      * @return
      */
     public boolean onPreferenceClick(Preference preference) {
+       /* Log.d(TAG, "onPreferenceClickCalled");
         if (preference.getKey().equals(getString(R.string.key_toggle_lock_screen))) {
             Log.d(TAG, "onPreferenceClick called on toggle lock screen");
             SharedPreferences prefs = getSharedPreferences(
@@ -257,7 +241,7 @@ public class SettingsActivity extends PreferenceActivity
             String lockScreenType = prefs.getString(
                     getString(R.string.key_select_lock_screen_type),
                     getString(R.string.pref_default_value_lock_screen_type));
-
+            Log.d(TAG, lockScreenType);
             // Where no lock screen type has been selected
             if (lockScreenType.equals(getString(R.string.lock_screen_type_value_none))) {
                 //Set toast
@@ -278,10 +262,42 @@ public class SettingsActivity extends PreferenceActivity
                 pref.show();
                 return true;
             }
-        }
+        }*/
         return false;
     }
 
+    public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+        if (preference.getKey().equals(getString(R.string.key_toggle_lock_screen))) {
+            Log.d(TAG, "onPreferenceChange called on toggle lock screen");
+            SharedPreferences prefs = getSharedPreferences(
+                    getString(R.string.key_select_lock_screen_type), MODE_PRIVATE);
+            String lockScreenType = prefs.getString(
+                    getString(R.string.key_select_lock_screen_type),
+                    getString(R.string.pref_default_value_lock_screen_type));
+            Log.d(TAG, lockScreenType);
+            // Where no lock screen type has been selected
+            if (lockScreenType.equals(getString(R.string.lock_screen_type_value_none))) {
+                //Set toast
+                LayoutInflater inflater = getLayoutInflater();
+                View layout = inflater.inflate(
+                        R.layout.toast_custom,
+                        (ViewGroup) findViewById(R.id.toast_custom));
+                TextView text = (TextView) layout.findViewById(R.id.toast_text);
+                text.setText(getString(R.string.toast_lock_screen_type_not_selected));
+                Toast toast = new Toast(getApplicationContext());
+                toast.setDuration(Toast.LENGTH_LONG);
+                toast.setView(layout);
+                toast.show();
+
+                // Show the lock screen selection dialog
+                MyListPreference pref = (MyListPreference)
+                        findPreference(getString(R.string.key_select_lock_screen_type));
+                pref.show();
+                return false;
+            }
+        }
+        return true;
+    }
     /**
      * Handles toggling of lock screen on/off by taking down the lock screen service
      * @param sharedPreferences

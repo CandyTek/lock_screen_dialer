@@ -195,10 +195,12 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         // to the current time
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
             try {
-                TextView clock = (TextView) mWrapperView.findViewById(R.id.lock_screen_clock);
+                TextView lockClock = (TextView) mWrapperView.findViewById(R.id.lock_screen_clock);
+                TextView sheathClock = (TextView) mWrapperView.findViewById(R.id.sheath_screen_clock);
                 Calendar cal = Calendar.getInstance(TimeZone.getDefault());
                 SimpleDateFormat sdf = new SimpleDateFormat("HH:mm a", Locale.getDefault());
-                clock.setText(sdf.format(cal.getTime()));
+                lockClock.setText(sdf.format(cal.getTime()));
+                sheathClock.setText(sdf.format(cal.getTime()));
             } catch (ClassCastException e) {
                 Log.e(TAG, "Layout has improper clock view type for older versions.", e);
                 onFatalError();
@@ -810,7 +812,25 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
                         break;
 
+                    case R.id.sheath_screen_date:
+                        if (prefs.getBoolean(keys.getString(i), false)) {
+                            SimpleDateFormat df = new SimpleDateFormat(getString(R.string.date_format));
+                            ((TextView) view).setText(df.format(new Date()));
+                            view.setVisibility(View.VISIBLE);
+                        } else {
+                            view.setVisibility(View.INVISIBLE);
+                        }
+                        break;
+
                     case R.id.lock_screen_clock:
+                        if (prefs.getBoolean(keys.getString(i), false)) {
+                            view.setVisibility(View.VISIBLE);
+                        } else {
+                            view.setVisibility(View.INVISIBLE);
+                        }
+                        break;
+
+                    case R.id.sheath_screen_clock:
                         if (prefs.getBoolean(keys.getString(i), false)) {
                             view.setVisibility(View.VISIBLE);
                         } else {

@@ -3,40 +3,52 @@
 
     <Preference
         android:key="key_select_lock_screen_background"
-        android:title="@string/pref_title_select_lock_screen_background"
-        android:summary="@string/pref_description_select_lock_screen_background">
+        android:summary="@string/pref_description_select_lock_screen_background"
+        android:title="@string/pref_title_select_lock_screen_background">
         <intent
             android:action="android.intent.action.MAIN"
-            android:targetPackage="com.vitaminbacon.lockscreendialer"
-            android:targetClass="com.vitaminbacon.lockscreendialer.BackgroundSelectionActivity" />
+            android:targetClass="com.vitaminbacon.lockscreendialer.BackgroundSelectionActivity"
+            android:targetPackage="com.vitaminbacon.lockscreendialer" />
     </Preference>
 
     <CheckBoxPreference
+        android:defaultValue="true"
         android:key="@string/key_toggle_clock_display"
-        android:title="@string/pref_title_toggle_clock"
-        android:summary="@string/pref_description_toggle_clock"
-        android:defaultValue="true" />
+        android:summary="@string/pref_description_toggle_lock_clock"
+        android:title="@string/pref_title_toggle_lock_clock" />
 
     <CheckBoxPreference
+        android:defaultValue="true"
         android:key="@string/key_toggle_date_display"
-        android:title="@string/pref_title_toggle_date"
-        android:summary="@string/pref_description_toggle_date"
-        android:defaultValue="true" />
+        android:summary="@string/pref_description_toggle_lock_date"
+        android:title="@string/pref_title_toggle_lock_date" />
 
     <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/key_toggle_sheath_clock_display"
+        android:summary="@string/pref_description_toggle_sheath_clock"
+        android:title="@string/pref_title_toggle_sheath_clock" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/key_toggle_sheath_date_display"
+        android:summary="@string/pref_description_toggle_sheath_date"
+        android:title="@string/pref_title_toggle_sheath_date" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
         android:key="@string/key_toggle_speed_dial_button"
-        android:title="@string/pref_title_toggle_speed_dial_button"
         android:summary="@string/pref_description_toggle_speed_dial_button"
-        android:defaultValue="true" />
+        android:title="@string/pref_title_toggle_speed_dial_button" />
 
     <EditTextPreference
-        android:key="@string/key_toggle_info_display"
-        android:title="@string/pref_title_display_contact_info"
-        android:summary="@string/pref_description_display_contact_info"
-        android:selectAllOnFocus="true"
-        android:inputType="textCapWords"
         android:capitalize="words"
+        android:inputType="textCapWords"
+        android:key="@string/key_toggle_info_display"
+        android:maxLines="2"
+        android:selectAllOnFocus="true"
         android:singleLine="false"
-        android:maxLines="2" />
+        android:summary="@string/pref_description_display_contact_info"
+        android:title="@string/pref_title_display_contact_info" />
 
 </PreferenceScreen>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/sheath_screen_clock"
+        style="@style/sheath_screen_clock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="12:00 AM"
+        tools:ignore="NewApi" />
+
+    <TextView
+        android:id="@+id/sheath_screen_date"
+        style="@style/sheath_screen_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="June 25, 2015" />
+</LinearLayout>
