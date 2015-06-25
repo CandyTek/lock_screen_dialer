@@ -180,6 +180,9 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
      * @return
      */
     public boolean onTouch(View v, MotionEvent event) {
+        if (super.onTouch(v, event)) {
+            return true;
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 Log.d(TAG, v.getId() + " down. (" + event.getX() + ", " + event.getY() + "); raw(" + event.getRawX() + ", " + event.getRawY() + ")");

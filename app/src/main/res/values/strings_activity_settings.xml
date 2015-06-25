@@ -91,6 +91,10 @@
 
     <string name="pref_description_display_contact_info">Custom text display, e.g., name and email</string>
 
+    <string name="pref_title_sheath_screen">Enable sheath screen</string>
+    <string name="pref_description_sheath_screen">Swipe to access to the lock screen</string>
+
+
     <string name="speed_dial_selection_instructions">Tap a key to assign a phone number.</string>
 
     <string name="speed_dial_selection_details">Shaded keys have been assigned.</string>
@@ -109,6 +113,7 @@
     <string name="key_toggle_info_display">key_toggle_info_display</string>
     <string name="key_toggle_speed_dial_button">key_toggle_speed_dial_button</string>
     <string name="key_toggle_speed_dial_enabled">key_toggle_speed_dial_enabled</string>
+    <string name="key_toggle_sheath_screen">key_toggle_sheath_screen</string>
 
     <string name="date_format">E d MMM yyyy</string>
 

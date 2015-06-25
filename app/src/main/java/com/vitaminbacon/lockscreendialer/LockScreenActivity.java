@@ -22,11 +22,14 @@ import android.os.RemoteException;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
+import android.support.v4.view.GestureDetectorCompat;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Display;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -56,7 +59,8 @@ import java.util.TimeZone;
 
 
 public abstract class LockScreenActivity extends Activity implements View.OnClickListener,
-        CompoundButton.OnCheckedChangeListener, BitmapToViewHelper.GetBitmapFromTaskInterface {
+        View.OnTouchListener, CompoundButton.OnCheckedChangeListener,
+        BitmapToViewHelper.GetBitmapFromTaskInterface {
 
     private final static String TAG = "LSActivity";
     // Timer to handle on long clicks using the ontouchlistener -- this will presumably be used by all instances
@@ -76,6 +80,11 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     private String mPhoneTypeOnCall;
     private String mContactNameOnCall;
     private boolean mBackgroundSetFlag;
+
+    private GestureDetectorCompat mDetector;
+    private float mLastMoveCoord;
+    private boolean mFlinged;
+    private boolean mSheathScreenOn;
     //protected int mLayoutId;
 
     @Override
@@ -83,6 +92,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         //Log.d(TAG, "onCreate() called.");
         super.onCreate(savedInstanceState);
 
+        // Check phone call status first, and handle appropriately
         int phoneState = getIntent().getIntExtra(PhoneStateReceiver.EXTRA_PHONE_STATE, 0);
         if (phoneState == PhoneStateReceiver.PHONE_STATE_IDLE) {
             //mPhoneCallActiveFlag = false;
@@ -97,16 +107,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         } else if (phoneState == 0) { // Activity initialized not by the phone state receiver
             // begin the phone state service to listen to phone call information; supposedly only one service of a kind can exist
             startService(new Intent(this, PhoneStateService.class));
-        }/*else if (isCallActive()) {
-            mPhoneCallActiveFlag = true;  // we can handle the display stuff in onResume
-        } else {
-            mPhoneCallActiveFlag = false; // Possibly revised later by onResumeInstanceState
-        }*/
-
-
+        }
         mPhoneCallActiveFlag = false;
-
-        //mWrapperView = new RelativeLayout(getBaseContext());
 
         // Implement some of the WindowManager TYPE_SYSTEM_ERROR hocus pocus
         //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -181,13 +183,18 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             onFatalError();
         }
 
-        // Set up the animation for when the background is set
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mSheathScreenOn = prefs.getBoolean(getString(R.string.key_toggle_sheath_screen), false);
+
+        // Set up the animation for when the background is set and there is no SheathScreen
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1 && !mSheathScreenOn) {
             mScreenText.setTranslationX(getDisplayWidth());
         }
+
         mBackgroundView.setVisibility(View.GONE);
         setActivityBackground(mBackgroundView);
         mBackgroundSetFlag = false;
+        mDetector = new GestureDetectorCompat(this, new MyGestureListener());
     }
 
 
@@ -197,18 +204,32 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         // if there is still a phone call active, we need to set the display to handle that
         //Log.d(TAG, "onResume() called.");
         super.onResume();
-        /*try {
-            if (mPhoneCallActiveFlag) {
-                enableCallViewsInView(mPhoneNumOnCall, mContactNameOnCall, mPhoneTypeOnCall);
-                disableOptionalViewsInView();
-            } *//*else {
-                disableCallViewsInView(false);
-                enableOptionalViewsInView();
-            }*//*
-        } catch (CallHandlerException e) {
-            Log.e(TAG, "Layout renders activity unable to handle calls", e);
+
+        // Check the "sheath" screen status and enable/disable
+
+        try {
+            View sheathScreen = mWrapperView.findViewById(R.id.lock_screen_sheath_container);
+            View interactionScreen = mWrapperView.findViewById(R.id.lock_screen_interaction_container);
+            if (mSheathScreenOn) {
+                Log.d(TAG, "Sheath screen active.");
+                sheathScreen.setVisibility(View.VISIBLE);
+                sheathScreen.setTranslationY(0);
+                //interactionScreen.setVisibility(View.INVISIBLE);
+                sheathScreen.setOnTouchListener(this);
+
+                // Need to set up the proper translation position for interactionScreen
+                interactionScreen.setVisibility(View.VISIBLE);
+                interactionScreen.setTranslationY(interactionScreen.getHeight());
+            } else {
+                Log.d(TAG, "Sheath screen inactive");
+                sheathScreen.setVisibility(View.INVISIBLE);
+                interactionScreen.setVisibility(View.VISIBLE);
+            }
+
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Layout has improper views; unable to find sheath screen or interaction screen", e);
             onFatalError();
-        }*/
+        }
 
         // For backwards compatibility, we need to manually set the "clock" text view
         // to the current time
@@ -296,15 +317,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             // This implementation ends the lock screen, but it should be recalled by the receiver once the call is over
             stopService(new Intent(this, LockScreenService.class));  // don't want the lock screen to keep popping up during a phone call in this implementation
             finish();
-
-            // Below implementation supports handling the call in the lock screen
-            /*mPhoneCallInitiated = true;
-            mPhoneNumOnCall = intent.getStringExtra(PhoneStateReceiver.EXTRA_PHONE_DATA_NUMBER);
-            enableCallButtonsInView(mPhoneNumOnCall, null, null);*/ // TODO: worth trying to get Contacts data for the number?
-            //moveTaskToBack(true); // for now, don't have the activity come to the foreground
-            //Log.d(TAG, "New Intent called, Phone State Ringing from " + mPhoneNumOnCall);
-
-            //TODO: implement setting for whether user wants to handle phone calls in lock screen or not?
         }
         else if (phoneState == PhoneStateReceiver.PHONE_STATE_OFFHOOK) {
             // Currently requires no implementation
@@ -681,11 +693,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                         view.setVisibility(value);
                     }
                     break;
-                /*case R.id.lock_screen_camera:
-                    if (prefs.getBoolean(keys.getString(i), false)) {
-                        view.setVisibility(value);
-                    }
-                    break;*/
             }
         }
     }
@@ -885,6 +892,76 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         }
     }
 
+    public boolean onTouch(final View view, MotionEvent event) {
+        if (view.getId() != R.id.lock_screen_sheath_container) {
+            return false;
+        }
+        final View interactionScreen = mWrapperView.findViewById(R.id.lock_screen_interaction_container);
+
+        try {
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    mDetector.onTouchEvent(event);
+                    mLastMoveCoord = event.getRawY();
+                    mFlinged = false;
+                    Log.d(TAG, "Action Down " + event.toString());
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    mDetector.onTouchEvent(event);
+                    float sheathPos = view.getTranslationY();
+                    float interactionPos = interactionScreen.getTranslationY();
+                    view.setTranslationY(sheathPos + (event.getRawY() - mLastMoveCoord));
+                    interactionScreen.setTranslationY(interactionPos + (event.getRawY() - mLastMoveCoord));
+                    mLastMoveCoord = event.getRawY();
+
+                    break;
+                case MotionEvent.ACTION_UP:
+                    mDetector.onTouchEvent(event);
+                    Log.d(TAG, "Action Up " + event.toString());
+                    int moveTolerance = getResources()
+                            .getInteger(R.integer.swipe_percent_move_tolerance);
+                    if (view.getTranslationY() / view.getHeight() < (-0.01 * moveTolerance)
+                            && !mFlinged) {
+                        // Animate sheath
+                        view.animate()
+                                .translationY(view.getHeight() * -1)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        super.onAnimationEnd(animation);
+                                        view.setVisibility(View.INVISIBLE);
+                                    }
+                                });
+                        interactionScreen.animate()
+                                .translationY(0);
+
+                    } else if (!mFlinged) {
+                        // Return
+                        view.animate()
+                                .translationY(0)
+                                .setListener(null);
+
+                        interactionScreen.animate()
+                                .translationY(interactionScreen.getHeight());
+                    }
+
+                    break;
+            }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Layout not compatible with animation; interaction screen id unavailable", e);
+            onFatalError();
+        }
+        return true;
+    }
+
+    /*@Override
+    public boolean onTouchEvent (MotionEvent event) {
+        Log.d(TAG, "onTouchEvent called with " + event.toString());
+        mDetector.onTouchEvent(event);
+        return super.onTouchEvent(event);
+    }*/
+
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         //Log.d(TAG, "lock screen speed dial toggle button pressed");
         try {
@@ -1038,6 +1115,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      */
     public void getBitmapFromTask(Bitmap bitmap) {
         mBackgroundView.setImageBitmap(bitmap);
+        mBackgroundSetFlag = true;
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
             int animationTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
             mBackgroundView.setAlpha(0f);
@@ -1053,7 +1132,9 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                             super.onAnimationEnd(animation);
                             // Here we can slide in the text view information stuff
                             //Log.d(TAG, "screenText translationX is " + mScreenText.getTranslationX());
-                            mScreenText.animate().translationX(0);
+                            if (!mSheathScreenOn) {
+                                mScreenText.animate().translationX(0);
+                            }
                         }
                     });
 
@@ -1070,7 +1151,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             mBackgroundView.setVisibility(View.VISIBLE);
             mBackgroundProgress.setVisibility(View.GONE);
         }
-        mBackgroundSetFlag = true;
+
     }
 
 
@@ -1199,6 +1280,45 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 enablePhoneCallActiveFlag();
             }
 
+        }
+    }
+
+    class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        private static final String TAG = "MyGestureListener";
+
+        @Override
+        public boolean onDown(MotionEvent event) {
+            Log.d(TAG, "onDown is " + event.getY());
+            return true;
+        }
+
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2,
+                               float velocityX, float velocityY) {
+            int minDistance = getResources().getInteger(R.integer.swipe_min_distance);
+            int thresholdVel = getResources().getInteger(R.integer.swipe_threshold_velocity);
+
+            Log.d(TAG, "VelX = " + velocityX + " VelY = " + velocityY + " e1 = " + e1.getRawY() + " e2 = " + e2.getRawY());
+            if (e1.getRawY() - e2.getRawY() > minDistance && Math.abs(velocityY) > thresholdVel) {
+                Log.d(TAG, "Threshold reached, animating.");
+                final View sheathScreen = mWrapperView.findViewById(R.id.lock_screen_sheath_container);
+                View interactionScreen = mWrapperView.findViewById(R.id.lock_screen_interaction_container);
+                sheathScreen.animate()
+                        .translationY(sheathScreen.getHeight() * -1)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                sheathScreen.setVisibility(View.INVISIBLE);
+                            }
+                        });
+                interactionScreen.animate().translationY(0);
+                mFlinged = true;
+
+            }
+            return false;
         }
     }
 }

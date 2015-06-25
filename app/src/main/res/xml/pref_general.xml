@@ -33,6 +33,12 @@
             android:targetPackage="com.vitaminbacon.lockscreendialer" />
     </Preference>
 
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/key_toggle_sheath_screen"
+        android:summary="@string/pref_description_sheath_screen"
+        android:title="@string/pref_title_sheath_screen" />
+
     <!-- A list of available lock screen mechanisms to bypass to access phone
     <Preference
         android:key="@string/key_select_lock_screen_type"

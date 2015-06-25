@@ -95,4 +95,5 @@
     <string name="lock_screen_speed_dial_toggle_off">Speed Dial Off</string>
     <string name="lock_screen_speed_dial_toggle_on">Speed Dial On</string>
 
+    <string name="swipe_screen_instruction">slide up to unlock</string>
 </resources>
