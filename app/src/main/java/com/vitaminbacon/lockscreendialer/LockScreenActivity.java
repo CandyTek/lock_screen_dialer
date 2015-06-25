@@ -176,8 +176,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             prepareLockScreenAnimation();
         }  // No else statement, because where the sheath is enabled, we want to handle this in onResume
         mBackgroundView.setVisibility(View.GONE);
-        setActivityBackground(mBackgroundView);
         mBackgroundSetFlag = false;
+        setActivityBackground(mBackgroundView);
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
     }
 
