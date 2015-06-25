@@ -9,4 +9,6 @@
     <integer name="swipe_min_distance">120</integer>
     <integer name="swipe_threshold_velocity">200</integer>
     <integer name="swipe_percent_move_tolerance">40</integer>
+    <integer name="sheath_text_long_animation">800</integer>
+    <integer name="sheath_text_short_animation">500</integer>
 </resources>

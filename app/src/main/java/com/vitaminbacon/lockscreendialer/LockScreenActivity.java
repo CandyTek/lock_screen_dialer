@@ -73,7 +73,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     //private Bitmap mBackgroundBitmap;
     private ImageView mBackgroundView;
     private ProgressBar mBackgroundProgress;
-    private View mLockScreen;  // So far, entirely for animation sequence
     // Variables to utilize phone state service and handle phone calls
     private boolean mPhoneCallActiveFlag;
     private String mPhoneNumOnCall;
@@ -137,6 +136,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 mWrapperView.findViewById(R.id.drawer_lock_screen_call_display) == null ||
                 mWrapperView.findViewById(R.id.lock_screen_background_progress) == null ||
                 mWrapperView.findViewById(R.id.lock_screen_background_view) == null ||
+                mWrapperView.findViewById(R.id.lock_screen_interaction_container) == null ||
                 mWrapperView.findViewById(R.id.lock_screen_fragment_container) == null) {
             Log.e(TAG, "Layout incompatible with this activity for failing to have proper Views.");
             onFatalError();
@@ -149,7 +149,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             // TextView v = (TextView)mWrapperView.findViewById(R.id.lock_screen_call_display);
             mBackgroundView = (ImageView)mWrapperView.findViewById(R.id.lock_screen_background_view);
             mBackgroundProgress = (ProgressBar)mWrapperView.findViewById(R.id.lock_screen_background_progress);
-            mLockScreen = mWrapperView.findViewById(R.id.lock_screen_interaction_container);
         } catch (ClassCastException e) {
             Log.e(TAG, "Layout incompatible with this activity for failing to have proper Views.");
             onFatalError();
@@ -183,12 +182,14 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             onFatalError();
         }
 
-        // Determine if the sheath screen is enabled
+        // Determine if the sheath screen is enabled and prepare the display
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         mSheathScreenOn = prefs.getBoolean(getString(R.string.key_toggle_sheath_screen), false);
-
-
-
+        // Since we never do side animation with the lock screen if we have a sheath, and we want to
+        // set up the lock screen animation before the background loading begins and never in onResume
+        if (!mSheathScreenOn) {
+            prepareLockScreenAnimation();
+        }  // No else statement, because where the sheath is enabled, we want to handle this in onResume
         mBackgroundView.setVisibility(View.GONE);
         setActivityBackground(mBackgroundView);
         mBackgroundSetFlag = false;
@@ -201,13 +202,12 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     protected void onResume(){
         super.onResume();
 
-        // Check the "sheath" screen status and enable/disable
-        // Set up the animation for when the background is set and there is no SheathScreen
         if (mSheathScreenOn) {
             prepareSheathScreenAnimation();
-        } else {
-            prepareLockScreenAnimation();
         }
+        // Check the "sheath" screen status and enable/disable
+        // Set up the animation for when the background is set and there is no SheathScreen
+
         /*try {
             View sheathScreen = mWrapperView.findViewById(R.id.lock_screen_sheath_container);
             View interactionScreen = mWrapperView.findViewById(R.id.lock_screen_interaction_container);
@@ -367,6 +367,10 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         sheathScreen.setVisibility(View.VISIBLE);
         sheathScreen.setTranslationY(0);
         sheathScreen.setOnTouchListener(this);
+        if (!mBackgroundSetFlag) {
+            sheathScreen
+                    .findViewById(R.id.lock_screen_sheath_instruction).setVisibility(View.INVISIBLE);
+        }
 
         // Set the proper translation position for the lock
         lockScreen.setTranslationY(lockScreen.getHeight());
@@ -405,6 +409,42 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     }
                 });
         lockScreen.animate().translationY(lockPos);
+    }
+
+    /**
+     * Animates the sheath text to the alpha parameter.  If the alpha is less than 0,
+     * method does the initial animation sequence
+     *
+     * @param alpha
+     */
+    private void doSheathTextAnimation(float alpha) {
+        final int longAnimTime = getResources().getInteger(R.integer.sheath_text_long_animation);
+        final int shortAnimTime = getResources().getInteger(R.integer.sheath_text_short_animation);
+        final View sheathInstruction = mWrapperView
+                .findViewById(R.id.lock_screen_sheath_instruction);
+
+        if (alpha < 0) {
+            sheathInstruction.setAlpha(0.05f);
+            sheathInstruction.setVisibility(View.VISIBLE);
+            sheathInstruction.animate()
+                    .alpha(1f)
+                    .setDuration(longAnimTime)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            sheathInstruction.animate()
+                                    .alpha(0.5f)
+                                    .setDuration(longAnimTime)
+                                    .setListener(null);
+                        }
+                    });
+        } else {
+            sheathInstruction.animate()
+                    .alpha(alpha)
+                    .setDuration(shortAnimTime)
+                    .setListener(null);
+        }
     }
 
     private void prepareLockScreenAnimation() {
@@ -980,6 +1020,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     mDetector.onTouchEvent(event);
                     mLastMoveCoord = event.getRawY();
                     mFlinged = false;
+                    doSheathTextAnimation(1f);
                     Log.d(TAG, "Action Down " + event.toString());
                     break;
                 case MotionEvent.ACTION_MOVE:
@@ -1000,22 +1041,10 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                             && !mFlinged) {
                         // Animate sheath
                         doSheathScreenAnimation(true);
-                        /*view.animate()
-                                .translationY(view.getHeight() * -1)
-                                .setListener(new AnimatorListenerAdapter() {
-                                    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
-                                    @Override
-                                    public void onAnimationEnd(Animator animation) {
-                                        super.onAnimationEnd(animation);
-                                        view.setVisibility(View.INVISIBLE);
-                                    }
-                                });
-                        interactionScreen.animate()
-                                .translationY(0);*/
-
                     } else if (!mFlinged) {
                         // Return
                         doSheathScreenAnimation(false);
+                        doSheathTextAnimation(0.5f);
                         /*view.animate()
                                 .translationY(0)
                                 .setListener(null);
@@ -1072,13 +1101,14 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         mBackgroundSetFlag = true;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-            int animationTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
             mBackgroundView.setAlpha(0f);
             mBackgroundView.setVisibility(View.VISIBLE);
 
             mBackgroundView.animate()
                     .alpha(1f)
-                    .setDuration(animationTime)
+                    .setDuration(shortAnimTime)
                     .setListener(new AnimatorListenerAdapter() {
                         @SuppressLint("NewApi")
                         @Override
@@ -1089,13 +1119,16 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                             if (!mSheathScreenOn) {
                                 //mLockScreen.animate().translationX(0);
                                 doLockScreenAnimation();
+                            } else {
+                                // Instantiate the sheath text animation
+                                doSheathTextAnimation(-1);
                             }
                         }
                     });
 
             mBackgroundProgress.animate()
                     .alpha(0f)
-                    .setDuration(animationTime)
+                    .setDuration(shortAnimTime)
                     .setListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
