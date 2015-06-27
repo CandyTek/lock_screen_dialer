@@ -7,8 +7,6 @@ import android.content.SharedPreferences;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import java.lang.reflect.Method;
-
 public class PhoneStateReceiver extends BroadcastReceiver {
 
     public static final String TAG = "PhoneStateReceiver";
@@ -59,25 +57,17 @@ public class PhoneStateReceiver extends BroadcastReceiver {
                 lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PHONE_STATE_RINGING);
                 lockScreenIntent.putExtra(EXTRA_PHONE_DATA_NUMBER, incomingNumber);
-                /*Log.d(TAG, "PhoneStateReceiver**Incoming call from "
-                        + lockScreenIntent.getStringExtra(EXTRA_PHONE_DATA_NUMBER)
-                        + " with state " + lockScreenIntent.getIntExtra(EXTRA_PHONE_STATE, 0));*/
+
                 context.startActivity(lockScreenIntent);
 
-/*                if (!killCall(context)) { // Using the method defined earlier
-                    Log.d(TAG, "PhoneStateReceiver **Unable to kill incoming call");
-                }*/
 
             } else if (state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
-                //Log.d(TAG, "PhoneStateReceiver **Offhook");
+
             }
         } else if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
             // Outgoing call -- we don't care about this also
             String outgoingNumber = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
             Log.d(TAG, "PhoneStateReceiver **Outgoing call " + outgoingNumber);
-
-            //setResultData(null); // Kills the outgoing call
-
         } else {
             Log.d(TAG, "PhoneStateReceiver **unexpected intent.action=" + intent.getAction());
         }
@@ -88,7 +78,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
      * @param context
      * @return
      */
-    public boolean killCall(Context context) {
+    /*public boolean killCall(Context context) {
         try {
             // Get the boring old TelephonyManager
             TelephonyManager telephonyManager =
@@ -117,7 +107,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             return false;
         }
         return true;
-    }
+    }*/
 
     private Intent getLockScreenIntent(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.lock_screen_type_file_key),

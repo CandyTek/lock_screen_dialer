@@ -103,6 +103,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         // Check phone call status first, and handle appropriately
         int phoneState = getIntent().getIntExtra(PhoneStateReceiver.EXTRA_PHONE_STATE, 0);
         if (phoneState == PhoneStateReceiver.PHONE_STATE_IDLE) {
+            Log.d(TAG, "onCreate received extra PHONE STATE IDLE");
             //mPhoneCallActiveFlag = false;
             //Log.d(TAG, "onCreate received intent with phone state idle; starting screen service and exiting");
             startService(new Intent(this, LockScreenService.class)); // Means lock screen was unlocked, but phone call ended, so resume screen service
@@ -118,8 +119,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         }
         mPhoneCallActiveFlag = false;
 
-        // Implement some of the WindowManager TYPE_SYSTEM_ERROR hocus pocus
-        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         WindowManager.LayoutParams localLayoutParams =
                 new WindowManager.LayoutParams(
                         WindowManager.LayoutParams.TYPE_SYSTEM_ERROR,
@@ -195,6 +194,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         if (mSheathScreenOn && !mPhoneCallActiveFlag) {
             Log.d(TAG, "sheath screen prepared");
             prepareSheathScreenAnimation();
+            mFlinged = false;
         } else {
             // Only now set the phone call flag to false.  Previously set in onNewIntent, but useful
             // to wait until onResume is subsequently called so that the sheath is not pulled up
@@ -325,7 +325,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         }
         mHandler = null;
         mRunnable = null;
-
     }
 
     /**
@@ -354,6 +353,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     }
 
     private void doSheathScreenAnimation(final boolean swiped) {
+        Log.d(TAG, "doSheathScreenAnimation() called, swiped = " + swiped);
         final View sheathScreen = mWrapperView.findViewById(R.id.lock_screen_sheath_container);
         final View lockScreen = mWrapperView.findViewById(R.id.lock_screen_interaction_container);
         int sheathPos;
@@ -381,9 +381,19 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                         if (swiped) {
                             sheathScreen.setVisibility(View.INVISIBLE);
                         }
+                        mFlinged = false;
                     }
                 });
-        lockScreen.animate().translationY(lockPos);
+        lockScreen.animate()
+                .translationY(lockPos)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        mFlinged = false;
+                    }
+                });
+
     }
 
     /**
@@ -422,6 +432,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     }
 
     private void prepareLockScreenAnimation() {
+        Log.d(TAG, "prepareLockScreenAnimation() called");
         View sheathScreen = mWrapperView.findViewById(R.id.lock_screen_sheath_container);
         View lockScreen = mWrapperView.findViewById(R.id.lock_screen_interaction_container);
         lockScreen.setTranslationX(getDisplayWidth());
@@ -430,6 +441,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     }
 
     private void doLockScreenAnimation() {
+        Log.d(TAG, "doLockScreenAnimation() called");
         View lockScreen = mWrapperView.findViewById(R.id.lock_screen_interaction_container);
         lockScreen.animate().translationX(0);
     }
@@ -566,7 +578,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      * @param animationFlag - value true animates the drawer and buttons
      */
     private void disableCallViewsInView(boolean animationFlag) {
-        //Log.d(TAG, "disableCallViewsInView() called");
+        Log.d(TAG, "disableCallViewsInView() called");
         ImageButton endCallBtn;
 
         final ViewGroup phoneButtons, widgets;  // Declared final for anonymous function purpose
@@ -941,7 +953,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         } else if (filePath == null) { // then we have the default image situation
             Log.d(TAG, "setting activity to default image");
 
-
             Bitmap bitmap = BitmapFactory.decodeResource(
                     getResources(), R.drawable.background_default);
             mBackgroundView.setImageBitmap(bitmap);
@@ -1003,8 +1014,11 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     }
 
     public boolean onTouch(final View view, MotionEvent event) {
+        Log.d(TAG, "onTouch() called");
         if (view.getId() != R.id.lock_screen_sheath_container) {
             return false;
+        } else if (mFlinged) {
+            return true;
         }
         final View interactionScreen = mWrapperView.findViewById(R.id.lock_screen_interaction_container);
 
@@ -1013,7 +1027,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 case MotionEvent.ACTION_DOWN:
                     mDetector.onTouchEvent(event);
                     mLastMoveCoord = event.getRawY();
-                    mFlinged = false;
                     doSheathTextAnimation(
                             getResources().getFraction(R.fraction.sheath_text_alpha_max, 1, 1));
                     break;
@@ -1231,8 +1244,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
         // Better placed to a location when all the phone buttons are retracted
         //mPhoneCallActiveFlag = false;
-
-
     }
 
     private boolean isCallActive() {
@@ -1446,9 +1457,15 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             int thresholdVel = getResources().getInteger(R.integer.swipe_threshold_velocity);
 
             //Log.d(TAG, "VelX = " + velocityX + " VelY = " + velocityY + " e1 = " + e1.getRawY() + " e2 = " + e2.getRawY());
-            if (e1.getRawY() - e2.getRawY() > minDistance && Math.abs(velocityY) > thresholdVel) {
+            if (Math.abs(e1.getRawY() - e2.getRawY()) > minDistance
+                    && -velocityY > thresholdVel) {
                 Log.d(TAG, "Threshold reached, animating.");
                 doSheathScreenAnimation(true);
+                mFlinged = true;
+            } else if (Math.abs(e1.getRawY() - e2.getRawY()) > minDistance
+                    && velocityY > thresholdVel) {
+                Log.d(TAG, "Threshold return reached, animating return");
+                doSheathScreenAnimation(false);
                 mFlinged = true;
             }
             return false;
