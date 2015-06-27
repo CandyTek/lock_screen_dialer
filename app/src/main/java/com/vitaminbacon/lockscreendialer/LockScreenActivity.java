@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -73,9 +74,12 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     private WindowManager mWindowManager;
     private RelativeLayout mWrapperView;
 
-    // Variables for the backgrounds
+    // Variables for the backgrounds and animation layouts
+    // Unfortunately, for whatever reason retrieving these variables dynamically while the phone is
+    // tilted results in an error, so it is important to get them and hold them from the beginning
     private ImageView mBackgroundView;
     private ProgressBar mBackgroundProgress;
+    private TextView mSheathTextView;
 
     // Variables to utilize phone state service and handle phone calls
     private boolean mPhoneCallActiveFlag;
@@ -93,18 +97,18 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        //Log.d(TAG, "onCreate() called.");
+        Log.d(TAG, "onCreate() called.");
         super.onCreate(savedInstanceState);
 
         // Check phone call status first, and handle appropriately
         int phoneState = getIntent().getIntExtra(PhoneStateReceiver.EXTRA_PHONE_STATE, 0);
         if (phoneState == PhoneStateReceiver.PHONE_STATE_IDLE) {
             //mPhoneCallActiveFlag = false;
-            Log.d(TAG, "onCreate received intent with phone state idle; starting screen service and exiting");
+            //Log.d(TAG, "onCreate received intent with phone state idle; starting screen service and exiting");
             startService(new Intent(this, LockScreenService.class)); // Means lock screen was unlocked, but phone call ended, so resume screen service
         } else if (phoneState == PhoneStateReceiver.PHONE_STATE_RINGING) {
             //mPhoneCallActiveFlag = true;
-            Log.d(TAG, "onCreate received intent with phone state ringing; stopping screen service and exiting");
+            //Log.d(TAG, "onCreate received intent with phone state ringing; stopping screen service and exiting");
             stopService(new Intent(this, LockScreenService.class));  // Means lock screen was unlocked, but phone call was received
             finish();
             return;
@@ -185,6 +189,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
     @Override
     protected void onResume(){
+        Log.d(TAG, "onResume() called");
         super.onResume();
 
         if (mSheathScreenOn) {
@@ -257,11 +262,11 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
         int phoneState = intent.getIntExtra(PhoneStateReceiver.EXTRA_PHONE_STATE, 0); // returns 0 if doesn't exist
 
-        Log.d(TAG, "onNewIntent called, phoneState = " + phoneState);
+        Log.d(TAG, "onNewIntent called" + intent.toString());
 
         if (phoneState == PhoneStateReceiver.PHONE_STATE_IDLE) {
             // Phone was just hung up and activity is instantiated
-            Log.d(TAG, "onNewIntent received intent with phone state idle; starting screen service");
+            //Log.d(TAG, "onNewIntent received intent with phone state idle; starting screen service");
             mPhoneCallActiveFlag = false;
             mContactNameOnCall = mPhoneNumOnCall = mPhoneTypeOnCall = null;
             disableCallViewsInView(true);
@@ -275,7 +280,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             startService(new Intent(this, LockScreenService.class)); // reenable the off-screen receiver
         }
         else if (phoneState == PhoneStateReceiver.PHONE_STATE_RINGING) { // a call has been received, we should handle lock screen in case user returns there
-            Log.d(TAG, "onNewIntent received intent with phone state ringing; stopping screen service");
+            //Log.d(TAG, "onNewIntent received intent with phone state ringing; stopping screen service");
             // This implementation ends the lock screen, but it should be recalled by the receiver once the call is over
             stopService(new Intent(this, LockScreenService.class));  // don't want the lock screen to keep popping up during a phone call in this implementation
             finish();
@@ -284,6 +289,12 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             // Currently requires no implementation
             return;
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        Log.d(TAG, "onConfigurationChanged() called, newConfig = " + newConfig.toString());
+        super.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -381,28 +392,26 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     private void doSheathTextAnimation(float alpha) {
         final int longAnimTime = getResources().getInteger(R.integer.sheath_text_long_animation);
         final int shortAnimTime = getResources().getInteger(R.integer.sheath_text_short_animation);
-        final View sheathInstruction = mWrapperView
-                .findViewById(R.id.lock_screen_sheath_instruction);
 
         if (alpha < 0) {
-            sheathInstruction
+            mSheathTextView
                     .setAlpha(getResources().getFraction(R.fraction.sheath_text_alpha_min, 1, 1));
-            sheathInstruction.setVisibility(View.VISIBLE);
-            sheathInstruction.animate()
+            mSheathTextView.setVisibility(View.VISIBLE);
+            mSheathTextView.animate()
                     .alpha(getResources().getFraction(R.fraction.sheath_text_alpha_max, 1, 1))
                     .setDuration(longAnimTime)
                     .setListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
-                            sheathInstruction.animate()
+                            mSheathTextView.animate()
                                     .alpha(getResources().getFraction(R.fraction.sheath_text_alpha_static, 1, 1))
                                     .setDuration(longAnimTime)
                                     .setListener(null);
                         }
                     });
         } else {
-            sheathInstruction.animate()
+            mSheathTextView.animate()
                     .alpha(alpha)
                     .setDuration(shortAnimTime)
                     .setListener(null);
@@ -430,7 +439,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      * @param type - a string to display the phone number type
      */
     private void enableCallViewsInView(String telNum, String name, String type, String thumbUri){
-        Log.d(TAG, "enableCallViewsInView() called");
+        //Log.d(TAG, "enableCallViewsInView() called");
         //TextView dialInfoView;
 
         try {
@@ -554,7 +563,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      * @param animationFlag - value true animates the drawer and buttons
      */
     private void disableCallViewsInView(boolean animationFlag) {
-        Log.d(TAG, "disableCallViewsInView() called");
+        //Log.d(TAG, "disableCallViewsInView() called");
         ImageButton endCallBtn;
 
         final ViewGroup phoneButtons, widgets;  // Declared final for anonymous function purpose
@@ -941,7 +950,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
         } else if (file != null && file.exists()) { //now we must retrieve and set up the stored picture
             if (!mBackgroundSetFlag) {
-                Log.d(TAG, "setting background image from stored data");
+                //Log.d(TAG, "setting background image from stored data");
                 Display display = getWindowManager().getDefaultDisplay();
                 Bitmap bitmap = null;
                 int w = getDisplayWidth();
@@ -1004,7 +1013,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     mFlinged = false;
                     doSheathTextAnimation(
                             getResources().getFraction(R.fraction.sheath_text_alpha_max, 1, 1));
-                    Log.d(TAG, "Action Down " + event.toString());
                     break;
                 case MotionEvent.ACTION_MOVE:
                     mDetector.onTouchEvent(event);
@@ -1017,7 +1025,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     break;
                 case MotionEvent.ACTION_UP:
                     mDetector.onTouchEvent(event);
-                    Log.d(TAG, "Action Up " + event.toString());
                     int moveTolerance = getResources()
                             .getInteger(R.integer.swipe_percent_move_tolerance);
                     if (view.getTranslationY() / view.getHeight() < (-0.01 * moveTolerance)
@@ -1030,7 +1037,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                         doSheathTextAnimation(getResources().getFraction(
                                 R.fraction.sheath_text_alpha_static, 1, 1));
                     }
-
                     break;
             }
         } catch (NullPointerException e) {
@@ -1171,7 +1177,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     mWrapperView.findViewById(R.id.lock_screen_background_view);
             mBackgroundProgress = (ProgressBar)
                     mWrapperView.findViewById(R.id.lock_screen_background_progress);
-            TextView sheathText = (TextView)
+            mSheathTextView = (TextView)
                     mWrapperView.findViewById(R.id.lock_screen_sheath_instruction);
         } catch (ClassCastException e) {
             throw new IllegalLayoutException("Layout does not have the requisite view classes");

@@ -163,6 +163,8 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                     mHandler = null;
                     mRunnable = null;
                 }
+                mTouchDrawView.clearLines();
+                mTouchDrawView.invalidate();
                 if (mPatternEntered.equals(mPatternStored)) {
                     onCorrectPasscode();
                 } else {

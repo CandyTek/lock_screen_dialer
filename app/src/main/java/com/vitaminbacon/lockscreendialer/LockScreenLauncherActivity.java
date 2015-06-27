@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.WindowManager;
 
 /**
  * This activity is solely for the purpose of fulfilling the logic that decides which lock screen
@@ -52,7 +51,7 @@ public class LockScreenLauncherActivity extends Activity {
             return;
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // necessary to add to android's stack of things to do
-        intent.addFlags(WindowManager.LayoutParams.TYPE_SYSTEM_ERROR); //this allows the activity to be placed on top of everything -- UGLY HACK??
+        //intent.addFlags(WindowManager.LayoutParams.TYPE_SYSTEM_ERROR); //this allows the activity to be placed on top of everything -- UGLY HACK??
         if (getIntent().getExtras() != null){
             intent.putExtras(getIntent().getExtras()); //places the extras, if any, passed to the activity
         }

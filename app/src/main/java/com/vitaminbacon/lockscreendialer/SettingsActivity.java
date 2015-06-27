@@ -45,8 +45,7 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 public class SettingsActivity extends PreferenceActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener,
-        Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener,
-        MyListPreference.ListItemClickListener {
+        Preference.OnPreferenceChangeListener, MyListPreference.ListItemClickListener {
     static final int PICK_LOCK_SCREEN_PIN = 1;
     static final int PICK_LOCK_SCREEN_PATTERN = 2;
     /**
@@ -160,7 +159,7 @@ public class SettingsActivity extends PreferenceActivity
                 getString(R.string.key_toggle_lock_screen));
         // If settings believes the service is enabled and it is not (due to error of some kind), fix it.
         if (!isServiceRunning(LockScreenService.class) && checkPref.isChecked()) {
-            Log.d(TAG, "Turning off lock screen in onResume()");
+            //Log.d(TAG, "Turning off lock screen in onResume()");
             checkPref.setChecked(false);
         }
     }
@@ -170,7 +169,6 @@ public class SettingsActivity extends PreferenceActivity
         super.onResume();
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         Preference p = getPreferenceScreen().findPreference(getString(R.string.key_toggle_lock_screen));
-        p.setOnPreferenceClickListener(this);
         p.setOnPreferenceChangeListener(this);
 
         MyListPreference listPref = (MyListPreference)
@@ -226,49 +224,9 @@ public class SettingsActivity extends PreferenceActivity
         }
     }
 
-    /**
-     * Just want to handle the situation where user clicks to enable lock screen but no
-     * lock screen type is selected.
-     * @param preference
-     * @return
-     */
-    public boolean onPreferenceClick(Preference preference) {
-       /* Log.d(TAG, "onPreferenceClickCalled");
-        if (preference.getKey().equals(getString(R.string.key_toggle_lock_screen))) {
-            Log.d(TAG, "onPreferenceClick called on toggle lock screen");
-            SharedPreferences prefs = getSharedPreferences(
-                    getString(R.string.key_select_lock_screen_type), MODE_PRIVATE);
-            String lockScreenType = prefs.getString(
-                    getString(R.string.key_select_lock_screen_type),
-                    getString(R.string.pref_default_value_lock_screen_type));
-            Log.d(TAG, lockScreenType);
-            // Where no lock screen type has been selected
-            if (lockScreenType.equals(getString(R.string.lock_screen_type_value_none))) {
-                //Set toast
-                LayoutInflater inflater = getLayoutInflater();
-                View layout = inflater.inflate(
-                        R.layout.toast_custom,
-                        (ViewGroup) findViewById(R.id.toast_custom));
-                TextView text = (TextView) layout.findViewById(R.id.toast_text);
-                text.setText(getString(R.string.toast_lock_screen_type_not_selected));
-                Toast toast = new Toast(getApplicationContext());
-                toast.setDuration(Toast.LENGTH_LONG);
-                toast.setView(layout);
-                toast.show();
-
-                // Show the lock screen selection dialog
-                MyListPreference pref = (MyListPreference)
-                        findPreference(getString(R.string.key_select_lock_screen_type));
-                pref.show();
-                return true;
-            }
-        }*/
-        return false;
-    }
-
     public boolean onPreferenceChange(final Preference preference, final Object newValue) {
         if (preference.getKey().equals(getString(R.string.key_toggle_lock_screen))) {
-            Log.d(TAG, "onPreferenceChange called on toggle lock screen");
+            //Log.d(TAG, "onPreferenceChange called on toggle lock screen");
             /*SharedPreferences prefs = getSharedPreferences(
                     getString(R.string.key_select_lock_screen_type), MODE_PRIVATE);*/
 
@@ -279,7 +237,7 @@ public class SettingsActivity extends PreferenceActivity
             MyListPreference pref = (MyListPreference)
                     findPreference(getString(R.string.key_select_lock_screen_type));
 
-            Log.d(TAG, pref.getValue());
+            //Log.d(TAG, pref.getValue());
             // Where no lock screen type has been selected
             if (pref.getValue().equals(getString(R.string.lock_screen_type_value_none))) {
                 //Set toast
@@ -308,7 +266,7 @@ public class SettingsActivity extends PreferenceActivity
      */
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
-        Log.d(TAG, "onSharedPreferencesChanged called, key = " + key);
+        //Log.d(TAG, "onSharedPreferencesChanged called, key = " + key);
         if (key.equals(getString(R.string.key_toggle_lock_screen))) {
             CheckBoxPreference checkPref = (CheckBoxPreference) findPreference(key);
             String text;
@@ -385,12 +343,11 @@ public class SettingsActivity extends PreferenceActivity
         }
 
         if (value.equals(getString(R.string.lock_screen_type_value_keypad_pin))) {
-            Log.d(TAG, "Selected PIN activity");
+            //Log.d(TAG, "Selected PIN activity");
             // Lock screen PIN was selected, need to go to config for that
             Intent intent = new Intent(this, KeypadPinConfigActivity.class);
             startActivityForResult(intent, PICK_LOCK_SCREEN_PIN);
         } else if (value.equals(getString(R.string.lock_screen_type_value_keypad_pattern))) {
-            Log.d(TAG, "Selected PIN activity");
             // Same logic as above
             Intent intent = new Intent(this, KeypadPatternConfigActivity.class);
             startActivityForResult(intent, PICK_LOCK_SCREEN_PATTERN);
@@ -401,7 +358,7 @@ public class SettingsActivity extends PreferenceActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case PICK_LOCK_SCREEN_PIN:
-                Log.d(TAG, "Result from PIN activity, code = " + resultCode);
+                //Log.d(TAG, "Result from PIN activity, code = " + resultCode);
                 if (resultCode == RESULT_OK) {
                     try {
                         MyListPreference listPref = (MyListPreference) findPreference(

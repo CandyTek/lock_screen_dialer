@@ -103,7 +103,7 @@
         </activity>
         <activity
             android:name=".LockScreenKeypadPinActivity"
-            android:configChanges="orientation"
+            android:configChanges="screenSize|orientation"
             android:label="@string/title_activity_lock_screen_keypad_pin"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -111,11 +111,11 @@
         </activity>
         <activity
             android:name=".LockScreenKeypadPatternActivity"
-            android:configChanges="orientation"
+            android:configChanges="screenSize|orientation"
             android:label="@string/title_activity_lock_screen_keypad_pattern"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.NoBackground"></activity>
+            android:theme="@style/Theme.NoBackground" />
         <activity
             android:name=".ErrorPageActivity"
             android:label="@string/title_activity_error_page" >
@@ -140,8 +140,8 @@
         <activity
             android:name=".LockScreenLauncherActivity"
             android:label="@string/title_activity_lock_screen_launcher"
-            android:launchMode="singleInstance">
-        </activity>
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".BackgroundSelectionActivity"
             android:label="@string/title_activity_background_selection"
