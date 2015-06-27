@@ -3,6 +3,7 @@ package com.vitaminbacon.lockscreendialer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -29,18 +30,20 @@ public class PhoneStateReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "Phone state receiver onReceive called");
+
+
         if (intent.getAction().equals("android.intent.action.PHONE_STATE")) {
             String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
             Log.d(TAG, "PhoneStateReceiver**Call State=" + state);
 
             if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
                 Log.d(TAG, "PhoneStateReceiver**Idle");
-
+                Intent lockScreenIntent = getLockScreenIntent(context);
                 // Now we need to call the lock screen activity back to the foreground
-                Intent lockScreenIntent = new Intent (context, LockScreenLauncherActivity.class);
                 //Strange error -- if this is set along with manifest setting, it doesn't want to call onNewIntent
                 lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PHONE_STATE_IDLE);
+
                 context.startActivity(lockScreenIntent);
 
                 // Now
@@ -52,7 +55,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
                         intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
 
 
-                Intent lockScreenIntent = new Intent (context, LockScreenLauncherActivity.class);
+                Intent lockScreenIntent = getLockScreenIntent(context);
                 lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PHONE_STATE_RINGING);
                 lockScreenIntent.putExtra(EXTRA_PHONE_DATA_NUMBER, incomingNumber);
@@ -114,5 +117,40 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             return false;
         }
         return true;
+    }
+
+    private Intent getLockScreenIntent(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.lock_screen_type_file_key),
+                Context.MODE_PRIVATE);
+        String lockScreenType;
+
+        try {
+            lockScreenType = prefs.getString(
+                    context.getString(R.string.lock_screen_type_value_key),
+                    null);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Unable to access shared preferences for lock screen type");
+            return null;
+        }
+
+        Intent newIntent;
+        if (lockScreenType != null) {
+
+            if (lockScreenType.equals(
+                    context.getString(R.string.lock_screen_type_value_keypad_pin))) {
+                newIntent = new Intent(context, LockScreenKeypadPinActivity.class);
+            } else if (lockScreenType.equals(
+                    context.getString(R.string.lock_screen_type_value_keypad_pattern))) {
+                newIntent = new Intent(context, LockScreenKeypadPatternActivity.class);
+            } else { //An error of some kind
+                Log.d(TAG, "No value for key " + context
+                        .getString(R.string.lock_screen_type_value_key));
+                newIntent = new Intent(context, ErrorPageActivity.class);
+            }
+        } else {
+            Log.e(TAG, "Unable to get the lock screen type from shared preferences.");
+            return null;
+        }
+        return newIntent;
     }
 }

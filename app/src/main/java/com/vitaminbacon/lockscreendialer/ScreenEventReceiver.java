@@ -3,6 +3,7 @@ package com.vitaminbacon.lockscreendialer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -33,18 +34,21 @@ public class ScreenEventReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.d(TAG, "onReceive called");
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        boolean startLockScreenIntent = false;
+
+
         if ( intent.getAction().equals(Intent.ACTION_SCREEN_OFF) ||
                 intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
             if (tm.getCallState() != TelephonyManager.CALL_STATE_OFFHOOK &&
                     tm.getCallState() != TelephonyManager.CALL_STATE_RINGING) {
-                Intent lockScreenIntent = new Intent(context, LockScreenLauncherActivity.class);
-                lockScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(lockScreenIntent);
+                startLockScreenIntent = true;
                 mIssueIntentOnScreenOn = false;
             } else {
                 Log.d(TAG, "Screen service could not be implemented because phone call active = "
                         + tm.getCallState());
+                startLockScreenIntent = false;
                 mIssueIntentOnScreenOn = true;
             }
         }
@@ -53,14 +57,51 @@ public class ScreenEventReceiver extends BroadcastReceiver {
             if (mIssueIntentOnScreenOn
                     && tm.getCallState() != TelephonyManager.CALL_STATE_OFFHOOK
                     && tm.getCallState() != TelephonyManager.CALL_STATE_RINGING) {
-                Intent lockScreenIntent = new Intent(context, LockScreenLauncherActivity.class);
-                lockScreenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(lockScreenIntent);
+                startLockScreenIntent = true;
                 mIssueIntentOnScreenOn = false;
             }
         }
         else {
             Log.d(TAG, "onReceive() received unanticipated event.");
+            startLockScreenIntent = false;
+        }
+
+        if (startLockScreenIntent) {
+
+            SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.lock_screen_type_file_key),
+                    Context.MODE_PRIVATE);
+            String lockScreenType;
+            Intent newIntent;
+
+            try {
+                lockScreenType = prefs.getString(
+                        context.getString(R.string.lock_screen_type_value_key),
+                        null);
+            } catch (NullPointerException e) {
+                Log.e(TAG, "Unable to access shared preferences for lock screen type");
+                return;
+            }
+
+            if (lockScreenType != null) {
+
+                if (lockScreenType.equals(
+                        context.getString(R.string.lock_screen_type_value_keypad_pin))) {
+                    newIntent = new Intent(context, LockScreenKeypadPinActivity.class);
+                } else if (lockScreenType.equals(
+                        context.getString(R.string.lock_screen_type_value_keypad_pattern))) {
+                    newIntent = new Intent(context, LockScreenKeypadPatternActivity.class);
+                } else { //An error of some kind
+                    Log.d(TAG, "No value for key " + context
+                            .getString(R.string.lock_screen_type_value_key));
+                    newIntent = new Intent(context, ErrorPageActivity.class);
+                }
+            } else {
+                Log.e(TAG, "Unable to get the lock screen type from shared preferences.");
+                return;
+            }
+
+            newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(newIntent);
         }
     }
 }

@@ -192,8 +192,13 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         Log.d(TAG, "onResume() called");
         super.onResume();
 
-        if (mSheathScreenOn) {
+        if (mSheathScreenOn && !mPhoneCallActiveFlag) {
+            Log.d(TAG, "sheath screen prepared");
             prepareSheathScreenAnimation();
+        } else {
+            // Only now set the phone call flag to false.  Previously set in onNewIntent, but useful
+            // to wait until onResume is subsequently called so that the sheath is not pulled up
+            mPhoneCallActiveFlag = false;
         }
 
         // For backwards compatibility, we need to manually set the "clock" text view
@@ -266,8 +271,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
         if (phoneState == PhoneStateReceiver.PHONE_STATE_IDLE) {
             // Phone was just hung up and activity is instantiated
-            //Log.d(TAG, "onNewIntent received intent with phone state idle; starting screen service");
-            mPhoneCallActiveFlag = false;
             mContactNameOnCall = mPhoneNumOnCall = mPhoneTypeOnCall = null;
             disableCallViewsInView(true);
             try {
@@ -1226,7 +1229,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             e.printStackTrace();
         }
 
-        mPhoneCallActiveFlag = false;
+        // Better placed to a location when all the phone buttons are retracted
+        //mPhoneCallActiveFlag = false;
 
 
     }
@@ -1430,7 +1434,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
         @Override
         public boolean onDown(MotionEvent event) {
-            Log.d(TAG, "onDown is " + event.getY());
+            //Log.d(TAG, "onDown is " + event.getY());
             return true;
         }
 
@@ -1441,7 +1445,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             int minDistance = getResources().getInteger(R.integer.swipe_min_distance);
             int thresholdVel = getResources().getInteger(R.integer.swipe_threshold_velocity);
 
-            Log.d(TAG, "VelX = " + velocityX + " VelY = " + velocityY + " e1 = " + e1.getRawY() + " e2 = " + e2.getRawY());
+            //Log.d(TAG, "VelX = " + velocityX + " VelY = " + velocityY + " e1 = " + e1.getRawY() + " e2 = " + e2.getRawY());
             if (e1.getRawY() - e2.getRawY() > minDistance && Math.abs(velocityY) > thresholdVel) {
                 Log.d(TAG, "Threshold reached, animating.");
                 doSheathScreenAnimation(true);
