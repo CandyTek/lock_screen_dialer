@@ -175,11 +175,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         mSheathScreenOn = prefs.getBoolean(getString(R.string.key_toggle_sheath_screen), false);
         // Since we never do side animation with the lock screen if we have a sheath, and we want to
         // set up the lock screen animation before the background loading begins and never in onResume
-        if (!mSheathScreenOn) {
-            prepareLockScreenAnimation();
-        }  // No else statement, because where the sheath is enabled, we want to handle this in onResume
-        mBackgroundView.setVisibility(View.GONE);
         mBackgroundSetFlag = false;
+        mBackgroundView.setVisibility(View.GONE);
         setActivityBackground(mBackgroundView);
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
     }
@@ -187,9 +184,13 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         Log.d(TAG, "onResume() called");
         super.onResume();
+        if (!mSheathScreenOn && !mBackgroundSetFlag) {
+            prepareLockScreenAnimation();
+        }  // No else statement, because where the sheath is enabled, we want to handle this in onResume
+
 
         if (mSheathScreenOn && !mPhoneCallActiveFlag) {
             Log.d(TAG, "sheath screen prepared");
@@ -347,8 +348,10 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         }
 
         // Set the proper translation position for the lock
-        lockScreen.setTranslationY(lockScreen.getHeight());
+        //lockScreen.setTranslationY(lockScreen.getHeight());
+        lockScreen.setTranslationY(getDisplayHeight());
         lockScreen.setVisibility(View.VISIBLE);
+        Log.d(TAG, "lock screen translationY = " + lockScreen.getTranslationY() + " height = " + lockScreen.getHeight());
 
     }
 
@@ -365,11 +368,13 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         }
 
         if (swiped) {
-            sheathPos = sheathScreen.getHeight() * -1;
+            //sheathPos = sheathScreen.getHeight() * -1;
+            sheathPos = getDisplayHeight() * -1;
             lockPos = 0;
         } else {
             sheathPos = 0;
-            lockPos = lockScreen.getHeight();
+            //lockPos = lockScreen.getHeight();
+            lockPos = getDisplayHeight();
         }
         sheathScreen.animate()
                 .translationY(sheathPos)
