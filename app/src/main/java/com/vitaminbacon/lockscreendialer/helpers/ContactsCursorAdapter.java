@@ -1,14 +1,14 @@
-package com.vitaminbacon.lockscreendialer;
+package com.vitaminbacon.lockscreendialer.helpers;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.nfc.Tag;
-import android.provider.ContactsContract;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.vitaminbacon.lockscreendialer.R;
 
 import static android.provider.ContactsContract.CommonDataKinds;
 

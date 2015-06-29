@@ -16,6 +16,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.vitaminbacon.lockscreendialer.fragments.ContactAssignedDialogFragment;
+
 import java.util.Arrays;
 
 

@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vitaminbacon.lockscreendialer.helpers.MyListPreference;
+import com.vitaminbacon.lockscreendialer.services.LockScreenService;
 
 import java.util.List;
 

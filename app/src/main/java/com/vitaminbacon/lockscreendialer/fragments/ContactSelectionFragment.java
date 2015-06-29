@@ -1,4 +1,4 @@
-package com.vitaminbacon.lockscreendialer;
+package com.vitaminbacon.lockscreendialer.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -20,6 +20,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import com.vitaminbacon.lockscreendialer.R;
+import com.vitaminbacon.lockscreendialer.helpers.ContactsCursorAdapter;
 
 import static android.provider.ContactsContract.Contacts;
 

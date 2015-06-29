@@ -1,4 +1,4 @@
-package com.vitaminbacon.lockscreendialer;
+package com.vitaminbacon.lockscreendialer.fragments;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -18,30 +18,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.CursorAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.vitaminbacon.lockscreendialer.R;
+import com.vitaminbacon.lockscreendialer.helpers.ContactsCursorAdapter;
 
 public class ContactDialogFragment extends DialogFragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
         AdapterView.OnItemClickListener {
 
     private static final String TAG = "ContactDialogFragment"; //debugging tag
-    private OnPhoneNumSelectionListener mListener;
-
-    private String mContactLookupKey;
-    private String mContactDisplayName;
-    private String mContactThumbnailUriString;
-
-    private ListView mPhoneNumsView;
-    private TextView mContactNameView;
-    private ImageView mThumbnailView;
-    private View mRootView;
-
-    private ContactsCursorAdapter mCursorAdapter;
-
     /**
      * Private variables to set up the database retrievals
      */
@@ -53,15 +41,11 @@ public class ContactDialogFragment extends DialogFragment implements
                     ContactsContract.CommonDataKinds.Phone.TYPE,
                     ContactsContract.CommonDataKinds.Phone.LABEL
             };
-
     private static final String SELECTION =
             ContactsContract.Data.LOOKUP_KEY + " = ?" +
                     " AND " +
                     ContactsContract.Data.MIMETYPE + " = " +
                     "'" + ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE + "'";
-
-    private String[] mSelectionArgs = { "" };
-
     /**
      * Private variables to enable the CursorAdapter to set up the ListView
      */
@@ -70,18 +54,26 @@ public class ContactDialogFragment extends DialogFragment implements
                     ContactsContract.CommonDataKinds.Phone.NUMBER,
                     ContactsContract.CommonDataKinds.Phone.TYPE
             };
-
     private static final int[] TO_IDS =
             {
                     R.id.phone_selector_list_item_number,
                     R.id.phone_selector_list_item_phone_type
             };
-
     // The column indices for the columns you substantiated in the PROJECTION
     private static final int PHONE_ID_INDEX = 0;
     private static final int PHONE_NUMBER_INDEX = 1;
     private static final int PHONE_TYPE_INDEX = 2;
     private static final int PHONE_LABEL_INDEX = 3;
+    private OnPhoneNumSelectionListener mListener;
+    private String mContactLookupKey;
+    private String mContactDisplayName;
+    private String mContactThumbnailUriString;
+    private ListView mPhoneNumsView;
+    private TextView mContactNameView;
+    private ImageView mThumbnailView;
+    private View mRootView;
+    private ContactsCursorAdapter mCursorAdapter;
+    private String[] mSelectionArgs = {""};
 
     public ContactDialogFragment() {
         // Required empty public constructor
@@ -285,6 +277,11 @@ public class ContactDialogFragment extends DialogFragment implements
         );
     }
 
+    private int pixelToDIP(int pixels) {
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, pixels,
+                getResources().getDisplayMetrics());
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -299,10 +296,5 @@ public class ContactDialogFragment extends DialogFragment implements
         // TODO: Update argument type and name
         public void onPhoneNumSelected(String displayName, String thumbUri,
                                        String phoneNum, String phoneType);
-    }
-
-    private int pixelToDIP(int pixels){
-        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, pixels,
-                getResources().getDisplayMetrics());
     }
 }

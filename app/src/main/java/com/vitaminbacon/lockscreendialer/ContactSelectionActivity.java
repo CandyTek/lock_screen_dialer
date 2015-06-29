@@ -12,6 +12,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.vitaminbacon.lockscreendialer.fragments.ContactAssignedDialogFragment;
+import com.vitaminbacon.lockscreendialer.fragments.ContactDialogFragment;
+import com.vitaminbacon.lockscreendialer.fragments.ContactSelectionFragment;
+
 
 public class ContactSelectionActivity extends ActionBarActivity
         implements ContactSelectionFragment.OnContactSelectedListener,

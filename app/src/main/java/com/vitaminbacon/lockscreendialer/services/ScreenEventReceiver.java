@@ -1,4 +1,4 @@
-package com.vitaminbacon.lockscreendialer;
+package com.vitaminbacon.lockscreendialer.services;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -6,6 +6,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+
+import com.vitaminbacon.lockscreendialer.ErrorPageActivity;
+import com.vitaminbacon.lockscreendialer.LockScreenKeypadPatternActivity;
+import com.vitaminbacon.lockscreendialer.LockScreenKeypadPinActivity;
+import com.vitaminbacon.lockscreendialer.R;
 
 public class ScreenEventReceiver extends BroadcastReceiver {
 

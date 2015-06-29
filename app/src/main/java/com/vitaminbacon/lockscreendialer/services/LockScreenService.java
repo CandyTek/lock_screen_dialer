@@ -1,4 +1,4 @@
-package com.vitaminbacon.lockscreendialer;
+package com.vitaminbacon.lockscreendialer.services;
 
 import android.app.KeyguardManager;
 import android.app.Service;
@@ -9,7 +9,7 @@ import android.util.Log;
 
 public class LockScreenService extends Service {
 
-    public static final String ACTION_NAME = "com.vitaminbacon.lockscreendialer.LockScreenService";
+    public static final String ACTION_NAME = "com.vitaminbacon.lockscreendialer.services.LockScreenService";
     private static String TAG = "LockScreenService";
     private static ScreenEventReceiver mReceiver;
 

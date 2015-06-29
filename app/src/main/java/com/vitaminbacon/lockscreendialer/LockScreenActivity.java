@@ -47,6 +47,9 @@ import android.widget.ToggleButton;
 import com.android.internal.telephony.ITelephony;
 import com.vitaminbacon.lockscreendialer.exceptions.IllegalLayoutException;
 import com.vitaminbacon.lockscreendialer.helpers.BitmapToViewHelper;
+import com.vitaminbacon.lockscreendialer.services.LockScreenService;
+import com.vitaminbacon.lockscreendialer.services.PhoneStateReceiver;
+import com.vitaminbacon.lockscreendialer.services.PhoneStateService;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

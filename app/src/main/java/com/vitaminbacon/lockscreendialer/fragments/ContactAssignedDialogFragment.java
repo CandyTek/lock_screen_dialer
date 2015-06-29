@@ -1,4 +1,4 @@
-package com.vitaminbacon.lockscreendialer;
+package com.vitaminbacon.lockscreendialer.fragments;
 
 import android.app.Activity;
 import android.database.Cursor;
@@ -17,6 +17,8 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.vitaminbacon.lockscreendialer.R;
 
 import java.io.ByteArrayInputStream;
 

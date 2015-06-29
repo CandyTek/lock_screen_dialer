@@ -1,4 +1,4 @@
-package com.vitaminbacon.lockscreendialer;
+package com.vitaminbacon.lockscreendialer.services;
 
 import android.app.Service;
 import android.content.Intent;
