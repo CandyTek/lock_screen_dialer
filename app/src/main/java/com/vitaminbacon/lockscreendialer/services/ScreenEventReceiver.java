@@ -41,8 +41,7 @@ public class ScreenEventReceiver extends BroadcastReceiver {
         boolean startLockScreenIntent = false;
 
 
-        if ( intent.getAction().equals(Intent.ACTION_SCREEN_OFF) ||
-                intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
+        if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
             //Log.d(TAG, "onReceive() obtained screen off event");
             if (tm.getCallState() != TelephonyManager.CALL_STATE_OFFHOOK &&
                     tm.getCallState() != TelephonyManager.CALL_STATE_RINGING) {
