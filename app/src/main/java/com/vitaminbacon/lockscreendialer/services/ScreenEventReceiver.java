@@ -7,9 +7,7 @@ import android.content.SharedPreferences;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.vitaminbacon.lockscreendialer.ErrorPageActivity;
-import com.vitaminbacon.lockscreendialer.LockScreenKeypadPatternActivity;
-import com.vitaminbacon.lockscreendialer.LockScreenKeypadPinActivity;
+import com.vitaminbacon.lockscreendialer.LockScreenLauncherActivity;
 import com.vitaminbacon.lockscreendialer.R;
 
 public class ScreenEventReceiver extends BroadcastReceiver {
@@ -39,13 +37,13 @@ public class ScreenEventReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, "onReceive called");
         TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         boolean startLockScreenIntent = false;
 
 
         if ( intent.getAction().equals(Intent.ACTION_SCREEN_OFF) ||
                 intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
+            //Log.d(TAG, "onReceive() obtained screen off event");
             if (tm.getCallState() != TelephonyManager.CALL_STATE_OFFHOOK &&
                     tm.getCallState() != TelephonyManager.CALL_STATE_RINGING) {
                 startLockScreenIntent = true;
@@ -59,6 +57,7 @@ public class ScreenEventReceiver extends BroadcastReceiver {
         }
 
         else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
+            //Log.d(TAG, "onReceive() obtained screen on event");
             if (mIssueIntentOnScreenOn
                     && tm.getCallState() != TelephonyManager.CALL_STATE_OFFHOOK
                     && tm.getCallState() != TelephonyManager.CALL_STATE_RINGING) {
@@ -88,8 +87,8 @@ public class ScreenEventReceiver extends BroadcastReceiver {
             }
 
             if (lockScreenType != null) {
-
-                if (lockScreenType.equals(
+                newIntent = new Intent(context, LockScreenLauncherActivity.class);
+                /*if (lockScreenType.equals(
                         context.getString(R.string.lock_screen_type_value_keypad_pin))) {
                     newIntent = new Intent(context, LockScreenKeypadPinActivity.class);
                 } else if (lockScreenType.equals(
@@ -99,7 +98,7 @@ public class ScreenEventReceiver extends BroadcastReceiver {
                     Log.d(TAG, "No value for key " + context
                             .getString(R.string.lock_screen_type_value_key));
                     newIntent = new Intent(context, ErrorPageActivity.class);
-                }
+                }*/
             } else {
                 Log.e(TAG, "Unable to get the lock screen type from shared preferences.");
                 return;

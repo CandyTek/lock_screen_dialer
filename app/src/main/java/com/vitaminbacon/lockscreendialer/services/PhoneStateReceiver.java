@@ -3,14 +3,10 @@ package com.vitaminbacon.lockscreendialer.services;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.vitaminbacon.lockscreendialer.ErrorPageActivity;
-import com.vitaminbacon.lockscreendialer.LockScreenKeypadPatternActivity;
-import com.vitaminbacon.lockscreendialer.LockScreenKeypadPinActivity;
-import com.vitaminbacon.lockscreendialer.R;
+import com.vitaminbacon.lockscreendialer.LockScreenLauncherActivity;
 
 public class PhoneStateReceiver extends BroadcastReceiver {
 
@@ -114,8 +110,16 @@ public class PhoneStateReceiver extends BroadcastReceiver {
         return true;
     }*/
 
+    /**
+     * Because of strange black out errors on the Galaxy S4 when the lock screen is activated over
+     * a rotated activity, we need to route the intent through the defunct lock screen launcher
+     * activity, which now displays a splash screen.
+     *
+     * @param context
+     * @return
+     */
     private Intent getLockScreenIntent(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.lock_screen_type_file_key),
+        /*SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.lock_screen_type_file_key),
                 Context.MODE_PRIVATE);
         String lockScreenType;
 
@@ -145,7 +149,8 @@ public class PhoneStateReceiver extends BroadcastReceiver {
         } else {
             Log.e(TAG, "Unable to get the lock screen type from shared preferences.");
             return null;
-        }
+        }*/
+        Intent newIntent = new Intent(context, LockScreenLauncherActivity.class);
         return newIntent;
     }
 }
