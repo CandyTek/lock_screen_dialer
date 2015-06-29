@@ -120,8 +120,7 @@ public class ContactSelectionFragment extends Fragment implements
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      */
-    // TODO: Rename and change types and number of parameters
-    public static ContactSelectionFragment newInstance(String param1, String param2) {
+    public static ContactSelectionFragment newInstance() {
         ContactSelectionFragment fragment = new ContactSelectionFragment();
         return fragment;
     }

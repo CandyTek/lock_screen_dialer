@@ -16,4 +16,6 @@
     <dimen name="typeface_phone_call_info_text_size"> 28dp</dimen>
     <dimen name="typeface_phone_call_info_text_margin"> 12dp</dimen>
     <dimen name="typeface_phone_call_description_text_size"> 20dp</dimen>
+
+    <dimen name="scroll_dialog_height">325dp</dimen>
 </resources>

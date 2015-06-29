@@ -96,4 +96,6 @@
     <string name="lock_screen_speed_dial_toggle_on">Speed Dial On</string>
 
     <string name="swipe_screen_instruction">slide up to unlock</string>
+
+    <string name="color_selection_instruction">Select a color</string>
 </resources>

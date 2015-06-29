@@ -16,9 +16,32 @@
     <color name="blue_diamond">#4EE2EC</color>
     <color name="green">#00FF00</color>
     <color name="holo_background">#fff3f3f3</color>
-    <color name="turquoise">#4EE2EC</color>
+    <color name="turquoise">#43C6DB</color>
     <color name="ocean_blue">#2B65EC</color>
     <color name="milk_white">#FEFCFF</color>
+
+    <array name="color_value_list">
+        <item>@color/white</item>
+        <item>@color/beige</item>
+        <item>@color/platinum</item>
+        <item>@color/blue_diamond</item>
+        <item>@color/turquoise</item>
+        <item>@color/ocean_blue</item>
+        <item>@color/green</item>
+        <item>@color/lava_red</item>
+        <item>@color/gunmetal</item>
+    </array>
+    <array name="color_name_list">
+        <item>@string/white</item>
+        <item>@string/beige</item>
+        <item>@string/platinum</item>
+        <item>@string/blue_diamond</item>
+        <item>@string/turquoise</item>
+        <item>@string/ocean_blue</item>
+        <item>@string/green</item>
+        <item>@string/lava_red</item>
+        <item>@string/gunmetal</item>
+    </array>
 
 
 

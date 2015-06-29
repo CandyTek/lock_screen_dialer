@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dialog_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/contact_dialog_instruction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/gunmetal"
+        android:padding="20dp"
+        android:text="@string/color_selection_instruction"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
+    <ListView
+        android:id="@+id/color_list"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/scroll_dialog_height" />
+
+
+</LinearLayout>

@@ -19,12 +19,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.vitaminbacon.lockscreendialer.fragments.ColorPickerDialogFragment;
 import com.vitaminbacon.lockscreendialer.helpers.BitmapToViewHelper;
 
-import yuku.ambilwarna.AmbilWarnaDialog;
 
+public class BackgroundSelectionActivity extends ActionBarActivity implements View.OnClickListener,
+        ColorPickerDialogFragment.OnColorSelectedListener {
 
-public class BackgroundSelectionActivity extends ActionBarActivity implements View.OnClickListener {
 
     private final static String TAG = "BackgroundSelActivity";
     private final static int PICK_IMAGE = 1; // Request code to be handled in onActivityResult()
@@ -155,7 +156,9 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
                 int color = prefs.getInt(getString(R.string.key_background_color),
                         getResources().getColor(R.color.ripple_material_light));
 
-                AmbilWarnaDialog dialog = new AmbilWarnaDialog(this, color,
+                ColorPickerDialogFragment dialog = ColorPickerDialogFragment.newInstance(color);
+                dialog.show(getFragmentManager(), "fragment_color_list_dialog");
+                /*AmbilWarnaDialog dialog = new AmbilWarnaDialog(this, color,
                         new AmbilWarnaDialog.OnAmbilWarnaListener() {
                     @Override
                     public void onCancel(AmbilWarnaDialog ambilWarnaDialog) {
@@ -176,9 +179,25 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
                         editor.commit();
                     }
                 });
-                dialog.show();
+                dialog.show(); */
                 break;
+
+
         }
+    }
+
+    public void onColorSelected(int color) {
+        Log.d(TAG, "color selected = " + color);
+        ImageView bg = (ImageView) findViewById(
+                R.id.background_selection_current_background);
+        bg.setImageBitmap(null);  //perhaps consider .setImageDrawable(null)?
+        bg.setBackgroundColor(color);
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                getString(R.string.background_file_key),
+                MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(getString(R.string.key_background_color), color);
+        editor.commit();
     }
 
     /***********************************************************************************************

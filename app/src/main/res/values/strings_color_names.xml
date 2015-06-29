@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="white">white</string>
+    <string name="beige">beige</string>
+    <string name="platinum">platinum</string>
+    <string name="blue_diamond">blue diamond</string>
+    <string name="turquoise">turquoise</string>
+    <string name="ocean_blue">ocean blue</string>
+    <string name="green">green</string>
+    <string name="lava_red">lava red</string>
+    <string name="gunmetal">gunmetal</string>
+</resources>

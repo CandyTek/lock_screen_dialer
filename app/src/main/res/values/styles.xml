@@ -266,4 +266,9 @@
         <item name="android:paddingTop">@dimen/activity_vertical_margin</item>
         <item name="android:paddingBottom">@dimen/activity_vertical_margin</item>
     </style>
+
+    <style name="color_list_item">
+        <item name="android:textSize">20dp</item>
+        <item name="android:padding">12dp</item>
+    </style>
 </resources>
