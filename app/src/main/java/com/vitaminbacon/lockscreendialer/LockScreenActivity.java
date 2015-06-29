@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
@@ -47,6 +48,7 @@ import com.android.internal.telephony.ITelephony;
 import com.vitaminbacon.lockscreendialer.exceptions.IllegalLayoutException;
 import com.vitaminbacon.lockscreendialer.helpers.BitmapToViewHelper;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -488,20 +490,55 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             if (thumbUri != null) { // block that sets the thumbnail, if it exists
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    phoneCallThumb.setImageURI(Uri.parse(thumbUri));
+                    //phoneCallThumb.setImageURI(Uri.parse(thumbUri));
+                    Log.d(TAG, "thumbUri = " + thumbUri);
+                    Uri photoUri = Uri.parse(thumbUri);
+                    Cursor cursor = getContentResolver().query(photoUri,
+                            new String[]{ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
+                    if (cursor == null) {
+                        phoneCallThumb.setImageResource(android.R.color.transparent);
+                        phoneCallThumb.setImageResource(R.drawable.default_contact_image);
+                    } else {
+                        try {
+                            if (cursor.moveToFirst()) {
+                                byte[] data = cursor.getBlob(0);
+                                if (data != null) {
+                                    Log.d(TAG, "Applying bitmap to thumb view");
+                                    phoneCallThumb.setImageBitmap(
+                                            BitmapFactory
+                                                    .decodeStream(new ByteArrayInputStream(data)));
+                                } else {
+                                    phoneCallThumb.setImageResource(android.R.color.transparent);
+                                    phoneCallThumb.setImageResource(R.drawable.default_contact_image);
+                                }
+                            } else {
+                                phoneCallThumb.setImageResource(android.R.color.transparent);
+                                phoneCallThumb.setImageResource(R.drawable.default_contact_image);
+                            }
+                        } finally {
+                            cursor.close();
+                        }
+                    }
+
                 }
-                else {
+                /*else {
+                    *//**
+                 * This else statement is no longer applicable given new API target
+                 *//*
+                    Log.d(TAG, "thumbUri = " + thumbUri);
                     final Uri contactUri = Uri.withAppendedPath(
                             ContactsContract.Contacts.CONTENT_URI, thumbUri);
+
                     phoneCallThumb.setImageURI(Uri.withAppendedPath(
                             contactUri,
                             ContactsContract.Contacts.Photo.CONTENT_DIRECTORY
                     ));
-                }
+                }*/
                 if (phoneCallThumb.getDrawable() == null) {
                     Log.d(TAG, "Thumb drawable null");
                 }
             } else {
+                phoneCallThumb.setImageResource(android.R.color.transparent);
                 phoneCallThumb.setImageResource(R.drawable.default_contact_image);
             }
             // Get the phone button views
@@ -1019,7 +1056,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     }
 
     public boolean onTouch(final View view, MotionEvent event) {
-        Log.d(TAG, "onTouch() called");
+        //Log.d(TAG, "onTouch() called");
         if (view.getId() != R.id.lock_screen_sheath_container) {
             return false;
         } else if (mFlinged) {
@@ -1454,7 +1491,18 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             return true;
         }
 
-
+        /**
+         * Ocassionally getting strange error where velocity is positive but should be negative.
+         * No solution found, but could just register a swipe on abs of velocity, and determine
+         * direction by the e1 and e2 parameters.  Would cause some unintuitive results with creative
+         * finger play, but might be better result
+         *
+         * @param e1
+         * @param e2
+         * @param velocityX
+         * @param velocityY
+         * @return
+         */
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2,
                                float velocityX, float velocityY) {
@@ -1473,6 +1521,10 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 doSheathScreenAnimation(false);
                 mFlinged = true;
             }
+
+            /*if (velocityY > 0) {
+                Log.d(TAG, "velocityY error:" + velocityY);
+            }*/
             return false;
         }
     }

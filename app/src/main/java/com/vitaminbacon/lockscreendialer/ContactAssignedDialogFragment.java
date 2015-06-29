@@ -1,11 +1,14 @@
 package com.vitaminbacon.lockscreendialer;
 
 import android.app.Activity;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +18,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.ByteArrayInputStream;
 
 
 public class ContactAssignedDialogFragment extends DialogFragment
@@ -23,16 +27,16 @@ public class ContactAssignedDialogFragment extends DialogFragment
     private static final String TAG = "ContactAssignedDialFrag";
     private ReassignSpeedDialInterface mListener;
 
-    private String mdisplayName;
-    private String mthumbUri;
-    private String mphoneNum;
-    private String mphoneType;
-    private String mkeyNumSelected;
+    private String mDisplayName;
+    private String mThumbUri;
+    private String mPhoneNum;
+    private String mPhoneType;
+    private String mKeyNumSelected;
 
-    private TextView mdisplayNameView;
-    private ImageView mthumbnailView;
-    private TextView mphoneNumView;
-    private TextView mphoneTypeView;
+    private TextView mDisplayNameView;
+    private ImageView mThumbnailView;
+    private TextView mPhoneNumView;
+    private TextView mPhoneTypeView;
     private TextView mInstructionView;
     private Button mReassignButton;
     private Button mRemoveButton;
@@ -62,11 +66,11 @@ public class ContactAssignedDialogFragment extends DialogFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
-        mdisplayName = bundle.getString("displayName");
-        mthumbUri = bundle.getString("thumbUri");
-        mphoneNum = bundle.getString("phoneNum");
-        mphoneType = bundle.getString("phoneType");
-        mkeyNumSelected = bundle.getString("keyNumSelected");
+        mDisplayName = bundle.getString("displayName");
+        mThumbUri = bundle.getString("thumbUri");
+        mPhoneNum = bundle.getString("phoneNum");
+        mPhoneType = bundle.getString("phoneType");
+        mKeyNumSelected = bundle.getString("keyNumSelected");
     }
 
     @Override
@@ -83,38 +87,65 @@ public class ContactAssignedDialogFragment extends DialogFragment
         View rootView = inflater.inflate(R.layout.fragment_contact_assigned_dialog, container, false);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-        mdisplayNameView = (TextView) rootView.findViewById(R.id.contact_assigned_display_name);
-        mdisplayNameView.setText(mdisplayName);
-        mdisplayNameView.setSingleLine(false); // To make wrapping; can't seem to do this via XML
+        mDisplayNameView = (TextView) rootView.findViewById(R.id.contact_assigned_display_name);
+        mDisplayNameView.setText(mDisplayName);
+        mDisplayNameView.setSingleLine(false); // To make wrapping; can't seem to do this via XML
 
-        mthumbnailView = (ImageView) rootView.findViewById(R.id.contact_assigned_thumbnail);
-        if(mthumbUri != null) {
+        mThumbnailView = (ImageView) rootView.findViewById(R.id.contact_assigned_thumbnail);
+        if (mThumbUri != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                mthumbnailView.setImageURI(Uri.parse(mthumbUri));
-            }
-            else {
+                //mThumbnailView.setImageURI(Uri.parse(mThumbUri));
+                Uri photoUri = Uri.parse(mThumbUri);
+                Cursor cursor = getActivity().getContentResolver().query(photoUri,
+                        new String[]{ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
+                if (cursor == null) {
+                    mThumbnailView.setImageResource(android.R.color.transparent);
+                    mThumbnailView.setImageResource(R.drawable.default_contact_image);
+                } else {
+                    try {
+                        if (cursor.moveToFirst()) {
+                            byte[] data = cursor.getBlob(0);
+                            if (data != null) {
+                                Log.d(TAG, "Applying bitmap to thumb view");
+                                mThumbnailView.setImageBitmap(
+                                        BitmapFactory
+                                                .decodeStream(new ByteArrayInputStream(data)));
+                            } else {
+                                mThumbnailView.setImageResource(android.R.color.transparent);
+                                mThumbnailView.setImageResource(R.drawable.default_contact_image);
+                            }
+                        } else {
+                            mThumbnailView.setImageResource(android.R.color.transparent);
+                            mThumbnailView.setImageResource(R.drawable.default_contact_image);
+                        }
+                    } finally {
+                        cursor.close();
+                    }
+                }
+            } else {
+                // Outdated block given new target API
                 final Uri contactUri = Uri.withAppendedPath(
-                        ContactsContract.Contacts.CONTENT_URI, mthumbUri);
-                mthumbnailView.setImageURI(Uri.withAppendedPath(
+                        ContactsContract.Contacts.CONTENT_URI, mThumbUri);
+                mThumbnailView.setImageURI(Uri.withAppendedPath(
                         contactUri,
                         ContactsContract.Contacts.Photo.CONTENT_DIRECTORY
                 ));
             }
         }
         else { // Set the default thumbnail image
-            mthumbnailView.setImageResource(R.drawable.default_contact_image);
+            mThumbnailView.setImageResource(R.drawable.default_contact_image);
         }
 
-        mphoneNumView = (TextView) rootView.findViewById(R.id.contact_assigned_phone_num);
-        mphoneNumView.setText(mphoneNum);
+        mPhoneNumView = (TextView) rootView.findViewById(R.id.contact_assigned_phone_num);
+        mPhoneNumView.setText(mPhoneNum);
 
-        mphoneTypeView = (TextView) rootView.findViewById(R.id.contact_assigned_phone_type);
-        mphoneTypeView.setText(mphoneType);
+        mPhoneTypeView = (TextView) rootView.findViewById(R.id.contact_assigned_phone_type);
+        mPhoneTypeView.setText(mPhoneType);
 
         /*mInstructionView = (TextView) rootView.findViewById(R.id.contact_assigned_instruction);
         mInstructionView.setText(getString(R.string.contact_assigned_instruction));*/
         TextView numView = (TextView) rootView.findViewById(R.id.contact_assigned_number);
-        numView.setText(mkeyNumSelected);
+        numView.setText(mKeyNumSelected);
         mReassignButton = (Button) rootView.findViewById(R.id.contact_assigned_reassign);
         mReassignButton.setOnClickListener(this);
         mRemoveButton = (Button) rootView.findViewById(R.id.contact_assigned_remove);
@@ -133,7 +164,7 @@ public class ContactAssignedDialogFragment extends DialogFragment
      * @param v
      */
     public void onClick(View v) {
-        mListener.reassignSpeedDial(v.getId(), mkeyNumSelected);
+        mListener.reassignSpeedDial(v.getId(), mKeyNumSelected);
     }
 
     /*
