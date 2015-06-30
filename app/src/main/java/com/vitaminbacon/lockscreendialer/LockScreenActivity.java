@@ -197,8 +197,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         }
 
         if (mSheathScreenOn && !mPhoneCallActiveFlag) {
-            Log.d(TAG, "sheath screen prepared");
-
             mFlinged = false;
             if (mBackgroundSetFlag) {
                 prepareSheathScreenAnimation(true);
@@ -371,7 +369,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     }
 
     private void doSheathScreenAnimation(final boolean swiped) {
-        Log.d(TAG, "doSheathScreenAnimation() called, swiped = " + swiped);
+        //Log.d(TAG, "doSheathScreenAnimation() called, swiped = " + swiped);
         final View sheathScreen = mWrapperView.findViewById(R.id.lock_screen_sheath_container);
         final View lockScreen = mWrapperView.findViewById(R.id.lock_screen_interaction_container);
         int sheathPos;
@@ -453,7 +451,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     }
 
     private void prepareLockScreenAnimation() {
-        Log.d(TAG, "prepareLockScreenAnimation() called");
+        //Log.d(TAG, "prepareLockScreenAnimation() called");
         View sheathScreen = mWrapperView.findViewById(R.id.lock_screen_sheath_container);
         View lockScreen = mWrapperView.findViewById(R.id.lock_screen_interaction_container);
         lockScreen.setTranslationX(getDisplayWidth());
@@ -462,7 +460,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     }
 
     private void doLockScreenAnimation() {
-        Log.d(TAG, "doLockScreenAnimation() called");
+        //Log.d(TAG, "doLockScreenAnimation() called");
         View lockScreen = mWrapperView.findViewById(R.id.lock_screen_interaction_container);
         lockScreen.animate().translationX(0);
     }
@@ -505,7 +503,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     //phoneCallThumb.setImageURI(Uri.parse(thumbUri));
-                    Log.d(TAG, "thumbUri = " + thumbUri);
+                    //Log.d(TAG, "thumbUri = " + thumbUri);
                     Uri photoUri = Uri.parse(thumbUri);
                     Cursor cursor = getContentResolver().query(photoUri,
                             new String[]{ContactsContract.Contacts.Photo.PHOTO}, null, null, null);
@@ -517,7 +515,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                             if (cursor.moveToFirst()) {
                                 byte[] data = cursor.getBlob(0);
                                 if (data != null) {
-                                    Log.d(TAG, "Applying bitmap to thumb view");
+                                    //Log.d(TAG, "Applying bitmap to thumb view");
                                     phoneCallThumb.setImageBitmap(
                                             BitmapFactory
                                                     .decodeStream(new ByteArrayInputStream(data)));
@@ -549,7 +547,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     ));
                 }*/
                 if (phoneCallThumb.getDrawable() == null) {
-                    Log.d(TAG, "Thumb drawable null");
+                    //Log.d(TAG, "Thumb drawable null");
                 }
             } else {
                 phoneCallThumb.setImageResource(android.R.color.transparent);
@@ -634,7 +632,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      * @param animationFlag - value true animates the drawer and buttons
      */
     private void disableCallViewsInView(boolean animationFlag) {
-        Log.d(TAG, "disableCallViewsInView() called");
+        //Log.d(TAG, "disableCallViewsInView() called");
         ImageButton endCallBtn;
 
         final ViewGroup phoneButtons, widgets;  // Declared final for anonymous function purpose
@@ -1004,7 +1002,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         }
 
         if (color != -1) { // since color is set, we just set the background to that and return null
-            Log.d(TAG, "setting activity to a color");
+            //Log.d(TAG, "setting activity to a color");
             //view.setImageBitmap(null);
             view.setBackgroundColor(color);
             view.setVisibility(View.VISIBLE);
@@ -1014,7 +1012,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             return;
 
         } else if (filePath == null) { // then we have the default image situation
-            Log.d(TAG, "setting activity to default image");
+            //Log.d(TAG, "setting activity to default image");
 
             Bitmap bitmap = BitmapFactory.decodeResource(
                     getResources(), R.drawable.background_default);
@@ -1549,12 +1547,12 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             // Going for a somewhat unartful algorithm just to get some more consistent results
             if (e1.getRawY() - e2.getRawY() > minDistance
                     && Math.abs(velocityY) > thresholdVel) {
-                Log.d(TAG, "Threshold reached, animating.");
+                //Log.d(TAG, "Threshold reached, animating.");
                 doSheathScreenAnimation(true);
                 mFlinged = true;
             } else if (e2.getRawY() - e1.getRawY() > minDistance
                     && Math.abs(velocityY) > thresholdVel) {
-                Log.d(TAG, "Threshold return reached, animating return");
+                //Log.d(TAG, "Threshold return reached, animating return");
                 doSheathScreenAnimation(false);
                 mFlinged = true;
             }
@@ -1571,7 +1569,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             }*/
 
             /*if (velocityY > 0) {
-                Log.d(TAG, "velocityY error:" + velocityY);
+                 (TAG, "velocityY error:" + velocityY);
             }*/
             return false;
         }

@@ -3,10 +3,15 @@ package com.vitaminbacon.lockscreendialer.services;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.vitaminbacon.lockscreendialer.ErrorPageActivity;
+import com.vitaminbacon.lockscreendialer.LockScreenKeypadPatternActivity;
+import com.vitaminbacon.lockscreendialer.LockScreenKeypadPinActivity;
 import com.vitaminbacon.lockscreendialer.LockScreenLauncherActivity;
+import com.vitaminbacon.lockscreendialer.R;
 
 public class PhoneStateReceiver extends BroadcastReceiver {
 
@@ -37,15 +42,13 @@ public class PhoneStateReceiver extends BroadcastReceiver {
 
             if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
                 Log.d(TAG, "PhoneStateReceiver**Idle");
-                Intent lockScreenIntent = getLockScreenIntent(context);
+                Intent lockScreenIntent = new Intent(context, LockScreenLauncherActivity.class);
                 // Now we need to call the lock screen activity back to the foreground
                 //Strange error -- if this is set along with manifest setting, it doesn't want to call onNewIntent
                 lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PHONE_STATE_IDLE);
 
                 context.startActivity(lockScreenIntent);
-
-                // Now
             }
 
             else if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
@@ -53,7 +56,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
                 String incomingNumber =
                         intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
 
-
+                // Go to launcher activity, since we may need to clear any landscape orientation to avoid Galaxy S4 error
                 Intent lockScreenIntent = getLockScreenIntent(context);
                 lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PHONE_STATE_RINGING);
@@ -119,7 +122,8 @@ public class PhoneStateReceiver extends BroadcastReceiver {
      * @return
      */
     private Intent getLockScreenIntent(Context context) {
-        /*SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.lock_screen_type_file_key),
+
+        SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.lock_screen_type_file_key),
                 Context.MODE_PRIVATE);
         String lockScreenType;
 
@@ -149,8 +153,8 @@ public class PhoneStateReceiver extends BroadcastReceiver {
         } else {
             Log.e(TAG, "Unable to get the lock screen type from shared preferences.");
             return null;
-        }*/
-        Intent newIntent = new Intent(context, LockScreenLauncherActivity.class);
+        }
+        //Intent newIntent = new Intent(context, LockScreenLauncherActivity.class);
         return newIntent;
     }
 }
