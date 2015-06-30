@@ -1025,7 +1025,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             doSheathTextAnimation(-1);
             return;
 
-        } else if (filePath == null) { // then we have the default image situation
+        } else if (filePath == null || (file != null && !file.exists())) { // then we have the default image situation
             //Log.d(TAG, "setting activity to default image");
 
             Bitmap bitmap = BitmapFactory.decodeResource(

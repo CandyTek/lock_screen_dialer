@@ -62,7 +62,12 @@ public final class BitmapToViewHelper {
         Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
         Matrix matrix = new Matrix();
         matrix.postRotate(orientation);
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        if (bitmap != null) {
+            return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        } else {
+            Log.e(TAG, "Unable to obtain bitmap from file path");
+            return null;
+        }
     }
 
     public static int calculateInSampleSize(
@@ -182,12 +187,13 @@ public final class BitmapToViewHelper {
             }
             else {
                 Log.e(TAG, "Async received null bitmap onPostExecute");
+                // TODO: create a default error background
             }
 
         }
     }
 
-    private static class DataToBitmapTask extends AsyncTask<Integer, Void, Bitmap> {  // TODO: implement onProgressUpdate setting second generic type to integer?
+    private static class DataToBitmapTask extends AsyncTask<Integer, Void, Bitmap> {
         private final WeakReference<GetBitmapFromTaskInterface> activityInterfaceReference;
         private final WeakReference<String> filePathReference;
         private int orientation = 0;
