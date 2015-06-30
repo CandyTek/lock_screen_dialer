@@ -1,50 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lock_screen_interaction_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="5dp"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:layout_weight="1"
-    android:id="@+id/lock_screen_interaction_container"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp">
         <TextView
+            android:id="@+id/lock_screen_pin_display"
+            style="@style/key_pad_pin_instruction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/lock_screen_pin_display"
-            android:text="Enter PIN"
-            android:textColor="@color/white"
-            android:shadowColor="#000000"
-            android:shadowDx="3"
-            android:shadowDy="3"
-            android:shadowRadius="5"
-            android:textSize="25dp"
             android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
             android:layout_marginBottom="25dp"
             android:layout_marginRight="5dp"
-            android:layout_centerVertical="true"/>
+            android:text="Enter PIN" />
 
         <Button
+            android:id="@+id/lock_screen_pin_button_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="x"
-            android:id="@+id/lock_screen_pin_button_delete"
-            android:layout_toRightOf="@id/lock_screen_pin_display"
             android:layout_centerVertical="true"
-            android:textSize="25dp"
-            android:textColor="@color/white"
+            android:layout_toRightOf="@id/lock_screen_pin_display"
+            android:background="@drawable/selector_speed_dial"
+            android:minWidth="40dp"
             android:shadowColor="#000000"
             android:shadowDx="3"
             android:shadowDy="3"
             android:shadowRadius="5"
-            android:visibility="invisible"
-            android:background="@drawable/selector_speed_dial"
-            android:minWidth="40dp"/>
+            android:text="x"
+            android:textColor="@color/white"
+            android:textSize="25dp"
+            android:visibility="invisible" />
 
     </RelativeLayout>
 
@@ -65,10 +59,10 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true">
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_digits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1"
-                    style="@style/key_pad_buttons_lock_screen_digits"/>
+                    android:text="1" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -86,15 +80,15 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true">
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_digits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2"
-                    style="@style/key_pad_buttons_lock_screen_digits"/>
+                    android:text="2" />
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_alphabetics"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="ABC"
-                    style="@style/key_pad_buttons_lock_screen_alphabetics"/>
+                    android:text="ABC" />
             </LinearLayout>
 
         </RelativeLayout>
@@ -112,15 +106,15 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true">
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_digits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="3"
-                    style="@style/key_pad_buttons_lock_screen_digits"/>
+                    android:text="3" />
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_alphabetics"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="DEF"
-                    style="@style/key_pad_buttons_lock_screen_alphabetics"/>
+                    android:text="DEF" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -143,15 +137,15 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true">
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_digits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="4"
-                    style="@style/key_pad_buttons_lock_screen_digits"/>
+                    android:text="4" />
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_alphabetics"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="GHI"
-                    style="@style/key_pad_buttons_lock_screen_alphabetics"/>
+                    android:text="GHI" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -169,15 +163,15 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true">
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_digits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="5"
-                    style="@style/key_pad_buttons_lock_screen_digits"/>
+                    android:text="5" />
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_alphabetics"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="JKL"
-                    style="@style/key_pad_buttons_lock_screen_alphabetics"/>
+                    android:text="JKL" />
             </LinearLayout>
 
         </RelativeLayout>
@@ -195,15 +189,15 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true">
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_digits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="6"
-                    style="@style/key_pad_buttons_lock_screen_digits"/>
+                    android:text="6" />
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_alphabetics"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="MNO"
-                    style="@style/key_pad_buttons_lock_screen_alphabetics"/>
+                    android:text="MNO" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -226,15 +220,15 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true">
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_digits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="7"
-                    style="@style/key_pad_buttons_lock_screen_digits"/>
+                    android:text="7" />
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_alphabetics"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="PQRS"
-                    style="@style/key_pad_buttons_lock_screen_alphabetics"/>
+                    android:text="PQRS" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -251,15 +245,15 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true">
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_digits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="8"
-                    style="@style/key_pad_buttons_lock_screen_digits"/>
+                    android:text="8" />
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_alphabetics"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="TUV"
-                    style="@style/key_pad_buttons_lock_screen_alphabetics"/>
+                    android:text="TUV" />
             </LinearLayout>
 
         </RelativeLayout>
@@ -277,15 +271,15 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true">
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_digits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="9"
-                    style="@style/key_pad_buttons_lock_screen_digits"/>
+                    android:text="9" />
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_alphabetics"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="WXYZ"
-                    style="@style/key_pad_buttons_lock_screen_alphabetics"/>
+                    android:text="WXYZ" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -319,10 +313,10 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true">
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_digits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0"
-                    style="@style/key_pad_buttons_lock_screen_digits"/>
+                    android:text="0" />
             </LinearLayout>
         </RelativeLayout>
 
@@ -338,10 +332,10 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true">
                 <TextView
+                    style="@style/key_pad_buttons_lock_screen_digits"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="OK"
-                    style="@style/key_pad_buttons_lock_screen_digits"/>
+                    android:text="OK" />
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>

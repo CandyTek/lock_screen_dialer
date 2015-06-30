@@ -58,77 +58,6 @@
         <item name="android:padding">10dp</item>
     </style>
 
-    <style name="lock_screen_clock">
-        <item name="android:textSize">40sp</item>
-        <item name="android:textColor">@color/white</item>
-
-        <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">3</item>
-        <item name="android:shadowDy">3</item>
-        <item name="android:shadowRadius">5</item>
-    </style>
-
-    <style name="lock_screen_date">
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">3</item>
-        <item name="android:shadowDy">5</item>
-        <item name="android:shadowRadius">3</item>
-    </style>
-
-    <style name="sheath_screen_clock">
-        <item name="android:textSize">55sp</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:gravity">center</item>
-        <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">2</item>
-        <item name="android:shadowDy">2</item>
-        <item name="android:shadowRadius">5</item>
-    </style>
-
-    <style name="sheath_screen_date">
-        <item name="android:textSize">25sp</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:gravity">center</item>
-        <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">2</item>
-        <item name="android:shadowDy">2</item>
-        <item name="android:shadowRadius">5</item>
-    </style>
-
-    <style name="lock_screen_info">
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@color/white</item>
-
-        <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">3</item>
-        <item name="android:shadowDy">3</item>
-        <item name="android:shadowRadius">5</item>
-    </style>
-
-    <style name="lock_screen_additional_widgets">
-        <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">3</item>
-        <item name="android:shadowDy">3</item>
-        <item name="android:shadowRadius">5</item>
-        <item name="android:background">@drawable/selector_speed_dial</item>
-    </style>
-
-
-    <style name="pin_pad_buttons">
-        <item name="android:typeface">sans</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">50sp</item>
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:layout_margin">0dp</item>
-        <item name="android:padding">12dp</item>
-        <item name="android:background">@drawable/selector_speed_dial</item>
-    </style>
 
     <style name="list_item_selection">
         <item name="android:padding">30dp</item>
@@ -145,43 +74,7 @@
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
-    <style name="key_pad_buttons_lock_screen">
-        <item name="android:typeface">sans</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">35sp</item>
-        <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:layout_margin">0dp</item>
-        <item name="android:padding">12dp</item>
-        <item name="android:shadowColor">#000000</item>
-        <item name="android:gravity">left</item>
-        <item name="android:background">@drawable/selector_speed_dial</item>
-    </style>
-    <style name="key_pad_buttons_lock_screen_digits">
-        <item name="android:typeface">sans</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">35sp</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">0dp</item>
-        <item name="android:paddingLeft">12dp</item>
-        <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">2</item>
-        <item name="android:shadowDy">2</item>
-        <item name="android:shadowRadius">5</item>
 
-    </style>
-    <style name="key_pad_buttons_lock_screen_alphabetics">
-        <item name="android:typeface">sans</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:paddingLeft">10dp</item>
-        <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">2</item>
-        <item name="android:shadowDy">2</item>
-        <item name="android:shadowRadius">5</item>
-    </style>
 
     <style name="key_pad_buttons_speed_dial_selection">
         <item name="android:layout_width">fill_parent</item>
@@ -212,54 +105,7 @@
         <item name="android:paddingLeft">10dp</item>
     </style>
 
-    <style name="speed_dial_toggle_lock_screen">
-        <item name="android:typeface">sans</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:shadowColor">#000000</item>
-        <item name="android:gravity">left</item>
-        <item name="android:background">@drawable/selector_speed_dial</item>
-    </style>
-    <style name="end_call_button">
-        <item name="android:textSize">60dp</item>
-        <item name="android:background">@color/lava_red</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textAllCaps">false</item>
-    </style>
 
-    <style name="lock_screen_call_display">
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">18dp</item>
-        <item name="android:layout_gravity">center_horizontal</item>
-    </style>
-
-    <style name="background_selection_buttons">
-        <item name="android:textAllCaps">false</item>
-        <item name="android:typeface">sans</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:padding">5dp</item>
-        <item name="android:layout_margin">10dp</item>
-        <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">1</item>
-        <item name="android:shadowDy">1</item>
-        <item name="android:background">@drawable/selector_background_activity</item>
-    </style>
-
-    <style name="typeface_phone_call_info">
-        <item name="android:typeface">sans</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">@dimen/typeface_phone_call_info_text_size</item>
-        <item name="android:layout_marginTop">@dimen/typeface_phone_call_info_text_margin</item>
-        <item name="android:layout_marginLeft">@dimen/typeface_phone_call_info_text_margin</item>
-    </style>
-
-    <style name="typeface_phone_call_description">
-        <item name="android:typeface">sans</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">@dimen/typeface_phone_call_description_text_size</item>
-        <item name="android:layout_marginLeft">@dimen/typeface_phone_call_info_text_margin</item>
-        <item name="android:textStyle">italic</item>
-    </style>
     <style name="lock_screen_padding">
         <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
         <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
