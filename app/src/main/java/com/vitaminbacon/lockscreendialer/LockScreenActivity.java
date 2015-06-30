@@ -955,6 +955,13 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                             } else {
                                 Log.w(TAG, "Layout does not have toggle button text");
                             }
+                            if (prefs.getBoolean(
+                                    getString(R.string.key_toggle_speed_dial_enabled),
+                                    false)) {
+                                ((ToggleButton) view).setChecked(true);
+                            } else {
+                                ((ToggleButton) view).setChecked(false);
+                            }
                         }
                         break;
                     case R.id.lock_screen_speed_dial_toggle_text:
@@ -1136,6 +1143,20 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     tv.setText(getString(R.string.lock_screen_speed_dial_toggle_off));
                 }
             }
+            /*SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = prefs.edit();
+            if (isChecked) {
+                editor.putBoolean(getString(R.string.key_toggle_speed_dial_enabled), true);
+                if (tv != null) {
+                    tv.setText(getString(R.string.lock_screen_speed_dial_toggle_on));
+                }
+            } else {
+                editor.putBoolean(getString(R.string.key_toggle_speed_dial_enabled), false);
+                if (tv != null) {
+                    tv.setText(getString(R.string.lock_screen_speed_dial_toggle_off));
+                }
+            }
+            editor.commit();*/
         } catch (ClassCastException e) {
             // This isn't a fatal error.
             Log.w(
