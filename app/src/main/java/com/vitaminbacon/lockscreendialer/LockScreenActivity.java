@@ -194,13 +194,19 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         super.onResume();
         if (!mSheathScreenOn && !mBackgroundSetFlag) {
             prepareLockScreenAnimation();
-        }  // No else statement, because where the sheath is enabled, we want to handle this in onResume
-
+        }
 
         if (mSheathScreenOn && !mPhoneCallActiveFlag) {
             Log.d(TAG, "sheath screen prepared");
-            prepareSheathScreenAnimation();
+
             mFlinged = false;
+            if (mBackgroundSetFlag) {
+                prepareSheathScreenAnimation(true);
+                // Covers situation where power button pressed after swiping sheath away
+                doSheathTextAnimation(-1);
+            } else {
+                prepareSheathScreenAnimation(false);
+            }
         } else {
             // Only now set the phone call flag to false.  Previously set in onNewIntent, but useful
             // to wait until onResume is subsequently called so that the sheath is not pulled up
@@ -339,25 +345,29 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      * ---------------------------------------------------------------------------------------------
      */
 
-    private void prepareSheathScreenAnimation() {
+    private void prepareSheathScreenAnimation(boolean animate) {
         View sheathScreen = mWrapperView.findViewById(R.id.lock_screen_sheath_container);
         View lockScreen = mWrapperView.findViewById(R.id.lock_screen_interaction_container);
 
-        // Set the proper translation position for the sheath
+        // Set the visibility of the views
         sheathScreen.setVisibility(View.VISIBLE);
-        sheathScreen.setTranslationY(0);
-        sheathScreen.setOnTouchListener(this);
+        lockScreen.setVisibility(View.VISIBLE);
         if (!mBackgroundSetFlag) {
             sheathScreen
                     .findViewById(R.id.lock_screen_sheath_instruction).setVisibility(View.INVISIBLE);
         }
 
-        // Set the proper translation position for the lock
-        //lockScreen.setTranslationY(lockScreen.getHeight());
-        lockScreen.setTranslationY(getDisplayHeight());
-        lockScreen.setVisibility(View.VISIBLE);
-        Log.d(TAG, "lock screen translationY = " + lockScreen.getTranslationY() + " height = " + lockScreen.getHeight());
+        // Set the translation, animated or not
+        if (animate && sheathScreen.getTranslationY() != 0
+                && lockScreen.getTranslationY() != getDisplayHeight()) {
+            sheathScreen.animate().translationY(0).setListener(null);
+            lockScreen.animate().translationY(getDisplayHeight()).setListener(null);
+        } else {
+            sheathScreen.setTranslationY(0);
+            lockScreen.setTranslationY(getDisplayHeight());
+        }
 
+        sheathScreen.setOnTouchListener(this);
     }
 
     private void doSheathScreenAnimation(final boolean swiped) {
@@ -417,8 +427,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         final int shortAnimTime = getResources().getInteger(R.integer.sheath_text_short_animation);
 
         if (alpha < 0) {
-            mSheathTextView
-                    .setAlpha(getResources().getFraction(R.fraction.sheath_text_alpha_min, 1, 1));
+            /*mSheathTextView
+                    .setAlpha(getResources().getFraction(R.fraction.sheath_text_alpha_min, 1, 1));*/
             mSheathTextView.setVisibility(View.VISIBLE);
             mSheathTextView.animate()
                     .alpha(getResources().getFraction(R.fraction.sheath_text_alpha_max, 1, 1))
@@ -428,7 +438,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
                             mSheathTextView.animate()
-                                    .alpha(getResources().getFraction(R.fraction.sheath_text_alpha_static, 1, 1))
+                                    .alpha(getResources()
+                                            .getFraction(R.fraction.sheath_text_alpha_static, 1, 1))
                                     .setDuration(longAnimTime)
                                     .setListener(null);
                         }
