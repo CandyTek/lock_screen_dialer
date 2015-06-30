@@ -1524,7 +1524,20 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             int thresholdVel = getResources().getInteger(R.integer.swipe_threshold_velocity);
 
             //Log.d(TAG, "VelX = " + velocityX + " VelY = " + velocityY + " e1 = " + e1.getRawY() + " e2 = " + e2.getRawY());
-            if (Math.abs(e1.getRawY() - e2.getRawY()) > minDistance
+
+            // Going for a somewhat unartful algorithm just to get some more consistent results
+            if (e1.getRawY() - e2.getRawY() > minDistance
+                    && Math.abs(velocityY) > thresholdVel) {
+                Log.d(TAG, "Threshold reached, animating.");
+                doSheathScreenAnimation(true);
+                mFlinged = true;
+            } else if (e2.getRawY() - e1.getRawY() > minDistance
+                    && Math.abs(velocityY) > thresholdVel) {
+                Log.d(TAG, "Threshold return reached, animating return");
+                doSheathScreenAnimation(false);
+                mFlinged = true;
+            }
+            /*if (Math.abs(e1.getRawY() - e2.getRawY()) > minDistance
                     && -velocityY > thresholdVel) {
                 Log.d(TAG, "Threshold reached, animating.");
                 doSheathScreenAnimation(true);
@@ -1534,7 +1547,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 Log.d(TAG, "Threshold return reached, animating return");
                 doSheathScreenAnimation(false);
                 mFlinged = true;
-            }
+            }*/
 
             /*if (velocityY > 0) {
                 Log.d(TAG, "velocityY error:" + velocityY);
