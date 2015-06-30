@@ -114,7 +114,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             startService(new Intent(this, LockScreenService.class)); // Means lock screen was unlocked, but phone call ended, so resume screen service
             // Need to launch the launcher to clear any screen issues with Galaxy s4
             startActivity(new Intent(this, LockScreenLauncherActivity.class));
-
             finish();
             return;
         } else if (phoneState == PhoneStateReceiver.PHONE_STATE_RINGING) {

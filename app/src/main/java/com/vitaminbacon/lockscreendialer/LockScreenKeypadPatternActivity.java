@@ -45,6 +45,11 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
 
         View wrapperView = getWrapperView();
 
+        if (wrapperView == null) {
+            // Means the super onCreate is shutting down
+            return;
+        }
+
         // Initialize some basic variables
         mNumTries = 0;  // Possibly modified later by onRestoreInstanceState
         mPatternStored = getStoredPattern();
