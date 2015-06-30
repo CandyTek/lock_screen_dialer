@@ -119,7 +119,8 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity
             android:name=".ErrorPageActivity"
-            android:label="@string/title_activity_error_page" >
+            android:label="@string/title_activity_error_page"
+            android:noHistory="true">
         </activity>
 
         <receiver
@@ -142,6 +143,7 @@
             android:name=".LockScreenLauncherActivity"
             android:label="@string/title_activity_lock_screen_launcher"
             android:launchMode="singleInstance"
+            android:noHistory="true"
             android:screenOrientation="portrait" />
         <activity
             android:name=".BackgroundSelectionActivity"

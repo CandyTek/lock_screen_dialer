@@ -166,6 +166,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                 mTouchDrawView.clearLines();
                 mTouchDrawView.invalidate();
                 if (mPatternEntered.equals(mPatternStored)) {
+                    Log.d(TAG, "Correct passcode called");
                     onCorrectPasscode();
                 } else {
                     if (getPhoneCallActiveFlag() && mPhoneCallInterruptFlag) {

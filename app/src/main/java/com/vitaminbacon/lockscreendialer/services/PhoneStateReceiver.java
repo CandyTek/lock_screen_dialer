@@ -10,7 +10,6 @@ import android.util.Log;
 import com.vitaminbacon.lockscreendialer.ErrorPageActivity;
 import com.vitaminbacon.lockscreendialer.LockScreenKeypadPatternActivity;
 import com.vitaminbacon.lockscreendialer.LockScreenKeypadPinActivity;
-import com.vitaminbacon.lockscreendialer.LockScreenLauncherActivity;
 import com.vitaminbacon.lockscreendialer.R;
 
 public class PhoneStateReceiver extends BroadcastReceiver {
@@ -42,7 +41,8 @@ public class PhoneStateReceiver extends BroadcastReceiver {
 
             if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
                 Log.d(TAG, "PhoneStateReceiver**Idle");
-                Intent lockScreenIntent = new Intent(context, LockScreenLauncherActivity.class);
+                //Intent lockScreenIntent = new Intent(context, LockScreenLauncherActivity.class);
+                Intent lockScreenIntent = getLockScreenIntent(context);
                 // Now we need to call the lock screen activity back to the foreground
                 //Strange error -- if this is set along with manifest setting, it doesn't want to call onNewIntent
                 lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

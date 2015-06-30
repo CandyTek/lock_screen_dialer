@@ -23,6 +23,8 @@ public class LockScreenLauncherActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Log.d(TAG, "LAUNCHER CALLED.");
+
         setContentView(R.layout.activity_lock_screen_launcher);
 
         // Get the lock screen type from sharedPref

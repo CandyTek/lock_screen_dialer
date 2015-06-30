@@ -112,6 +112,11 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             //mPhoneCallActiveFlag = false;
             //Log.d(TAG, "onCreate received intent with phone state idle; starting screen service and exiting");
             startService(new Intent(this, LockScreenService.class)); // Means lock screen was unlocked, but phone call ended, so resume screen service
+            // Need to launch the launcher to clear any screen issues with Galaxy s4
+            startActivity(new Intent(this, LockScreenLauncherActivity.class));
+
+            finish();
+            return;
         } else if (phoneState == PhoneStateReceiver.PHONE_STATE_RINGING) {
             //mPhoneCallActiveFlag = true;
             //Log.d(TAG, "onCreate received intent with phone state ringing; stopping screen service and exiting");
@@ -280,7 +285,14 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         Log.d(TAG, "onNewIntent called" + intent.toString());
 
         if (phoneState == PhoneStateReceiver.PHONE_STATE_IDLE) {
-            // Phone was just hung up and activity is instantiated
+            // Phone was just hung up
+            if (!mPhoneCallActiveFlag) {
+                Log.d(TAG, "restarting activity)");
+                // Received new intent in situation where we may need to reset the screen if it is rotated b/c of galaxy error
+                startActivity(new Intent(this, LockScreenLauncherActivity.class));
+                finish();
+                return;
+            }
             mContactNameOnCall = mPhoneNumOnCall = mPhoneTypeOnCall = null;
             disableCallViewsInView(true);
             try {
@@ -322,9 +334,11 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         super.onDestroy();
 
         // TODO: is there a way to animate this?
-        mWindowManager.removeView(mWrapperView);
-        ((ImageView) mWrapperView.findViewById(R.id.lock_screen_background_view)).setImageBitmap(null);  // Probably not necessary
-        mWrapperView.removeAllViews();
+        if (mWindowManager != null && mWrapperView != null) {
+            mWindowManager.removeView(mWrapperView);
+            ((ImageView) mWrapperView.findViewById(R.id.lock_screen_background_view)).setImageBitmap(null);  // Probably not necessary
+            mWrapperView.removeAllViews();
+        }
 
         /*if (mBackgroundBitmap != null) {
             mBackgroundBitmap.recycle();
