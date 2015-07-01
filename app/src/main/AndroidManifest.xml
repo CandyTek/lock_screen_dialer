@@ -145,7 +145,8 @@
             android:label="@string/title_activity_lock_screen_launcher"
             android:launchMode="singleInstance"
             android:noHistory="true"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/lock_screen_window_theme" />
         <activity
             android:name=".BackgroundSelectionActivity"
             android:label="@string/title_activity_background_selection"

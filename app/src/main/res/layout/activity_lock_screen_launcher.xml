@@ -3,19 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
+    <RelativeLayout
+        android:id="@+id/splash_screen"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/green" />
+        android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="12dp"
-        android:gravity="center_horizontal"
-        android:text="vitamin bacon"
-        android:textColor="@color/white"
-        android:textSize="20dp" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/green" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="12dp"
+            android:gravity="center_horizontal"
+            android:text="vitamin bacon"
+            android:textColor="@color/white"
+            android:textSize="20dp" />
+
+    </RelativeLayout>
 
 </RelativeLayout>

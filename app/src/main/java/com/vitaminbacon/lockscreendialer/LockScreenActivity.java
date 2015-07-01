@@ -484,6 +484,56 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     }
 
     /**
+     * View a is crossfaded in while View b is crossfaded out, and sts the sheath animation as appropriate
+     *
+     * @param a
+     * @param b
+     */
+    private void crossFadeViewsOnStart(final View a, final View b) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+            a.setAlpha(0f);
+            a.setVisibility(View.VISIBLE);
+            b.setAlpha(1f);
+            b.setVisibility(View.VISIBLE);
+            int animTime = getResources().getInteger(android.R.integer.config_mediumAnimTime);
+            a.animate()
+                    .alpha(1f)
+                    .setDuration(animTime)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @SuppressLint("NewApi")
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            // Here we can slide in the text view information stuff
+                            //Log.d(TAG, "screenText translationX is " + mLockScreen.getTranslationX());
+                            if (!mSheathScreenOn) {
+                                //mLockScreen.animate().translationX(0);
+                                doLockScreenAnimation();
+                            } else {
+                                // Instantiate the sheath text animation
+                                doSheathTextAnimation(-1);
+                            }
+                            mBackgroundSetFlag = true;
+                        }
+                    });
+
+            b.animate()
+                    .alpha(0f)
+                    .setDuration(animTime)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            b.setVisibility(View.GONE);
+                        }
+                    });
+        } else {
+            a.setVisibility(View.VISIBLE);
+            b.setVisibility(View.GONE);
+            mBackgroundSetFlag = true;
+        }
+    }
+
+    /**
      * Animates the call drawer and call button animations when a phone call is initiated by the user.
      * This is the implementation of this parent class that requires certain view IDs --
      * @param telNum - a string with the telephone number
@@ -1052,14 +1102,15 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             file = new File(filePath);
         }
 
-        if (color != -1) { // since color is set, we just set the background to that and return null
+        if (color != -1) { // since color is set, we just set the background to that and return
             //Log.d(TAG, "setting activity to a color");
             //view.setImageBitmap(null);
             view.setBackgroundColor(color);
-            view.setVisibility(View.VISIBLE);
-            mBackgroundProgress.setVisibility(View.GONE);
-            mBackgroundSetFlag = true;
-            doSheathTextAnimation(-1);
+            crossFadeViewsOnStart(view, mBackgroundProgress);
+            //view.setVisibility(View.VISIBLE);
+            //mBackgroundProgress.setVisibility(View.GONE);
+            //mBackgroundSetFlag = true;
+            //doSheathTextAnimation(-1);
             return;
 
         } else if (filePath == null || (file != null && !file.exists())) { // then we have the default image situation
@@ -1068,11 +1119,12 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             Bitmap bitmap = BitmapFactory.decodeResource(
                     getResources(), R.drawable.background_default);
             mBackgroundView.setImageBitmap(bitmap);
-            view.setVisibility(View.VISIBLE);
-            mBackgroundProgress.setVisibility(View.GONE);
+            /*view.setVisibility(View.VISIBLE);
+            mBackgroundProgress.setVisibility(View.GONE);*/
             //mBackgroundBitmap = bitmap;
-            mBackgroundSetFlag = true;
-            doSheathTextAnimation(-1);
+            crossFadeViewsOnStart(mBackgroundView, mBackgroundProgress);
+            //mBackgroundSetFlag = true;
+            //doSheathTextAnimation(-1);
 
         } else if (file != null && file.exists()) { //now we must retrieve and set up the stored picture
             if (!mBackgroundSetFlag) {
@@ -1192,20 +1244,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     tv.setText(getString(R.string.lock_screen_speed_dial_toggle_off));
                 }
             }
-            /*SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor editor = prefs.edit();
-            if (isChecked) {
-                editor.putBoolean(getString(R.string.key_toggle_speed_dial_enabled), true);
-                if (tv != null) {
-                    tv.setText(getString(R.string.lock_screen_speed_dial_toggle_on));
-                }
-            } else {
-                editor.putBoolean(getString(R.string.key_toggle_speed_dial_enabled), false);
-                if (tv != null) {
-                    tv.setText(getString(R.string.lock_screen_speed_dial_toggle_off));
-                }
-            }
-            editor.commit();*/
+
         } catch (ClassCastException e) {
             // This isn't a fatal error.
             Log.w(
@@ -1224,9 +1263,10 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      */
     public void getBitmapFromTask(Bitmap bitmap) {
         mBackgroundView.setImageBitmap(bitmap);
-        mBackgroundSetFlag = true;
+        //mBackgroundSetFlag = true;
+        crossFadeViewsOnStart(mBackgroundView, mBackgroundProgress);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
             mBackgroundView.setAlpha(0f);
@@ -1264,7 +1304,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         } else {
             mBackgroundView.setVisibility(View.VISIBLE);
             mBackgroundProgress.setVisibility(View.GONE);
-        }
+        }*/
 
     }
     /**
