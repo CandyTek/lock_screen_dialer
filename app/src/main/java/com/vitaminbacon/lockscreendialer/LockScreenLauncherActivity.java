@@ -26,6 +26,8 @@ public class LockScreenLauncherActivity extends Activity {
         Log.d(TAG, "LAUNCHER CALLED.");
 
         setContentView(R.layout.activity_lock_screen_launcher);
+        //startActivity(new Intent(this, ErrorPageActivity.class));
+
 
         // Get the lock screen type from sharedPref
         SharedPreferences sharedPref = getSharedPreferences(
@@ -59,38 +61,6 @@ public class LockScreenLauncherActivity extends Activity {
             finish();
             return;
         }
-
-
-        /*if (lockScreenType != null) {
-
-            if (lockScreenType.equals(getString(R.string.lock_screen_type_value_keypad_pin))) { // Now enable the correct lock screen
-                intent = new Intent(this, LockScreenKeypadPinActivity.class);
-            } else if (lockScreenType.equals(getString(R.string.lock_screen_type_value_keypad_pattern))) {
-                intent = new Intent(this, LockScreenKeypadPatternActivity.class);
-            } else { //An error of some kind
-                Log.d(TAG, "No value for key " + getString(R.string.lock_screen_type_value_key));
-                intent = new Intent(this, ErrorPageActivity.class);
-            }
-        } else {
-            Log.e(TAG, "Unable to get the lock screen type from shared preferences.");
-            finish();
-            return;
-        }
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // necessary to add to android's stack of things to do
-        //intent.addFlags(WindowManager.LayoutParams.TYPE_SYSTEM_ERROR); //this allows the activity to be placed on top of everything -- UGLY HACK??
-        if (getIntent().getExtras() != null){
-            intent.putExtras(getIntent().getExtras()); //places the extras, if any, passed to the activity
-        }
-        else {
-            Log.d(TAG, "Passed intent did not have any extras.");
-        }*/
-        /*int delay;
-        int phoneState = getIntent().getIntExtra(PhoneStateReceiver.EXTRA_PHONE_STATE, -1);
-        if (phoneState != PhoneStateReceiver.PHONE_STATE_IDLE) {
-            delay = SPLASH_TIME_OUT;
-        } else {
-            delay = 0;
-        }*/
 
         new Handler().postDelayed(new Runnable() {
             @Override

@@ -143,6 +143,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 .inflate(R.layout.activity_lock_screen,  // obtained from subclass onCreate()
                         new RelativeLayout(getBaseContext()),
                         false);
+        //mWrapperView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
         mWindowManager.addView(mWrapperView, localLayoutParams);
 
         try {
@@ -1238,10 +1239,21 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      * Simple method that handles logic when the correct passcode is entered
      */
     protected void onCorrectPasscode() {
-        //Log.d(TAG, "Finishing activity, clearing service.");
-        //unregisterReceiver(mReceiver);
+        Log.d(TAG, "Correct passcode entered");
         stopService(new Intent(this, PhoneStateService.class));
-        finish();
+        View v = mWrapperView.findViewById(R.id.transition_wrapper);
+        // Fade out the lock screen
+        if (v != null) {
+            v.animate().alpha(0f).setDuration(200).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    finish();
+                }
+            });
+        } else {
+            finish();
+        }
     }
 
     protected void onFatalError() {

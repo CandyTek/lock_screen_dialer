@@ -164,7 +164,7 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         }
 
         //  Now check whether the PIN entered so far matches the stored PIN
-        //Log.d(TAG, mPinEntered + " vs " + mPinStored);
+        Log.d(TAG, mPinEntered + " vs " + mPinStored);
         if (mPinEntered.equals(mPinStored)) {
             onCorrectPasscode();
         }
@@ -185,7 +185,7 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                Log.d(TAG, v.getId() + " down. (" + event.getX() + ", " + event.getY() + "); raw(" + event.getRawX() + ", " + event.getRawY() + ")");
+                //Log.d(TAG, v.getId() + " down. (" + event.getX() + ", " + event.getY() + "); raw(" + event.getRawX() + ", " + event.getRawY() + ")");
                 if (mHandler == null) { // means there is no pending handler
                     mHandler = new Handler();
                     mRunnable = new DialerRunnable(this, getSpeedDialButtonPressed(v.getId(), -1));
@@ -196,13 +196,13 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                Log.d(TAG, v.getId() + " up. (" + event.getX() + ", " + event.getY() + "); raw(" + event.getRawX() + ", " + event.getRawY() + ")");
+                //Log.d(TAG, v.getId() + " up. (" + event.getX() + ", " + event.getY() + "); raw(" + event.getRawX() + ", " + event.getRawY() + ")");
                 mHandler.removeCallbacks(mRunnable);
                 mHandler = null;
                 mRunnable = null;
                 break;
             case MotionEvent.ACTION_MOVE:
-                Log.d(TAG, v.getId() + " move. (" + event.getX() + ", " + event.getY() + "); raw(" + event.getRawX() + ", " + event.getRawY() + ")");
+                //Log.d(TAG, v.getId() + " move. (" + event.getX() + ", " + event.getY() + "); raw(" + event.getRawX() + ", " + event.getRawY() + ")");
         }
         return false;
     }

@@ -108,7 +108,7 @@
             android:label="@string/title_activity_lock_screen_keypad_pin"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            android:theme="@style/lock_screen_window_theme">
         </activity>
         <activity
             android:name=".LockScreenKeypadPatternActivity"
@@ -116,11 +116,12 @@
             android:label="@string/title_activity_lock_screen_keypad_pattern"
             android:launchMode="singleInstance"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+            android:theme="@style/lock_screen_window_theme" />
         <activity
             android:name=".ErrorPageActivity"
             android:label="@string/title_activity_error_page"
-            android:noHistory="true">
+            android:noHistory="true"
+            android:theme="@style/lock_screen_window_theme">
         </activity>
 
         <receiver
