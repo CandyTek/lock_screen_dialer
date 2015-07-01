@@ -2,7 +2,7 @@
 <resources>
 
     <style name="pattern_buttons_lock_screen">
-        <item name="android:typeface">sans</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textColor">@color/milk_white</item>
         <item name="android:textSize">35sp</item>
         <item name="android:layout_width">@dimen/lock_screen_pattern_button_diameter</item>
@@ -18,7 +18,7 @@
     </style>
 
     <style name="pattern_buttons_lock_screen_digits">
-        <item name="android:typeface">sans</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">35sp</item>
         <item name="android:layout_width">wrap_content</item>
@@ -31,6 +31,7 @@
     </style>
 
     <style name="sheath_screen_instruction">
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:gravity">center</item>
         <item name="android:padding">15dp</item>
         <item name="android:shadowColor">#CC000000</item>
@@ -41,6 +42,7 @@
     </style>
 
     <style name="lock_screen_clock">
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textSize">40sp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:shadowColor">#000000</item>
@@ -50,6 +52,7 @@
     </style>
 
     <style name="lock_screen_date">
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:shadowColor">#000000</item>
@@ -59,6 +62,7 @@
     </style>
 
     <style name="sheath_screen_clock">
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textSize">55sp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:gravity">center</item>
@@ -69,6 +73,7 @@
     </style>
 
     <style name="sheath_screen_date">
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textSize">25sp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:gravity">center</item>
@@ -79,9 +84,9 @@
     </style>
 
     <style name="lock_screen_info">
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/white</item>
-
         <item name="android:shadowColor">#000000</item>
         <item name="android:shadowDx">3</item>
         <item name="android:shadowDy">3</item>
@@ -89,6 +94,7 @@
     </style>
 
     <style name="lock_screen_additional_widgets">
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:shadowColor">#000000</item>
@@ -100,7 +106,6 @@
 
 
     <style name="pin_pad_buttons">
-        <item name="android:typeface">sans</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">50sp</item>
         <item name="android:layout_width">0dp</item>
@@ -109,10 +114,11 @@
         <item name="android:layout_margin">0dp</item>
         <item name="android:padding">12dp</item>
         <item name="android:background">@drawable/selector_speed_dial</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
     </style>
 
     <style name="key_pad_buttons_lock_screen">
-        <item name="android:typeface">sans</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">35sp</item>
         <item name="android:layout_width">fill_parent</item>
@@ -126,7 +132,7 @@
     </style>
 
     <style name="key_pad_buttons_lock_screen_digits">
-        <item name="android:typeface">sans</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">35sp</item>
         <item name="android:layout_width">wrap_content</item>
@@ -141,7 +147,7 @@
     </style>
 
     <style name="key_pad_buttons_lock_screen_alphabetics">
-        <item name="android:typeface">sans</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">16sp</item>
         <item name="android:paddingLeft">10dp</item>
@@ -158,6 +164,7 @@
         <item name="android:shadowDy">3</item>
         <item name="android:shadowRadius">5</item>
         <item name="android:textSize">25dp</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
     </style>
 
     <style name="key_pad_pattern_instruction">
@@ -171,10 +178,11 @@
         <item name="android:shadowRadius">5</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">25dp</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
     </style>
 
     <style name="speed_dial_toggle_lock_screen">
-        <item name="android:typeface">sans</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">18sp</item>
         <item name="android:shadowColor">#000000</item>
