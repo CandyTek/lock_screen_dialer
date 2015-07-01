@@ -163,6 +163,9 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
                         mPatternEntered += mLastBtnTouchedNum;
                         b.setPressed(true);
                         Log.d(TAG, "Pattern now = " + mPatternEntered);
+                        Vibrator vibrator =
+                                (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        vibrator.vibrate(1);
                     }
                 } catch (ClassCastException e) {
                     Log.e(TAG, "Unable to case Button to view to get value.", e);
@@ -173,6 +176,8 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
 
             case MotionEvent.ACTION_UP:
                 onPatternSubmitted();
+                mTouchDrawView.clearLines();
+                mTouchDrawView.invalidate();
 
             case MotionEvent.ACTION_MOVE:
 
@@ -217,6 +222,10 @@ public class KeypadPatternConfigActivity extends ActionBarActivity implements Vi
                                 mPatternEntered += mLastBtnTouchedNum;
                                 //Log.d(TAG, "Pattern now = " + mPatternEntered);
                                 b.setPressed(true);
+
+                                Vibrator vibrator =
+                                        (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                                vibrator.vibrate(1);
 
                                 Paint p = new Paint();
                                 p.setColor(getResources().getColor(R.color.green));

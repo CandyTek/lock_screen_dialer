@@ -141,6 +141,9 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                         mHandler.postDelayed(
                                 mRunnable,
                                 getResources().getInteger(R.integer.lock_screen_pattern_long_press_delay));
+                        Vibrator vibrator =
+                                (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        vibrator.vibrate(1);
                     }
 
                     // Now handle pattern logic
@@ -229,6 +232,10 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                                 mPatternEntered += mLastBtnTouchedNum;
                                 //Log.d(TAG, "Pattern now = " + mPatternEntered);
                                 b.setPressed(true);
+
+                                Vibrator vibrator =
+                                        (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                                vibrator.vibrate(1);
 
                                 Paint p = new Paint();
                                 p.setColor(getResources().getColor(R.color.green));
