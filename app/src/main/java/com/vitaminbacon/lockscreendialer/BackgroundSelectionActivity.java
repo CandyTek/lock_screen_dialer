@@ -156,7 +156,8 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
                 int color = prefs.getInt(getString(R.string.key_background_color),
                         getResources().getColor(R.color.ripple_material_light));
 
-                ColorPickerDialogFragment dialog = ColorPickerDialogFragment.newInstance(color);
+                ColorPickerDialogFragment dialog = ColorPickerDialogFragment
+                        .newInstance(color, R.string.key_background_color);
                 dialog.show(getFragmentManager(), "fragment_color_list_dialog");
                 /*AmbilWarnaDialog dialog = new AmbilWarnaDialog(this, color,
                         new AmbilWarnaDialog.OnAmbilWarnaListener() {
@@ -186,7 +187,7 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
         }
     }
 
-    public void onColorSelected(int color) {
+    public void onColorSelected(int color, int key) {
         Log.d(TAG, "color selected = " + color);
         ImageView bg = (ImageView) findViewById(
                 R.id.background_selection_current_background);
@@ -196,7 +197,7 @@ public class BackgroundSelectionActivity extends ActionBarActivity implements Vi
                 getString(R.string.background_file_key),
                 MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt(getString(R.string.key_background_color), color);
+        editor.putInt(getString(key), color);
         editor.commit();
     }
 

@@ -28,6 +28,8 @@ public class ColorPickerDialogFragment extends DialogFragment
     private List<ColorListItem> mItems;
     private OnColorSelectedListener mListener;
     private int mColorSelected;
+    private boolean mNoColorSelected;
+    private int mKey;
     private View mFragView;
     private String TAG = "ColorPickerDialogFragment";
 
@@ -39,10 +41,22 @@ public class ColorPickerDialogFragment extends DialogFragment
     public ColorPickerDialogFragment() {
     }
 
-    public static ColorPickerDialogFragment newInstance(int colorSelected) {
+    public static ColorPickerDialogFragment newInstance(int key) {
         ColorPickerDialogFragment frag = new ColorPickerDialogFragment();
-        Bundle bundle = new Bundle(1);
+        Bundle bundle = new Bundle(3);
+        bundle.putInt("key", key);
+        bundle.putInt("colorSelected", 0);
+        bundle.putBoolean("noColorSelected", true);
+        frag.setArguments(bundle);
+        return frag;
+    }
+
+    public static ColorPickerDialogFragment newInstance(int colorSelected, int key) {
+        ColorPickerDialogFragment frag = new ColorPickerDialogFragment();
+        Bundle bundle = new Bundle(3);
+        bundle.putInt("key", key);
         bundle.putInt("colorSelected", colorSelected);
+        bundle.putBoolean("noColorSelected", false);
         frag.setArguments(bundle);
         return frag;
     }
@@ -53,7 +67,9 @@ public class ColorPickerDialogFragment extends DialogFragment
 
         Bundle bundle = getArguments();
 
+        mKey = bundle.getInt("key");
         mColorSelected = bundle.getInt("colorSelected");
+        mNoColorSelected = bundle.getBoolean("noColorSelected");
 
         mItems = new ArrayList<ColorListItem>();
         TypedArray colors = getResources().obtainTypedArray(R.array.color_value_list);
@@ -132,14 +148,14 @@ public class ColorPickerDialogFragment extends DialogFragment
         ColorListItem item = adapter.getItem(position);
 
         if (null != mListener) {
-            mListener.onColorSelected(item.color);
+            mListener.onColorSelected(item.color, mKey);
             dismiss();
         }
     }
 
 
     public interface OnColorSelectedListener {
-        public void onColorSelected(int color);
+        public void onColorSelected(int color, int key);
     }
 
     public class ColorListItem {
@@ -186,7 +202,7 @@ public class ColorPickerDialogFragment extends DialogFragment
             } else {
                 viewHolder.colorView.setTextColor(getResources().getColor(R.color.gray_goose));
             }
-            if (item.color == mColorSelected) {
+            if (!mNoColorSelected && item.color == mColorSelected) {
                 viewHolder.colorView.setTypeface(null, Typeface.BOLD_ITALIC);
             }
 

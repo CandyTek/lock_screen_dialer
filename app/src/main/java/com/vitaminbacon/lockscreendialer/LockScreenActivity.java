@@ -15,6 +15,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -98,7 +101,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     private float mLastMoveCoord;
     private boolean mFlinged;
     private boolean mSheathScreenOn;
-    //protected int mLayoutId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,6 +191,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         mBackgroundView.setVisibility(View.GONE);
         setActivityBackground(mBackgroundView);
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
+
+
     }
 
 
@@ -282,7 +286,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
         int phoneState = intent.getIntExtra(PhoneStateReceiver.EXTRA_PHONE_STATE, 0); // returns 0 if doesn't exist
 
-        Log.d(TAG, "onNewIntent called" + intent.toString());
+        //Log.d(TAG, "onNewIntent called" + intent.toString());
 
         if (phoneState == PhoneStateReceiver.PHONE_STATE_IDLE) {
             // Phone was just hung up
@@ -957,6 +961,39 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                                     tv.setText(getString(R.string.lock_screen_speed_dial_toggle_off));
                                     ((ToggleButton) view).setChecked(false);
                                 }
+                                // Now set the color of the background button
+                                try {
+                                    // Get drawing color
+                                    int color = PreferenceManager
+                                            .getDefaultSharedPreferences(this)
+                                            .getInt(
+                                                    getString(R.string.key_select_speed_dial_button_color),
+                                                    getResources().getColor(R.color.blue_diamond));
+
+                                    LayerDrawable layerList = (LayerDrawable) getResources()
+                                            .getDrawable(R.drawable.toggle_button_on);
+                                    GradientDrawable shape = (GradientDrawable) layerList
+                                            .findDrawableByLayerId(R.id.toggle_button_color);
+                                    shape.setColor(color);
+
+                                    StateListDrawable sld = new StateListDrawable();
+                                    // The order here is critically important -- android selects
+                                    // FIRST valid state, traversed based on the order they are added
+                                    sld.addState(new int[]{android.R.attr.state_pressed},
+                                            getResources().getDrawable(R.color.pressed));
+                                    sld.addState(new int[]{android.R.attr.state_checked}, layerList);
+                                    sld.addState(new int[]{},
+                                            getResources().getDrawable(android.R.color.transparent));
+
+
+                                    ((ToggleButton) view).setBackgroundDrawable(sld);
+
+                                } catch (NullPointerException e) {
+                                    Log.w(TAG, "No toggle button layout or color");
+                                } catch (ClassCastException e) {
+                                    Log.w(TAG, "Toggle button layers of wrong type");
+                                }
+
                             } else {
                                 Log.w(TAG, "Layout does not have toggle button text");
                             }

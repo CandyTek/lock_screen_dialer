@@ -23,6 +23,16 @@
         android:summary="@string/pref_description_toggle_lock_date"
         android:title="@string/pref_title_toggle_lock_date" />
 
+    <EditTextPreference
+        android:capitalize="words"
+        android:inputType="textCapWords"
+        android:key="@string/key_toggle_info_display"
+        android:maxLines="2"
+        android:selectAllOnFocus="true"
+        android:singleLine="false"
+        android:summary="@string/pref_description_display_contact_info"
+        android:title="@string/pref_title_display_contact_info" />
+
     <CheckBoxPreference
         android:defaultValue="true"
         android:key="@string/key_toggle_sheath_clock_display"
@@ -41,14 +51,10 @@
         android:summary="@string/pref_description_toggle_speed_dial_button"
         android:title="@string/pref_title_toggle_speed_dial_button" />
 
-    <EditTextPreference
-        android:capitalize="words"
-        android:inputType="textCapWords"
-        android:key="@string/key_toggle_info_display"
-        android:maxLines="2"
-        android:selectAllOnFocus="true"
-        android:singleLine="false"
-        android:summary="@string/pref_description_display_contact_info"
-        android:title="@string/pref_title_display_contact_info" />
+    <Preference
+        android:key="@string/key_select_speed_dial_button_color"
+        android:summary="@string/pref_description_select_speed_dial_button_color"
+        android:title="@string/pref_title_select_speed_dial_button_color"></Preference>
+
 
 </PreferenceScreen>

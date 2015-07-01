@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.vitaminbacon.lockscreendialer.fragments.ColorPickerDialogFragment;
 import com.vitaminbacon.lockscreendialer.helpers.MyListPreference;
 import com.vitaminbacon.lockscreendialer.services.LockScreenService;
 
@@ -46,7 +47,8 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 public class SettingsActivity extends PreferenceActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener,
-        Preference.OnPreferenceChangeListener, MyListPreference.ListItemClickListener {
+        Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener,
+        MyListPreference.ListItemClickListener, ColorPickerDialogFragment.OnColorSelectedListener {
     static final int PICK_LOCK_SCREEN_PIN = 1;
     static final int PICK_LOCK_SCREEN_PATTERN = 2;
     /**
@@ -169,12 +171,34 @@ public class SettingsActivity extends PreferenceActivity
     protected void onResume() {
         super.onResume();
         getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-        Preference p = getPreferenceScreen().findPreference(getString(R.string.key_toggle_lock_screen));
-        p.setOnPreferenceChangeListener(this);
 
-        MyListPreference listPref = (MyListPreference)
-                findPreference(getString(R.string.key_select_lock_screen_type));
-        listPref.setOnListItemClickListener(this);
+        try {
+            Preference lockScreenTogglePref =
+                    getPreferenceScreen().findPreference(getString(R.string.key_toggle_lock_screen));
+            lockScreenTogglePref.setOnPreferenceChangeListener(this);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Lock screen toggle preference missing from layout");
+            finish();
+            return;
+        }
+
+        try {
+            MyListPreference listPref = (MyListPreference)
+                    findPreference(getString(R.string.key_select_lock_screen_type));
+            listPref.setOnListItemClickListener(this);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Lock screen type selection preference missing from layout");
+            finish();
+            return;
+        }
+
+        try {
+            Preference widgetColorPref = getPreferenceScreen()
+                    .findPreference(getString(R.string.key_select_speed_dial_button_color));
+            widgetColorPref.setOnPreferenceClickListener(this);
+        } catch (NullPointerException e) {
+            Log.w(TAG, "Drawing color preference missing from layout");
+        }
     }
 
     @Override
@@ -225,20 +249,34 @@ public class SettingsActivity extends PreferenceActivity
         }
     }
 
+    public boolean onPreferenceClick(Preference preference) {
+        if (preference.getKey().equals(getString(R.string.key_select_speed_dial_button_color))) {
+            ColorPickerDialogFragment dialogFragment;
+            int color = PreferenceManager
+                    .getDefaultSharedPreferences(preference.getContext())
+                    .getInt(preference.getKey(), getResources().getColor(R.color.blue_diamond));
+            dialogFragment = ColorPickerDialogFragment
+                    .newInstance(color, R.string.key_select_speed_dial_button_color);
+            dialogFragment.show(getFragmentManager(), "fragment_color_list_dialog");
+            return true;
+        }
+        return false;
+    }
+
+    public void onColorSelected(int color, int key) {
+        if (key == R.string.key_select_speed_dial_button_color) {
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(getString(key), color);
+            editor.commit();
+        }
+    }
+
     public boolean onPreferenceChange(final Preference preference, final Object newValue) {
         if (preference.getKey().equals(getString(R.string.key_toggle_lock_screen))) {
-            //Log.d(TAG, "onPreferenceChange called on toggle lock screen");
-            /*SharedPreferences prefs = getSharedPreferences(
-                    getString(R.string.key_select_lock_screen_type), MODE_PRIVATE);*/
-
-            /*String lockScreenType = prefs.getString(
-                    getString(R.string.key_select_lock_screen_type),
-                    getString(R.string.pref_default_value_lock_screen_type));*/
-
             MyListPreference pref = (MyListPreference)
                     findPreference(getString(R.string.key_select_lock_screen_type));
 
-            //Log.d(TAG, pref.getValue());
             // Where no lock screen type has been selected
             if (pref.getValue().equals(getString(R.string.lock_screen_type_value_none))) {
                 //Set toast
@@ -270,19 +308,19 @@ public class SettingsActivity extends PreferenceActivity
         //Log.d(TAG, "onSharedPreferencesChanged called, key = " + key);
         if (key.equals(getString(R.string.key_toggle_lock_screen))) {
             CheckBoxPreference checkPref = (CheckBoxPreference) findPreference(key);
-            String text;
+            //String text;
             if (checkPref.isChecked()) {
                 Log.d(TAG, "Lock screen flagged enabled with valid unlocking mech, starting service");
                 startService(new Intent(this, LockScreenService.class));
-                text = getString(R.string.toast_lock_screen_enabled);
+                //text = getString(R.string.toast_lock_screen_enabled);
 
             } else {
                 Log.d(TAG, "Lock screen flagged disabled, stopping service");
                 stopService(new Intent(this, LockScreenService.class));
-                text = getString(R.string.toast_lock_screen_disabled);
+                //text = getString(R.string.toast_lock_screen_disabled);
             }
             // Display toast
-            LayoutInflater inflater = getLayoutInflater();
+            /*LayoutInflater inflater = getLayoutInflater();
             View layout = inflater.inflate(
                     R.layout.toast_custom,
                     (ViewGroup) findViewById(R.id.toast_custom));
@@ -291,7 +329,7 @@ public class SettingsActivity extends PreferenceActivity
             Toast toast = new Toast(getApplicationContext());
             toast.setDuration(Toast.LENGTH_SHORT);
             toast.setView(layout);
-            toast.show();
+            toast.show();*/
         } else if (key.equals(getString(R.string.key_select_lock_screen_type))) {
             MyListPreference listPref = (MyListPreference) findPreference(key);
             if (listPref.getValue().equals(getString(R.string.lock_screen_type_value_none))) {

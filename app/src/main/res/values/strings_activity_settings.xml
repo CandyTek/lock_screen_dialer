@@ -76,27 +76,24 @@
     <string name="pref_description_select_lock_screen_background"> Select a lock screen background from your phone</string>
 
     <string name="pref_title_toggle_lock_clock">Display lock clock</string>
-
     <string name="pref_description_toggle_lock_clock">Shows the current time on the lock screen</string>
 
     <string name="pref_title_toggle_lock_date">Display lock date</string>
-
     <string name="pref_description_toggle_lock_date">Shows the date on the lock screen</string>
 
     <string name="pref_title_toggle_sheath_clock">Display sheath clock</string>
-
     <string name="pref_description_toggle_sheath_clock">Shows the current time on the sheath screen</string>
 
     <string name="pref_title_toggle_sheath_date">Display sheath date</string>
-
     <string name="pref_description_toggle_sheath_date">Shows the date on the sheath screen</string>
 
     <string name="pref_title_toggle_speed_dial_button">Embed speed dial toggle button</string>
-
     <string name="pref_description_toggle_speed_dial_button">Toggle speed dial on and off in the lockscreen</string>
 
-    <string name="pref_title_display_contact_info">Display other text</string>
+    <string name="pref_title_select_speed_dial_button_color">Select speed dial toggle color</string>
+    <string name="pref_description_select_speed_dial_button_color">The speed dial toggle\'s "on" indicator</string>
 
+    <string name="pref_title_display_contact_info">Display other text on lock screen</string>
     <string name="pref_description_display_contact_info">Custom text display, e.g., name and email</string>
 
     <string name="pref_title_sheath_screen">Enable sheath screen</string>
@@ -124,6 +121,7 @@
     <string name="key_toggle_sheath_screen">key_toggle_sheath_screen</string>
     <string name="key_toggle_sheath_clock_display">key_toggle_sheath_clock_display</string>
     <string name="key_toggle_sheath_date_display">key_toggle_sheath_date_display</string>
+    <string name="key_select_speed_dial_button_color">key_select_speed_dial_button_color</string>
 
     <string name="date_format">E d MMM yyyy</string>
 
