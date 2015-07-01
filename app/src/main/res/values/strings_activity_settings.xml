@@ -99,6 +99,12 @@
     <string name="pref_title_sheath_screen">Enable sheath screen</string>
     <string name="pref_description_sheath_screen">Swipe to access to the lock screen</string>
 
+    <string name="pref_title_enable_pattern_draw">Show pattern drawing</string>
+    <string name="pref_description_enable_pattern_draw">Show/hide the pattern entered when using pattern security</string>
+
+    <string name="pref_title_select_pattern_draw_color">Select pattern security color</string>
+    <string name="pref_description_select_pattern_draw_color">The color of the pattern lines drawn when opening the lock screen with pattern security</string>
+
 
     <string name="speed_dial_selection_instructions">Tap a key to assign a phone number.</string>
 
@@ -122,6 +128,8 @@
     <string name="key_toggle_sheath_clock_display">key_toggle_sheath_clock_display</string>
     <string name="key_toggle_sheath_date_display">key_toggle_sheath_date_display</string>
     <string name="key_select_speed_dial_button_color">key_select_speed_dial_button_color</string>
+    <string name="key_enable_pattern_draw">key_enable_pattern_draw</string>
+    <string name="key_select_pattern_draw_color">key_select_pattern_draw_color</string>
 
     <string name="date_format">E d MMM yyyy</string>
 

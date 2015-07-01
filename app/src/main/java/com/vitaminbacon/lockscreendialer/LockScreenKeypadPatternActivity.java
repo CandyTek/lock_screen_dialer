@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -35,6 +36,8 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
     private int mLastBtnTouchedNum;
     private DrawView mPatternDrawView, mTouchDrawView;
     private boolean mPhoneCallInterruptFlag;
+    private boolean mDisplayPatternFlag;
+
 
 
     @Override
@@ -83,6 +86,9 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
             onFatalError(); //For now, just exit.  TODO: find good way to handle these errors.
             return;
         }
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mDisplayPatternFlag = prefs.getBoolean(getString(R.string.key_enable_pattern_draw), true);
     }
 
     @Override
@@ -154,7 +160,10 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                         return false;
                     } else {
                         mPatternEntered += mLastBtnTouchedNum;
-                        b.setPressed(true);
+                        // Draw the pattern
+                        if (mDisplayPatternFlag) {
+                            b.setPressed(true);
+                        }
                     }
                 } catch (ClassCastException e) {
                     Log.e(TAG, "Unable to cast Button to view to get value.", e);
@@ -171,8 +180,10 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                     mHandler = null;
                     mRunnable = null;
                 }
-                mTouchDrawView.clearLines();
-                mTouchDrawView.invalidate();
+                if (mDisplayPatternFlag) {
+                    mTouchDrawView.clearLines();
+                    mTouchDrawView.invalidate();
+                }
                 if (mPatternEntered.equals(mPatternStored)) {
                     Log.d(TAG, "Correct passcode called");
                     onCorrectPasscode();
@@ -231,35 +242,37 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                                 mLastBtnTouchedNum = Integer.parseInt(b.getText().toString());
                                 mPatternEntered += mLastBtnTouchedNum;
                                 //Log.d(TAG, "Pattern now = " + mPatternEntered);
-                                b.setPressed(true);
 
                                 Vibrator vibrator =
                                         (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                                 vibrator.vibrate(1);
 
-                                Paint p = new Paint();
-                                p.setColor(getResources().getColor(R.color.green));
-                                p.setStrokeWidth(3f);
+                                if (mDisplayPatternFlag) {
+                                    b.setPressed(true);
+                                    Paint p = new Paint();
+                                    p.setColor(getResources().getColor(R.color.green));
+                                    p.setStrokeWidth(3f);
 
-                                int[] startCoord = new int[2];
-                                int[] endCoord = new int[2];
-                                last.getLocationOnScreen(startCoord);
-                                b.getLocationOnScreen(endCoord);
-                                mPatternDrawView.addLineWithAbsoluteCoords(
-                                        startCoord[0] + last.getWidth() / 2f,
-                                        startCoord[1] + last.getHeight() / 2f,
-                                        endCoord[0] + b.getWidth() / 2f,
-                                        endCoord[1] + b.getHeight() / 2f,
-                                        p);
-                                mPatternDrawView.invalidate();
-                                mTouchDrawView.clearLines();
-                                mTouchDrawView.invalidate();
-                                drawToTouch = false;
+                                    int[] startCoord = new int[2];
+                                    int[] endCoord = new int[2];
+                                    last.getLocationOnScreen(startCoord);
+                                    b.getLocationOnScreen(endCoord);
+                                    mPatternDrawView.addLineWithAbsoluteCoords(
+                                            startCoord[0] + last.getWidth() / 2f,
+                                            startCoord[1] + last.getHeight() / 2f,
+                                            endCoord[0] + b.getWidth() / 2f,
+                                            endCoord[1] + b.getHeight() / 2f,
+                                            p);
+                                    mPatternDrawView.invalidate();
+                                    mTouchDrawView.clearLines();
+                                    mTouchDrawView.invalidate();
+                                    drawToTouch = false;
+                                }
                                 break;
                             }
                         }
                     }
-                    if (drawToTouch) {
+                    if (mDisplayPatternFlag && drawToTouch) {
                         Paint p = new Paint();
                         p.setColor(getResources().getColor(R.color.lava_red));
                         p.setStrokeWidth(3f);

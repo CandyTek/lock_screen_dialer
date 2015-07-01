@@ -54,7 +54,18 @@
     <Preference
         android:key="@string/key_select_speed_dial_button_color"
         android:summary="@string/pref_description_select_speed_dial_button_color"
-        android:title="@string/pref_title_select_speed_dial_button_color"></Preference>
+        android:title="@string/pref_title_select_speed_dial_button_color" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/key_enable_pattern_draw"
+        android:summary="@string/pref_description_enable_pattern_draw"
+        android:title="@string/pref_title_enable_pattern_draw" />
+
+    <Preference
+        android:key="@string/key_select_pattern_draw_color"
+        android:summary="@string/pref_description_select_pattern_draw_color"
+        android:title="@string/pref_title_select_pattern_draw_color" />
 
 
 </PreferenceScreen>
