@@ -286,7 +286,6 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                     }
                     if (mDisplayPatternFlag && drawToTouch) {
                         Paint p = new Paint();
-                        //p.setColor(getResources().getColor(R.color.lava_red));
                         p.setColor(mDrawColor);
                         p.setStrokeWidth(3f);
 
@@ -300,9 +299,6 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                                 event.getRawY(),
                                 p);
                         mTouchDrawView.invalidate();
-                        /*Log.d(TAG, "(" + (startCoord[0] + last.getWidth() / 2f)
-                                + ", " + (startCoord[1] + last.getHeight() / 2f)
-                                + ") --> (" + event.getRawX() + ", " + event.getRawY() + ")");*/
                     }
                 }
         }
@@ -325,6 +321,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
             patternButtons[7] = (Button) wrapperView.findViewById(R.id.lock_screen_pattern_button_8);
             patternButtons[8] = (Button) wrapperView.findViewById(R.id.lock_screen_pattern_button_9);
 
+
             for (int i = 0; i < 9; i++) {
                 LayerDrawable layerList = (LayerDrawable) getResources()
                         .getDrawable(R.drawable.pattern_button_pressed);
@@ -335,14 +332,18 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                 sld.addState(new int[]{},
                         getResources().getDrawable(R.drawable.pattern_button_normal));
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-
                     patternButtons[i].setBackground(sld);
                 } else {
                     patternButtons[i].setBackgroundDrawable(sld);
                 }
-                // Only now mutate, which is OK because we are wired into the shape
-                sld.mutate();
-                shape.setStroke((int) BitmapToViewHelper.convertDpToPixel(1, this), mDrawColor);
+                // We thought mutate was critical here, but it caused a strange error where
+                // one of the buttons' color would not be changed.  By commenting out mutate(), the
+                // problem goes away...
+                //sld.mutate();
+                int strokeWidth = (int) BitmapToViewHelper.convertDpToPixel(1, this);
+                shape.setStroke(strokeWidth, mDrawColor);
+
+                Log.d(TAG, "Button " + (i + 1) + " has stroke width " + strokeWidth);
             }
 
         } catch (NullPointerException e) {
