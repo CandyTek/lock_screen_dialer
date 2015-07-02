@@ -360,10 +360,10 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
 
     private String getStoredPattern() {
         SharedPreferences sharedPref = getSharedPreferences(
-                getString(R.string.lock_screen_type_file_key),
+                getString(R.string.file_lock_screen_type),
                 Context.MODE_PRIVATE);
 
-        return sharedPref.getString(getString(R.string.lock_screen_passcode_value_key), null);
+        return sharedPref.getString(getString(R.string.value_lock_screen_passcode), null);
 
     }
 

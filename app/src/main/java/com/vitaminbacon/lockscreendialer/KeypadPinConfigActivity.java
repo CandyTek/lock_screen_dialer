@@ -139,17 +139,17 @@ public class KeypadPinConfigActivity extends Activity {
             }
             else {
                 SharedPreferences sharedPref = this.getSharedPreferences(
-                        getString(R.string.lock_screen_type_file_key),
+                        getString(R.string.file_lock_screen_type),
                         Context.MODE_PRIVATE
                 );
                 SharedPreferences.Editor editor = sharedPref.edit();
                 // Set the preferences to indicate Keypad PIN is the type of entry
                 editor.putString(
-                        getString(R.string.lock_screen_type_value_key),
-                        getString(R.string.lock_screen_type_value_keypad_pin));
+                        getString(R.string.key_lock_screen_type),
+                        getString(R.string.value_lock_screen_type_keypad_pin));
                 // Store the PIN
                 editor.putString(
-                        getString(R.string.lock_screen_passcode_value_key),
+                        getString(R.string.value_lock_screen_passcode),
                         mPinEntered);
 
                 editor.commit();

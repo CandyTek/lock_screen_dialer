@@ -2,75 +2,14 @@
 
     <!-- Strings related to Settings -->
 
-    <!-- Example General settings -->
+    <!-- Headers -->
     <string name="pref_header_general">General</string>
-
-    <string name="pref_title_toggle_lock_screen">Enable lock screen</string>
-
-    <string name="pref_description_toggle_lock_screen">Checked box enables lock screen
-    </string>
-
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
-
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
-    </string-array>
-
-    <!-- Example settings for Data & Sync -->
-    <string name="pref_header_data_sync">Data &amp; sync</string>
-
-    <string name="pref_title_sync_frequency">Sync frequency</string>
-    <string-array name="pref_sync_frequency_titles">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>6 hours</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_sync_frequency_values">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>180</item>
-        <item>360</item>
-        <item>-1</item>
-    </string-array>
-
-    <string name="pref_title_system_sync_settings">System sync settings</string>
-
-    <!-- Example settings for Notifications -->
     <string name="pref_header_display">Display</string>
+    <string name="pref_header_speed_dial">Speed dial</string>
 
-    <string name="pref_title_new_message_notifications">New message notifications</string>
-
-    <string name="pref_title_ringtone">Ringtone</string>
-    <string name="pref_ringtone_silent">Silent</string>
-
-    <string name="pref_title_vibrate">Vibrate</string>
-
-    <string name="pref_title_assign_speed_dial_contacts">Configure speed dial contacts</string>
-
-    <string name="pref_description_assign_speed_dial_contacts">Assign or remove contacts to your speed dial</string>
-
-
-
-    <string-array name="pref_screen_lock_types_titles">
-        <item>Keypad PIN</item>
-    </string-array>
-
-    <string-array name="pref_screen_lock_types_values">
-        <item>1</item>
-    </string-array>
+    <!-- Title/summary pairs for preferences -->
+    <string name="pref_title_toggle_lock_screen">Enable lock screen</string>
+    <string name="pref_description_toggle_lock_screen">Checked box enables lock screen</string>
 
     <string name="pref_title_select_lock_screen_background">Choose background</string>
     <string name="pref_description_select_lock_screen_background"> Select a lock screen background from your phone</string>
@@ -105,17 +44,19 @@
     <string name="pref_title_select_pattern_draw_color">Select pattern security color</string>
     <string name="pref_description_select_pattern_draw_color">The color of the pattern lines drawn when opening the lock screen with pattern security</string>
 
-
-    <string name="speed_dial_selection_instructions">Tap a key to assign a phone number.</string>
-
-    <string name="speed_dial_selection_details">Shaded keys have been assigned.</string>
-
-    <string name="contact_search_hint">Type a contact name</string>
-
     <string name="pref_title_toggle_speed_dial_enabled">Enable speed dial</string>
-
     <string name="pref_description_toggle_speed_dial_enabled">Holding down a keypad in the lock screen dials a stored contact</string>
 
+    <string name="pref_title_assign_speed_dial_contacts">Configure speed dial contacts</string>
+    <string name="pref_description_assign_speed_dial_contacts">Assign or remove contacts to your speed dial</string>
+
+    <string name="pref_title_select_lock_screen_type">Select security</string>
+    <string name="pref_description_select_lock_screen_type">The lock screen type (e.g., PIN or pattern)</string>
+
+    <!-- File strings for shared preferences other than default preferences -->
+    <string name="file_lock_screen_type">com.vitaminbacon.lockscreendialer.LOCK_SCREEN_TYPE_FILE</string>
+
+    <!-- Keys for shared preferences -->
     <string name="key_toggle_lock_screen">key_toggle_lock_screen</string>
     <string name="key_assign_speed_dial_contacts">key_assign_speed_dial_contacts</string>
     <string name="key_select_lock_screen_type">key_select_lock_screen_type</string>
@@ -130,6 +71,13 @@
     <string name="key_select_speed_dial_button_color">key_select_speed_dial_button_color</string>
     <string name="key_enable_pattern_draw">key_enable_pattern_draw</string>
     <string name="key_select_pattern_draw_color">key_select_pattern_draw_color</string>
+    <string name="key_lock_screen_type">LOCK_SCREEN_TYPE</string>
+
+    <!-- Values for shared preferences -->
+    <string name="value_lock_screen_type_keypad_pin">KEYPAD_PIN</string>
+    <string name="value_lock_screen_type_keypad_pattern">KEYPAD_PATTERN</string>
+    <string name="value_lock_screen_type_none">NONE</string>
+    <string name="value_lock_screen_passcode">PASSCODE</string>
 
     <string name="date_format">E d MMM yyyy</string>
 
@@ -163,9 +111,8 @@
     <string name="pref_description_on_toggle_lock_screen">The lock screen is currently ON</string>
 
     <string name="pref_dialog_title_select_lock_screen_type">Select lock screen type:</string>
-    <string name="pref_default_value_lock_screen_type">@string/lock_screen_type_value_none</string>
-    <string name="pref_title_select_lock_screen_type">Select unlocking method</string>
-    <string name="pref_description_select_lock_screen_type">The lock screen type (e.g., PIN or pattern)</string>
+    <string name="pref_default_value_lock_screen_type">@string/value_lock_screen_type_none</string>
+
     <array name="pref_entries_lock_screen_type">
         <item>None</item>
         <item>Keypad PIN</item>
@@ -173,17 +120,12 @@
     </array>
 
     <array name="pref_values_lock_screen_type">
-        <item>@string/lock_screen_type_value_none</item>
-        <item>@string/lock_screen_type_value_keypad_pin</item>
-        <item>@string/lock_screen_type_value_keypad_pattern</item>
+        <item>@string/value_lock_screen_type_none</item>
+        <item>@string/value_lock_screen_type_keypad_pin</item>
+        <item>@string/value_lock_screen_type_keypad_pattern</item>
     </array>
 
     <string name="toast_lock_screen_type_not_selected">No lock screen type selected</string>
-    <string name="lock_screen_type_file_key">com.vitaminbacon.lockscreendialer.LOCK_SCREEN_TYPE_FILE</string>
-    <string name="lock_screen_type_value_key">LOCK_SCREEN_TYPE</string>
-    <string name="lock_screen_type_value_keypad_pin">KEYPAD_PIN</string>
-    <string name="lock_screen_passcode_value_key">PASSCODE</string>
 
-    <string name="lock_screen_type_value_keypad_pattern">KEYPAD_PATTERN</string>
-    <string name="lock_screen_type_value_none">NONE</string>
+
 </resources>

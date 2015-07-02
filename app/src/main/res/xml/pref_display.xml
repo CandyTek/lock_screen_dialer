@@ -45,11 +45,6 @@
         android:summary="@string/pref_description_toggle_sheath_date"
         android:title="@string/pref_title_toggle_sheath_date" />
 
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="@string/key_toggle_speed_dial_button"
-        android:summary="@string/pref_description_toggle_speed_dial_button"
-        android:title="@string/pref_title_toggle_speed_dial_button" />
 
     <com.vitaminbacon.lockscreendialer.views.ColorPreference
         android:defaultValue="@color/blue_diamond"

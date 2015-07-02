@@ -71,14 +71,14 @@ public class ScreenEventReceiver extends BroadcastReceiver {
 
         if (startLockScreenIntent) {
 
-            SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.lock_screen_type_file_key),
+            SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.file_lock_screen_type),
                     Context.MODE_PRIVATE);
             String lockScreenType;
             Intent newIntent;
 
             try {
                 lockScreenType = prefs.getString(
-                        context.getString(R.string.lock_screen_type_value_key),
+                        context.getString(R.string.key_lock_screen_type),
                         null);
             } catch (NullPointerException e) {
                 Log.e(TAG, "Unable to access shared preferences for lock screen type");

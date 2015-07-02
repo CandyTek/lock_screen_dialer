@@ -98,4 +98,10 @@
     <string name="swipe_screen_instruction">slide up to unlock</string>
 
     <string name="color_selection_instruction">Select a color</string>
+
+    <string name="speed_dial_selection_instructions">Tap a key to assign a phone number.</string>
+
+    <string name="speed_dial_selection_details">Shaded keys have been assigned.</string>
+
+    <string name="contact_search_hint">Type a contact name</string>
 </resources>

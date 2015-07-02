@@ -291,17 +291,17 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
         } else { // We are in the second state
             if (mPatternStored.equals(mPatternEntered)) { // pattern is good
                 SharedPreferences sharedPref = this.getSharedPreferences(
-                        getString(R.string.lock_screen_type_file_key),
+                        getString(R.string.file_lock_screen_type),
                         Context.MODE_PRIVATE
                 );
                 SharedPreferences.Editor editor = sharedPref.edit();
                 // Set the preferences to indicate Keypad Pattern is the type of entry
                 editor.putString(
-                        getString(R.string.lock_screen_type_value_key),
-                        getString(R.string.lock_screen_type_value_keypad_pattern));
+                        getString(R.string.key_lock_screen_type),
+                        getString(R.string.value_lock_screen_type_keypad_pattern));
                 // Store the PIN
                 editor.putString(
-                        getString(R.string.lock_screen_passcode_value_key),
+                        getString(R.string.value_lock_screen_passcode),
                         mPatternEntered);
                 editor.commit();
                 Intent returnIntent = new Intent();

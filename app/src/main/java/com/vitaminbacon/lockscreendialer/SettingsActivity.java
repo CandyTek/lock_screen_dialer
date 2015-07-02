@@ -86,7 +86,7 @@ public class SettingsActivity extends PreferenceActivity
                 // using RingtoneManager.
                 if (TextUtils.isEmpty(stringValue)) {
                     // Empty values correspond to 'silent' (no ringtone).
-                    preference.setSummary(R.string.pref_ringtone_silent);
+                    preference.setSummary("silent"); // TODO: get rid of or utilize for sound of unlocking
 
                 } else {
                     Ringtone ringtone = RingtoneManager.getRingtone(
@@ -232,10 +232,15 @@ public class SettingsActivity extends PreferenceActivity
         // Add 'general' preferences.
         addPreferencesFromResource(R.xml.pref_general);
 
-        // Add 'notifications' preferences, and a corresponding header.
-        PreferenceCategory fakeHeader = new PreferenceCategory(this);
-        fakeHeader.setTitle(R.string.pref_header_display);  // Changed from template
-        getPreferenceScreen().addPreference(fakeHeader);
+        PreferenceCategory speedDialHeader = new PreferenceCategory(this);
+        speedDialHeader.setTitle(getString(R.string.pref_header_speed_dial));
+        getPreferenceScreen().addPreference(speedDialHeader);
+        addPreferencesFromResource(R.xml.pref_speed_dial);
+
+        // Add 'display' preferences.
+        PreferenceCategory displayHeader = new PreferenceCategory(this);
+        displayHeader.setTitle(R.string.pref_header_display);  // Changed from template
+        getPreferenceScreen().addPreference(displayHeader);
         addPreferencesFromResource(R.xml.pref_display);  //Changed from template
     }
 
@@ -288,7 +293,6 @@ public class SettingsActivity extends PreferenceActivity
             try {
                 ColorPreference pref = (ColorPreference) findPreference(getString(key));
                 pref.setColor(color);
-                this.findViewById(pref.getLayoutResource());
             } catch (ClassCastException e) {
                 Log.e(TAG, "Wrong preference received to set color, need ColorPreference");
             } catch (NullPointerException e) {
@@ -307,7 +311,7 @@ public class SettingsActivity extends PreferenceActivity
                     findPreference(getString(R.string.key_select_lock_screen_type));
 
             // Where no lock screen type has been selected
-            if (pref.getValue().equals(getString(R.string.lock_screen_type_value_none))) {
+            if (pref.getValue().equals(getString(R.string.value_lock_screen_type_none))) {
                 //Set toast
                 LayoutInflater inflater = getLayoutInflater();
                 View layout = inflater.inflate(
@@ -361,7 +365,7 @@ public class SettingsActivity extends PreferenceActivity
             toast.show();*/
         } else if (key.equals(getString(R.string.key_select_lock_screen_type))) {
             MyListPreference listPref = (MyListPreference) findPreference(key);
-            if (listPref.getValue().equals(getString(R.string.lock_screen_type_value_none))) {
+            if (listPref.getValue().equals(getString(R.string.value_lock_screen_type_none))) {
                 CheckBoxPreference checkPref =
                         (CheckBoxPreference) findPreference(getString(R.string.key_toggle_lock_screen));
                 if (checkPref.isChecked()) {
@@ -405,17 +409,17 @@ public class SettingsActivity extends PreferenceActivity
             pref.setChecked(false);
             MyListPreference listPref = (MyListPreference) findPreference(
                     getString(R.string.key_select_lock_screen_type));
-            listPref.setValue(getString(R.string.lock_screen_type_value_none));
+            listPref.setValue(getString(R.string.value_lock_screen_type_none));
         } catch (ClassCastException e) {
             Log.e(TAG, "Lock screen enabled preference of wrong type, unable to modify");
         }
 
-        if (value.equals(getString(R.string.lock_screen_type_value_keypad_pin))) {
+        if (value.equals(getString(R.string.value_lock_screen_type_keypad_pin))) {
             //Log.d(TAG, "Selected PIN activity");
             // Lock screen PIN was selected, need to go to config for that
             Intent intent = new Intent(this, KeypadPinConfigActivity.class);
             startActivityForResult(intent, PICK_LOCK_SCREEN_PIN);
-        } else if (value.equals(getString(R.string.lock_screen_type_value_keypad_pattern))) {
+        } else if (value.equals(getString(R.string.value_lock_screen_type_keypad_pattern))) {
             // Same logic as above
             Intent intent = new Intent(this, KeypadPatternConfigActivity.class);
             startActivityForResult(intent, PICK_LOCK_SCREEN_PATTERN);
@@ -431,7 +435,7 @@ public class SettingsActivity extends PreferenceActivity
                     try {
                         MyListPreference listPref = (MyListPreference) findPreference(
                                 getString(R.string.key_select_lock_screen_type));
-                        listPref.setValue(getString(R.string.lock_screen_type_value_keypad_pin));
+                        listPref.setValue(getString(R.string.value_lock_screen_type_keypad_pin));
                         CheckBoxPreference checkPref = (CheckBoxPreference) findPreference(
                                 getString(R.string.key_toggle_lock_screen));
                         checkPref.setChecked(true);
@@ -447,7 +451,7 @@ public class SettingsActivity extends PreferenceActivity
                     try {
                         MyListPreference listPref = (MyListPreference) findPreference(
                                 getString(R.string.key_select_lock_screen_type));
-                        listPref.setValue(getString(R.string.lock_screen_type_value_keypad_pattern));
+                        listPref.setValue(getString(R.string.value_lock_screen_type_keypad_pattern));
                         CheckBoxPreference checkPref = (CheckBoxPreference) findPreference(
                                 getString(R.string.key_toggle_lock_screen));
                         checkPref.setChecked(true);

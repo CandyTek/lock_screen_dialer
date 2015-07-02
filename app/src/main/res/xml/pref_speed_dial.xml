@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/key_toggle_speed_dial_enabled"
+        android:summary="@string/pref_description_toggle_speed_dial_enabled"
+        android:title="@string/pref_title_toggle_speed_dial_enabled" />
+
+    <!-- A preference that directs you to a new activity to select speed dial contacts -->
+    <Preference
+        android:key="@string/key_assign_speed_dial_contacts"
+        android:summary="@string/pref_description_assign_speed_dial_contacts"
+        android:title="@string/pref_title_assign_speed_dial_contacts">
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetClass="com.vitaminbacon.lockscreendialer.SpeedDialSelectionActivity"
+            android:targetPackage="com.vitaminbacon.lockscreendialer" />
+    </Preference>
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/key_toggle_speed_dial_button"
+        android:summary="@string/pref_description_toggle_speed_dial_button"
+        android:title="@string/pref_title_toggle_speed_dial_button" />
+
+</PreferenceScreen>

@@ -123,13 +123,13 @@ public class PhoneStateReceiver extends BroadcastReceiver {
      */
     private Intent getLockScreenIntent(Context context) {
 
-        SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.lock_screen_type_file_key),
+        SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.file_lock_screen_type),
                 Context.MODE_PRIVATE);
         String lockScreenType;
 
         try {
             lockScreenType = prefs.getString(
-                    context.getString(R.string.lock_screen_type_value_key),
+                    context.getString(R.string.key_lock_screen_type),
                     null);
         } catch (NullPointerException e) {
             Log.e(TAG, "Unable to access shared preferences for lock screen type");
@@ -140,14 +140,14 @@ public class PhoneStateReceiver extends BroadcastReceiver {
         if (lockScreenType != null) {
 
             if (lockScreenType.equals(
-                    context.getString(R.string.lock_screen_type_value_keypad_pin))) {
+                    context.getString(R.string.value_lock_screen_type_keypad_pin))) {
                 newIntent = new Intent(context, LockScreenKeypadPinActivity.class);
             } else if (lockScreenType.equals(
-                    context.getString(R.string.lock_screen_type_value_keypad_pattern))) {
+                    context.getString(R.string.value_lock_screen_type_keypad_pattern))) {
                 newIntent = new Intent(context, LockScreenKeypadPatternActivity.class);
             } else { //An error of some kind
                 Log.d(TAG, "No value for key " + context
-                        .getString(R.string.lock_screen_type_value_key));
+                        .getString(R.string.key_lock_screen_type));
                 newIntent = new Intent(context, ErrorPageActivity.class);
             }
         } else {

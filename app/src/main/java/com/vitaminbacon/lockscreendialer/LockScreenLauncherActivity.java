@@ -31,22 +31,22 @@ public class LockScreenLauncherActivity extends Activity {
 
         // Get the lock screen type from sharedPref
         SharedPreferences sharedPref = getSharedPreferences(
-                getString(R.string.lock_screen_type_file_key),
+                getString(R.string.file_lock_screen_type),
                 Context.MODE_PRIVATE);
 
         final String lockScreenType = sharedPref.getString(
-                getString(R.string.lock_screen_type_value_key),
+                getString(R.string.key_lock_screen_type),
                 null);
 
         final Intent intent;
         if (lockScreenType != null) {
 
-            if (lockScreenType.equals(getString(R.string.lock_screen_type_value_keypad_pin))) { // Now enable the correct lock screen
+            if (lockScreenType.equals(getString(R.string.value_lock_screen_type_keypad_pin))) { // Now enable the correct lock screen
                 intent = new Intent(getApplicationContext(), LockScreenKeypadPinActivity.class);
-            } else if (lockScreenType.equals(getString(R.string.lock_screen_type_value_keypad_pattern))) {
+            } else if (lockScreenType.equals(getString(R.string.value_lock_screen_type_keypad_pattern))) {
                 intent = new Intent(getApplicationContext(), LockScreenKeypadPatternActivity.class);
             } else { //An error of some kind
-                Log.d(TAG, "No value for key " + getString(R.string.lock_screen_type_value_key));
+                Log.d(TAG, "No value for key " + getString(R.string.key_lock_screen_type));
                 intent = new Intent(getApplicationContext(), ErrorPageActivity.class);
             }
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
