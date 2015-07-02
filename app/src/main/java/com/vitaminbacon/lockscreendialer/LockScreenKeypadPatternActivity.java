@@ -171,7 +171,6 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                         mPatternEntered += mLastBtnTouchedNum;
                         // Draw the pattern
                         if (mDisplayPatternFlag) {
-                            b.getBackground().mutate();
                             b.setPressed(true);
                         }
                     }
