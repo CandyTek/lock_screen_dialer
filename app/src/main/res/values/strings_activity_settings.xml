@@ -7,6 +7,16 @@
     <string name="pref_header_display">Display</string>
     <string name="pref_header_speed_dial">Speed dial</string>
 
+    <!-- Preference screens -->
+    <string name="pref_screen_title_lock_screen_display">Lock screen display options</string>
+    <string name="pref_screen_key_lock_screen_display">pref_screen_lock_screen_display_options</string>
+
+    <string name="pref_screen_title_sheath_screen_display">Sheath screen display options</string>
+    <string name="pref_screen_key_sheath_screen_display">pref_screen_sheath_screen_display_options</string>
+
+    <string name="pref_screen_title_colors_animation">Colors &amp; animation</string>
+    <string name="pref_screen_key_colors_animation">pref_screen_key_colors_animation</string>
+
     <!-- Title/summary pairs for preferences -->
     <string name="pref_title_toggle_lock_screen">Enable lock screen</string>
     <string name="pref_description_toggle_lock_screen">Checked box enables lock screen</string>

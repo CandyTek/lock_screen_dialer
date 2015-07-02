@@ -11,60 +11,78 @@
             android:targetPackage="com.vitaminbacon.lockscreendialer" />
     </Preference>
 
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="@string/key_toggle_clock_display"
-        android:summary="@string/pref_description_toggle_lock_clock"
-        android:title="@string/pref_title_toggle_lock_clock" />
+    <PreferenceScreen
+        android:key="@string/pref_screen_key_lock_screen_display"
+        android:title="@string/pref_screen_title_lock_screen_display">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/key_toggle_clock_display"
+            android:summary="@string/pref_description_toggle_lock_clock"
+            android:title="@string/pref_title_toggle_lock_clock" />
 
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="@string/key_toggle_date_display"
-        android:summary="@string/pref_description_toggle_lock_date"
-        android:title="@string/pref_title_toggle_lock_date" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/key_toggle_date_display"
+            android:summary="@string/pref_description_toggle_lock_date"
+            android:title="@string/pref_title_toggle_lock_date" />
 
-    <EditTextPreference
-        android:capitalize="words"
-        android:inputType="textCapWords"
-        android:key="@string/key_toggle_info_display"
-        android:maxLines="2"
-        android:selectAllOnFocus="true"
-        android:singleLine="false"
-        android:summary="@string/pref_description_display_contact_info"
-        android:title="@string/pref_title_display_contact_info" />
+        <EditTextPreference
+            android:capitalize="words"
+            android:inputType="textCapWords"
+            android:key="@string/key_toggle_info_display"
+            android:maxLines="2"
+            android:selectAllOnFocus="true"
+            android:singleLine="false"
+            android:summary="@string/pref_description_display_contact_info"
+            android:title="@string/pref_title_display_contact_info" />
 
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="@string/key_toggle_sheath_clock_display"
-        android:summary="@string/pref_description_toggle_sheath_clock"
-        android:title="@string/pref_title_toggle_sheath_clock" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/key_enable_pattern_draw"
+            android:summary="@string/pref_description_enable_pattern_draw"
+            android:title="@string/pref_title_enable_pattern_draw" />
 
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="@string/key_toggle_sheath_date_display"
-        android:summary="@string/pref_description_toggle_sheath_date"
-        android:title="@string/pref_title_toggle_sheath_date" />
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:key="@string/pref_screen_key_sheath_screen_display"
+        android:title="@string/pref_screen_title_sheath_screen_display">
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/key_toggle_sheath_clock_display"
+            android:summary="@string/pref_description_toggle_sheath_clock"
+            android:title="@string/pref_title_toggle_sheath_clock" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/key_toggle_sheath_date_display"
+            android:summary="@string/pref_description_toggle_sheath_date"
+            android:title="@string/pref_title_toggle_sheath_date" />
+
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:key="@string/pref_screen_key_colors_animation"
+        android:title="@string/pref_screen_title_colors_animation">
 
 
-    <com.vitaminbacon.lockscreendialer.views.ColorPreference
-        android:defaultValue="@color/blue_diamond"
-        android:key="@string/key_select_speed_dial_button_color"
-        android:persistent="true"
-        android:summary="@string/pref_description_select_speed_dial_button_color"
-        android:title="@string/pref_title_select_speed_dial_button_color" />
+        <com.vitaminbacon.lockscreendialer.views.ColorPreference
+            android:defaultValue="@color/blue_diamond"
+            android:key="@string/key_select_speed_dial_button_color"
+            android:persistent="true"
+            android:summary="@string/pref_description_select_speed_dial_button_color"
+            android:title="@string/pref_title_select_speed_dial_button_color" />
 
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="@string/key_enable_pattern_draw"
-        android:summary="@string/pref_description_enable_pattern_draw"
-        android:title="@string/pref_title_enable_pattern_draw" />
 
-    <com.vitaminbacon.lockscreendialer.views.ColorPreference
-        android:defaultValue="@color/green"
-        android:key="@string/key_select_pattern_draw_color"
-        android:persistent="true"
-        android:summary="@string/pref_description_select_pattern_draw_color"
-        android:title="@string/pref_title_select_pattern_draw_color" />
+        <com.vitaminbacon.lockscreendialer.views.ColorPreference
+            android:defaultValue="@color/green"
+            android:key="@string/key_select_pattern_draw_color"
+            android:persistent="true"
+            android:summary="@string/pref_description_select_pattern_draw_color"
+            android:title="@string/pref_title_select_pattern_draw_color" />
+
+    </PreferenceScreen>
 
 
 </PreferenceScreen>
