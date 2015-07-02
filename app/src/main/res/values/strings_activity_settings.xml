@@ -3,9 +3,12 @@
     <!-- Strings related to Settings -->
 
     <!-- Headers -->
-    <string name="pref_header_general">General</string>
-    <string name="pref_header_display">Display</string>
-    <string name="pref_header_speed_dial">Speed dial</string>
+    <string name="pref_header_title_general">General</string>
+    <string name="pref_header_key_general">pref_header_key_general</string>
+    <string name="pref_header_title_display">Display</string>
+    <string name="pref_header_key_display">pref_header_key_display</string>
+    <string name="pref_header_title_speed_dial">Speed dial</string>
+    <string name="pref_header_key_speed_dial">pref_header_key_speed_dial</string>
 
     <!-- Preference screens -->
     <string name="pref_screen_title_lock_screen_display">Lock screen display options</string>
