@@ -4,6 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.StateListDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -14,7 +18,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.vitaminbacon.lockscreendialer.helpers.DrawView;
+import com.vitaminbacon.lockscreendialer.helpers.BitmapToViewHelper;
+import com.vitaminbacon.lockscreendialer.views.DrawView;
 
 
 public class LockScreenKeypadPatternActivity extends LockScreenActivity
@@ -37,6 +42,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
     private DrawView mPatternDrawView, mTouchDrawView;
     private boolean mPhoneCallInterruptFlag;
     private boolean mDisplayPatternFlag;
+    private int mDrawColor;
 
 
 
@@ -57,6 +63,10 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
         mNumTries = 0;  // Possibly modified later by onRestoreInstanceState
         mPatternStored = getStoredPattern();
         mPatternEntered = "";
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mDisplayPatternFlag = prefs.getBoolean(getString(R.string.key_enable_pattern_draw), true);
+        mDrawColor = prefs.getInt(getString(R.string.key_select_pattern_draw_color),
+                getResources().getColor(R.color.green));
 
         // In case returning to this display from elsewhere, want to reset
         // Will also catch error when there is improper layout
@@ -87,8 +97,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
             return;
         }
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        mDisplayPatternFlag = prefs.getBoolean(getString(R.string.key_enable_pattern_draw), true);
+
     }
 
     @Override
@@ -162,6 +171,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                         mPatternEntered += mLastBtnTouchedNum;
                         // Draw the pattern
                         if (mDisplayPatternFlag) {
+                            b.getBackground().mutate();
                             b.setPressed(true);
                         }
                     }
@@ -248,9 +258,11 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                                 vibrator.vibrate(1);
 
                                 if (mDisplayPatternFlag) {
+                                    //b.getBackground().mutate();
                                     b.setPressed(true);
                                     Paint p = new Paint();
-                                    p.setColor(getResources().getColor(R.color.green));
+                                    //p.setColor(getResources().getColor(R.color.green));
+                                    p.setColor(mDrawColor);
                                     p.setStrokeWidth(3f);
 
                                     int[] startCoord = new int[2];
@@ -274,7 +286,8 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                     }
                     if (mDisplayPatternFlag && drawToTouch) {
                         Paint p = new Paint();
-                        p.setColor(getResources().getColor(R.color.lava_red));
+                        //p.setColor(getResources().getColor(R.color.lava_red));
+                        p.setColor(mDrawColor);
                         p.setStrokeWidth(3f);
 
                         int[] startCoord = new int[2];
@@ -299,6 +312,8 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
     private Button[] getPatternButtons(View wrapperView) {
         Button[] patternButtons = new Button[9];
 
+        //((ToggleButton) view).setBackgroundDrawable(sld);
+
         try {
             patternButtons[0] = (Button) wrapperView.findViewById(R.id.lock_screen_pattern_button_1);
             patternButtons[1] = (Button) wrapperView.findViewById(R.id.lock_screen_pattern_button_2);
@@ -309,6 +324,27 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
             patternButtons[6] = (Button) wrapperView.findViewById(R.id.lock_screen_pattern_button_7);
             patternButtons[7] = (Button) wrapperView.findViewById(R.id.lock_screen_pattern_button_8);
             patternButtons[8] = (Button) wrapperView.findViewById(R.id.lock_screen_pattern_button_9);
+
+            for (int i = 0; i < 9; i++) {
+                LayerDrawable layerList = (LayerDrawable) getResources()
+                        .getDrawable(R.drawable.pattern_button_pressed);
+                GradientDrawable shape = (GradientDrawable) layerList
+                        .findDrawableByLayerId(R.id.pattern_button_pressed);
+                StateListDrawable sld = new StateListDrawable();
+                sld.addState(new int[]{android.R.attr.state_pressed}, layerList);
+                sld.addState(new int[]{},
+                        getResources().getDrawable(R.drawable.pattern_button_normal));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+
+                    patternButtons[i].setBackground(sld);
+                } else {
+                    patternButtons[i].setBackgroundDrawable(sld);
+                }
+                // Only now mutate, which is OK because we are wired into the shape
+                sld.mutate();
+                shape.setStroke((int) BitmapToViewHelper.convertDpToPixel(1, this), mDrawColor);
+            }
+
         } catch (NullPointerException e) {
             Log.e(TAG, "Wrapper view could not be located in this activity.", e);
             onFatalError();  // TODO: find way to gracefully handle these exceptions

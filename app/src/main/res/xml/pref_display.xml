@@ -51,8 +51,10 @@
         android:summary="@string/pref_description_toggle_speed_dial_button"
         android:title="@string/pref_title_toggle_speed_dial_button" />
 
-    <Preference
+    <com.vitaminbacon.lockscreendialer.views.ColorPreference
+        android:defaultValue="@color/blue_diamond"
         android:key="@string/key_select_speed_dial_button_color"
+        android:persistent="true"
         android:summary="@string/pref_description_select_speed_dial_button_color"
         android:title="@string/pref_title_select_speed_dial_button_color" />
 
@@ -62,8 +64,10 @@
         android:summary="@string/pref_description_enable_pattern_draw"
         android:title="@string/pref_title_enable_pattern_draw" />
 
-    <Preference
+    <com.vitaminbacon.lockscreendialer.views.ColorPreference
+        android:defaultValue="@color/green"
         android:key="@string/key_select_pattern_draw_color"
+        android:persistent="true"
         android:summary="@string/pref_description_select_pattern_draw_color"
         android:title="@string/pref_title_select_pattern_draw_color" />
 

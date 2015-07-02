@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,7 +21,7 @@ import com.vitaminbacon.lockscreendialer.fragments.ContactAssignedDialogFragment
 import java.util.Arrays;
 
 
-public class SpeedDialSelectionActivity extends ActionBarActivity
+public class SpeedDialSelectionActivity extends FragmentActivity
         implements ContactAssignedDialogFragment.ReassignSpeedDialInterface {
 
     private static final String TAG = "SpeedDialSelAct";

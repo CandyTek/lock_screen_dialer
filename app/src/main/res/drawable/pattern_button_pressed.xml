@@ -9,6 +9,7 @@
         </shape>
     </item>
     <item
+        android:id="@+id/pattern_button_pressed"
         android:bottom="1dp"
         android:right="1dp">
         <shape android:shape="oval">

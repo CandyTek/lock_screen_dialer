@@ -1,4 +1,4 @@
-package com.vitaminbacon.lockscreendialer.helpers;
+package com.vitaminbacon.lockscreendialer.views;
 
 import android.content.Context;
 import android.graphics.Canvas;

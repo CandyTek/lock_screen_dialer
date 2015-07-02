@@ -1,5 +1,6 @@
 package com.vitaminbacon.lockscreendialer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,7 +9,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,10 +17,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.vitaminbacon.lockscreendialer.helpers.DrawView;
+import com.vitaminbacon.lockscreendialer.views.DrawView;
 
 
-public class KeypadPatternConfigActivity extends ActionBarActivity implements View.OnTouchListener {
+public class KeypadPatternConfigActivity extends Activity implements View.OnTouchListener {
 
     private static final String TAG = "KeypadPatternConfig";
     private TextView mKeyPadEntryInstructions;

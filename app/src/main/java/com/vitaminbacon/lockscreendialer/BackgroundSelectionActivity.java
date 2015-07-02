@@ -1,5 +1,6 @@
 package com.vitaminbacon.lockscreendialer;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -8,7 +9,6 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -23,7 +23,7 @@ import com.vitaminbacon.lockscreendialer.fragments.ColorPickerDialogFragment;
 import com.vitaminbacon.lockscreendialer.helpers.BitmapToViewHelper;
 
 
-public class BackgroundSelectionActivity extends ActionBarActivity implements View.OnClickListener,
+public class BackgroundSelectionActivity extends Activity implements View.OnClickListener,
         ColorPickerDialogFragment.OnColorSelectedListener {
 
 

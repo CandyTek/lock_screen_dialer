@@ -1,10 +1,10 @@
 package com.vitaminbacon.lockscreendialer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -21,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class KeypadPinConfigActivity extends ActionBarActivity {
+public class KeypadPinConfigActivity extends Activity {
 
     private static final String TAG = "KeypadPinConfig";
     private TextView mKeyPadEntryInstructions;

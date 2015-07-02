@@ -3,7 +3,7 @@ package com.vitaminbacon.lockscreendialer;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,7 +17,7 @@ import com.vitaminbacon.lockscreendialer.fragments.ContactDialogFragment;
 import com.vitaminbacon.lockscreendialer.fragments.ContactSelectionFragment;
 
 
-public class ContactSelectionActivity extends ActionBarActivity
+public class ContactSelectionActivity extends FragmentActivity
         implements ContactSelectionFragment.OnContactSelectedListener,
         ContactDialogFragment.OnPhoneNumSelectionListener {
 

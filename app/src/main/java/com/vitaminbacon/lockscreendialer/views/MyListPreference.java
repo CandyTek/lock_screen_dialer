@@ -1,4 +1,4 @@
-package com.vitaminbacon.lockscreendialer.helpers;
+package com.vitaminbacon.lockscreendialer.views;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

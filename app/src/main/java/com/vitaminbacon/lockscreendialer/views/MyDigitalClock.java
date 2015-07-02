@@ -1,4 +1,4 @@
-package com.vitaminbacon.lockscreendialer.helpers;
+package com.vitaminbacon.lockscreendialer.views;
 
 /*
  * Copyright (C) 2006 The Android Open Source Project

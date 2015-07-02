@@ -28,8 +28,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vitaminbacon.lockscreendialer.fragments.ColorPickerDialogFragment;
-import com.vitaminbacon.lockscreendialer.helpers.MyListPreference;
 import com.vitaminbacon.lockscreendialer.services.LockScreenService;
+import com.vitaminbacon.lockscreendialer.views.ColorPreference;
+import com.vitaminbacon.lockscreendialer.views.MyListPreference;
 
 import java.util.List;
 
@@ -193,9 +194,17 @@ public class SettingsActivity extends PreferenceActivity
         }
 
         try {
-            Preference widgetColorPref = getPreferenceScreen()
+            Preference speedDialBtnColorPref = getPreferenceScreen()
                     .findPreference(getString(R.string.key_select_speed_dial_button_color));
-            widgetColorPref.setOnPreferenceClickListener(this);
+            speedDialBtnColorPref.setOnPreferenceClickListener(this);
+        } catch (NullPointerException e) {
+            Log.w(TAG, "Speed dial button color preference missing from layout");
+        }
+
+        try {
+            Preference patternDrawColorPref = getPreferenceScreen()
+                    .findPreference(getString(R.string.key_select_pattern_draw_color));
+            patternDrawColorPref.setOnPreferenceClickListener(this);
         } catch (NullPointerException e) {
             Log.w(TAG, "Drawing color preference missing from layout");
         }
@@ -259,16 +268,36 @@ public class SettingsActivity extends PreferenceActivity
                     .newInstance(color, R.string.key_select_speed_dial_button_color);
             dialogFragment.show(getFragmentManager(), "fragment_color_list_dialog");
             return true;
+        } else if (preference.getKey().equals(getString(R.string.key_select_pattern_draw_color))) {
+            ColorPickerDialogFragment dialogFragment;
+            int color = PreferenceManager
+                    .getDefaultSharedPreferences(preference.getContext())
+                    .getInt(preference.getKey(), getResources().getColor(R.color.green));
+            dialogFragment = ColorPickerDialogFragment
+                    .newInstance(color, R.string.key_select_pattern_draw_color);
+            dialogFragment.show(getFragmentManager(), "fragment_color_list_dialog");
+            return true;
         }
         return false;
     }
 
     public void onColorSelected(int color, int key) {
-        if (key == R.string.key_select_speed_dial_button_color) {
-            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if (key == R.string.key_select_speed_dial_button_color
+                || key == R.string.key_select_pattern_draw_color) {
+            // We can apply same logic to either of these keys
+            try {
+                ColorPreference pref = (ColorPreference) findPreference(getString(key));
+                pref.setColor(color);
+                this.findViewById(pref.getLayoutResource());
+            } catch (ClassCastException e) {
+                Log.e(TAG, "Wrong preference received to set color, need ColorPreference");
+            } catch (NullPointerException e) {
+                Log.e(TAG, "Unable to obtain ColorPreference with key");
+            }
+            /*SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putInt(getString(key), color);
-            editor.commit();
+            editor.commit();*/
         }
     }
 

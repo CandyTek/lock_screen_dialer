@@ -1035,7 +1035,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                                     sld.addState(new int[]{},
                                             getResources().getDrawable(android.R.color.transparent));
 
-
                                     ((ToggleButton) view).setBackgroundDrawable(sld);
 
                                 } catch (NullPointerException e) {

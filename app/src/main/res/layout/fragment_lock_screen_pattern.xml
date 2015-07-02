@@ -22,12 +22,12 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
 
-        <com.vitaminbacon.lockscreendialer.helpers.DrawView
+        <com.vitaminbacon.lockscreendialer.views.DrawView
             android:id="@+id/lock_screen_pattern_canvas"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
 
-        <com.vitaminbacon.lockscreendialer.helpers.DrawView
+        <com.vitaminbacon.lockscreendialer.views.DrawView
             android:id="@+id/lock_screen_touch_canvas"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
