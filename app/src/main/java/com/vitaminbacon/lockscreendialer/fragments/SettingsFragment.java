@@ -100,6 +100,14 @@ public class SettingsFragment extends PreferenceFragment
         } catch (NullPointerException e) {
             Log.w(TAG, "Drawing color preference missing from layout");
         }
+
+        try {
+            Preference patternButtonColorPref = getPreferenceScreen()
+                    .findPreference(getString(R.string.key_select_pattern_button_pressed_color));
+            patternButtonColorPref.setOnPreferenceClickListener(this);
+        } catch (NullPointerException e) {
+            Log.w(TAG, "Button-pressed color preference missing from layout");
+        }
     }
 
 
@@ -164,6 +172,15 @@ public class SettingsFragment extends PreferenceFragment
                     .getInt(preference.getKey(), getResources().getColor(R.color.green));
             dialogFragment = ColorPickerDialogFragment
                     .newInstance(color, R.string.key_select_pattern_draw_color);
+            dialogFragment.show(getFragmentManager(), "fragment_color_list_dialog");
+            return true;
+        } else if (preference.getKey().equals(getString(R.string.key_select_pattern_button_pressed_color))) {
+            ColorPickerDialogFragment dialogFragment;
+            int color = PreferenceManager
+                    .getDefaultSharedPreferences(preference.getContext())
+                    .getInt(preference.getKey(), getResources().getColor(R.color.lava_red));
+            dialogFragment = ColorPickerDialogFragment
+                    .newInstance(color, R.string.key_select_pattern_button_pressed_color);
             dialogFragment.show(getFragmentManager(), "fragment_color_list_dialog");
             return true;
         }
@@ -261,7 +278,8 @@ public class SettingsFragment extends PreferenceFragment
 
     public void onColorSelected(int color, int key) {
         if (key == R.string.key_select_speed_dial_button_color
-                || key == R.string.key_select_pattern_draw_color) {
+                || key == R.string.key_select_pattern_draw_color
+                || key == R.string.key_select_pattern_button_pressed_color) {
             // We can apply same logic to either of these keys
             try {
                 ColorPreference pref = (ColorPreference) findPreference(getString(key));

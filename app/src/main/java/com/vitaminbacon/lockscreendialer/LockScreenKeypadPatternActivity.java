@@ -43,6 +43,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
     private boolean mPhoneCallInterruptFlag;
     private boolean mDisplayPatternFlag;
     private int mDrawColor;
+    private int mButtonColor;
 
 
 
@@ -67,6 +68,8 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
         mDisplayPatternFlag = prefs.getBoolean(getString(R.string.key_enable_pattern_draw), true);
         mDrawColor = prefs.getInt(getString(R.string.key_select_pattern_draw_color),
                 getResources().getColor(R.color.green));
+        mButtonColor = prefs.getInt(getString(R.string.key_select_pattern_button_pressed_color),
+                getResources().getColor(R.color.lava_red));
 
         // In case returning to this display from elsewhere, want to reset
         // Will also catch error when there is improper layout
@@ -340,9 +343,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                 // problem goes away...
                 //sld.mutate();
                 int strokeWidth = (int) BitmapToViewHelper.convertDpToPixel(1, this);
-                shape.setStroke(strokeWidth, mDrawColor);
-
-                Log.d(TAG, "Button " + (i + 1) + " has stroke width " + strokeWidth);
+                shape.setStroke(strokeWidth, mButtonColor);
             }
 
         } catch (NullPointerException e) {

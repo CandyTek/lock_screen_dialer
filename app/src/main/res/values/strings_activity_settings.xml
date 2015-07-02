@@ -42,7 +42,7 @@
     <string name="pref_title_toggle_speed_dial_button">Embed speed dial toggle button</string>
     <string name="pref_description_toggle_speed_dial_button">Toggle speed dial on and off in the lockscreen</string>
 
-    <string name="pref_title_select_speed_dial_button_color">Select speed dial toggle color</string>
+    <string name="pref_title_select_speed_dial_button_color">Speed dial toggle color</string>
     <string name="pref_description_select_speed_dial_button_color">The speed dial toggle\'s "on" indicator</string>
 
     <string name="pref_title_display_contact_info">Display other text on lock screen</string>
@@ -54,7 +54,7 @@
     <string name="pref_title_enable_pattern_draw">Show pattern drawing</string>
     <string name="pref_description_enable_pattern_draw">Show/hide the pattern entered when using pattern security</string>
 
-    <string name="pref_title_select_pattern_draw_color">Select pattern security color</string>
+    <string name="pref_title_select_pattern_draw_color">Pattern draw color</string>
     <string name="pref_description_select_pattern_draw_color">The color of the pattern lines drawn when opening the lock screen with pattern security</string>
 
     <string name="pref_title_toggle_speed_dial_enabled">Enable speed dial</string>
@@ -65,6 +65,9 @@
 
     <string name="pref_title_select_lock_screen_type">Select security</string>
     <string name="pref_description_select_lock_screen_type">The lock screen type (e.g., PIN or pattern)</string>
+
+    <string name="pref_title_select_pattern_button_pressed_color">Pattern button-pressed color</string>
+    <string name="pref_description_select_pattern_button_pressed_color">The color when pattern button is activated</string>
 
     <!-- File strings for shared preferences other than default preferences -->
     <string name="file_lock_screen_type">com.vitaminbacon.lockscreendialer.LOCK_SCREEN_TYPE_FILE</string>
@@ -84,6 +87,7 @@
     <string name="key_select_speed_dial_button_color">key_select_speed_dial_button_color</string>
     <string name="key_enable_pattern_draw">key_enable_pattern_draw</string>
     <string name="key_select_pattern_draw_color">key_select_pattern_draw_color</string>
+    <string name="key_select_pattern_button_pressed_color">key_select_pattern_button_pressed_color</string>
     <string name="key_lock_screen_type">LOCK_SCREEN_TYPE</string>
 
     <!-- Values for shared preferences -->

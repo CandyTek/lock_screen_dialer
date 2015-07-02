@@ -137,6 +137,13 @@
                 android:summary="@string/pref_description_select_pattern_draw_color"
                 android:title="@string/pref_title_select_pattern_draw_color" />
 
+            <com.vitaminbacon.lockscreendialer.views.ColorPreference
+                android:defaultValue="@color/lava_red"
+                android:key="@string/key_select_pattern_button_pressed_color"
+                android:persistent="true"
+                android:summary="@string/pref_description_select_pattern_button_pressed_color"
+                android:title="@string/pref_title_select_pattern_button_pressed_color" />
+
         </PreferenceScreen>
 
     </PreferenceCategory>
