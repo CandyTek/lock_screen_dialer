@@ -87,14 +87,12 @@ public class ColorPickerDialogFragment extends DialogFragment
         for (int i = 0; i < length; i++) {
             mItems.add(new ColorListItem(colors.getColor(i, 0), names.getString(i)));
         }
-
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mFragView = inflater.inflate(R.layout.fragment_color, container, false);
+        mFragView = inflater.inflate(R.layout.fragment_color, container, false); // How can this be right?
         getDialog().setCanceledOnTouchOutside(true);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
@@ -197,7 +195,7 @@ public class ColorPickerDialogFragment extends DialogFragment
             viewHolder.colorView.setText(item.name);
             viewHolder.colorView.setBackgroundColor(item.color);
             viewHolder.colorView.setTextColor(getResources().getColor(R.color.white));
-            viewHolder.colorView.setShadowLayer(4, 1, 1, getResources().getColor(R.color.black_cow));
+            viewHolder.colorView.setShadowLayer(3, 1, 1, getResources().getColor(R.color.black_cow));
 
             /*TypedArray darkTypeList =
                     getResources().obtainTypedArray(R.array.color_req_dark_type_list);
@@ -228,4 +226,5 @@ public class ColorPickerDialogFragment extends DialogFragment
             TextView colorView;
         }
     }
+
 }

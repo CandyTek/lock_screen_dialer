@@ -115,6 +115,14 @@
                 android:summary="@string/pref_description_toggle_sheath_date"
                 android:title="@string/pref_title_toggle_sheath_date" />
 
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/key_toggle_sheath_instruction"
+                android:summary="@string/pref_description_toggle_sheath_instruction"
+                android:summaryOff="@string/pref_summary_off_toggle_sheath_instruction"
+                android:summaryOn="@string/pref_summary_on_toggle_sheath_instruction"
+                android:title="@string/pref_title_toggle_sheath_instruction" />
+
         </PreferenceScreen>
 
         <PreferenceScreen
@@ -145,6 +153,13 @@
                 android:title="@string/pref_title_select_pattern_button_pressed_color" />
 
         </PreferenceScreen>
+
+        <Preference
+            android:defaultValue="@string/font_default"
+            android:key="@string/key_select_accessory_fonts"
+            android:persistent="true"
+            android:summary="@string/pref_description_accessory_fonts"
+            android:title="@string/pref_title_accessory_fonts" />
 
     </PreferenceCategory>
 

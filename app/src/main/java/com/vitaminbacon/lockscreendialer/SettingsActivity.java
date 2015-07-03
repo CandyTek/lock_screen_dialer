@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.vitaminbacon.lockscreendialer.fragments.ColorPickerDialogFragment;
+import com.vitaminbacon.lockscreendialer.fragments.FontPickerDialogFragment;
 import com.vitaminbacon.lockscreendialer.fragments.SettingsFragment;
 
 public class SettingsActivity extends Activity
-        implements ColorPickerDialogFragment.OnColorSelectedListener {
+        implements ColorPickerDialogFragment.OnColorSelectedListener,
+        FontPickerDialogFragment.OnFontSelectedListener {
 
     private static final String TAG = "SettingsActivity";
     private SettingsFragment mFragment;
@@ -31,6 +33,10 @@ public class SettingsActivity extends Activity
      */
     public void onColorSelected(int color, int key) {
         mFragment.onColorSelected(color, key);
+    }
+
+    public void onFontSelected(String font, int key) {
+        mFragment.onFontSelected(font, key);
     }
 
 }

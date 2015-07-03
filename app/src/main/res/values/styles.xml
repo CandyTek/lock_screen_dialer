@@ -117,4 +117,9 @@
         <item name="android:textSize">20dp</item>
         <item name="android:padding">12dp</item>
     </style>
+
+    <style name="font_list_item">
+        <item name="android:textSize">25dp</item>
+        <item name="android:padding">12dp</item>
+    </style>
 </resources>

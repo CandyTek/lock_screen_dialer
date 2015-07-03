@@ -19,7 +19,7 @@ import com.vitaminbacon.lockscreendialer.R;
  */
 public class ColorPreference extends Preference {
 
-    private final static String TAG = "COlorPreference";
+    private final static String TAG = "ColorPreference";
     private int mColor;
     private View mColorView;
 

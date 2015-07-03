@@ -69,6 +69,14 @@
     <string name="pref_title_select_pattern_button_pressed_color">Pattern button-pressed color</string>
     <string name="pref_description_select_pattern_button_pressed_color">The color when pattern button is activated</string>
 
+    <string name="pref_title_accessory_fonts">Select font for accessories</string>
+    <string name="pref_description_accessory_fonts">Font for clock, date, etc.</string>
+
+    <string name="pref_title_toggle_sheath_instruction">Display swipe instruction</string>
+    <string name="pref_description_toggle_sheath_instruction">%s</string>
+    <string name="pref_summary_on_toggle_sheath_instruction">ON</string>
+    <string name="pref_summary_off_toggle_sheath_instruction">OFF</string>
+
     <!-- File strings for shared preferences other than default preferences -->
     <string name="file_lock_screen_type">com.vitaminbacon.lockscreendialer.LOCK_SCREEN_TYPE_FILE</string>
 
@@ -88,6 +96,8 @@
     <string name="key_enable_pattern_draw">key_enable_pattern_draw</string>
     <string name="key_select_pattern_draw_color">key_select_pattern_draw_color</string>
     <string name="key_select_pattern_button_pressed_color">key_select_pattern_button_pressed_color</string>
+    <string name="key_select_accessory_fonts">key_select_accessory_fonts</string>
+    <string name="key_toggle_sheath_instruction">key_toggle_sheath_instruction</string>
     <string name="key_lock_screen_type">LOCK_SCREEN_TYPE</string>
 
     <!-- Values for shared preferences -->
@@ -106,6 +116,7 @@
         <item>@string/key_toggle_speed_dial_button</item>
         <item>@string/key_toggle_sheath_clock_display</item>
         <item>@string/key_toggle_sheath_date_display</item>
+        <item>@string/key_toggle_sheath_instruction</item>
     </array>
     <array name="optional_display_view_layout_ids">
         <item>@id/lock_screen_clock</item>
@@ -114,11 +125,13 @@
         <item>@id/lock_screen_speed_dial_toggle</item>
         <item>@id/sheath_screen_clock</item>
         <item>@id/sheath_screen_date</item>
+        <item>@id/lock_screen_sheath_instruction</item>
     </array>
     <array name="optional_display_view_data_types">
         <item>boolean</item>
         <item>boolean</item>
         <item>string</item>
+        <item>boolean</item>
         <item>boolean</item>
         <item>boolean</item>
         <item>boolean</item>

@@ -108,6 +108,14 @@ public class SettingsFragment extends PreferenceFragment
         } catch (NullPointerException e) {
             Log.w(TAG, "Button-pressed color preference missing from layout");
         }
+
+        try {
+            Preference fontAccessoryPref = getPreferenceScreen()
+                    .findPreference(getString(R.string.key_select_accessory_fonts));
+            fontAccessoryPref.setOnPreferenceClickListener(this);
+        } catch (NullPointerException e) {
+            Log.w(TAG, "Accessory font preference missing from layout");
+        }
     }
 
 
@@ -183,6 +191,14 @@ public class SettingsFragment extends PreferenceFragment
                     .newInstance(color, R.string.key_select_pattern_button_pressed_color);
             dialogFragment.show(getFragmentManager(), "fragment_color_list_dialog");
             return true;
+        } else if (preference.getKey().equals(getString(R.string.key_select_accessory_fonts))) {
+            FontPickerDialogFragment dialogFragment;
+            String font = PreferenceManager
+                    .getDefaultSharedPreferences(preference.getContext())
+                    .getString(preference.getKey(), getString(R.string.font_default));
+            dialogFragment = FontPickerDialogFragment
+                    .newInstance(font, R.string.key_select_accessory_fonts);
+            dialogFragment.show(getFragmentManager(), "fragment_font_dialog");
         }
         return false;
     }
@@ -290,6 +306,20 @@ public class SettingsFragment extends PreferenceFragment
                 Log.e(TAG, "Unable to obtain ColorPreference with key");
             }
 
+        }
+    }
+
+    public void onFontSelected(String font, int key) {
+        if (key == R.string.key_select_accessory_fonts) {
+            try {
+                Preference pref = findPreference(getString(key));
+                pref.setSummary(font);
+                SharedPreferences.Editor edit = pref.getEditor();
+                edit.putString(getString(key), font);
+                edit.commit();
+            } catch (NullPointerException e) {
+                Log.e(TAG, "Unable to obtain FontPreference with key");
+            }
         }
     }
 

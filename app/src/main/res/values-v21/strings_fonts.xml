@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="fonts">
+        <item>@string/sans_serif</item>
+        <item>@string/sans_serif_light</item>
+        <item>@string/sans_serif_condensed</item>
+        <item>@string/sans_serif_thin</item>
+        <item>@string/sans_serif_medium</item>
+        <item>@string/monospace</item>
+        <item>@string/serif</item>
+    </array>
+
+    <string name="sans_serif_medium">sans-serif-medium</string>
+</resources>

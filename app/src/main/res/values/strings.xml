@@ -104,4 +104,6 @@
     <string name="speed_dial_selection_details">Shaded keys have been assigned.</string>
 
     <string name="contact_search_hint">Type a contact name</string>
+
+    <string name="font_selection_instruction">Select a font</string>
 </resources>

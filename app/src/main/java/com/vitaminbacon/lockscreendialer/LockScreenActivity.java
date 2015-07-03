@@ -15,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
@@ -101,6 +102,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     private float mLastMoveCoord;
     private boolean mFlinged;
     private boolean mSheathScreenOn;
+    private boolean mSheathInstructionFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -439,6 +441,10 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      * @param alpha
      */
     private void doSheathTextAnimation(float alpha) {
+        if (!mSheathInstructionFlag) {
+            return;
+        }
+
         final int longAnimTime = getResources().getInteger(R.integer.sheath_text_long_animation);
         final int shortAnimTime = getResources().getInteger(R.integer.sheath_text_short_animation);
 
@@ -952,6 +958,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                             SimpleDateFormat df = new SimpleDateFormat(getString(R.string.date_format));
                             ((TextView) view).setText(df.format(new Date()));
                             view.setVisibility(View.VISIBLE);
+
                         } else {
                             view.setVisibility(View.INVISIBLE);
                         }
@@ -1011,6 +1018,13 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                                     tv.setText(getString(R.string.lock_screen_speed_dial_toggle_off));
                                     ((ToggleButton) view).setChecked(false);
                                 }
+                                String font = prefs.getString(
+                                        getString(R.string.key_select_accessory_fonts),
+                                        getString(R.string.font_default));
+                                //Only place where this logic needs to be specifically inserted
+                                if (!font.equals(getString(R.string.font_default))) {
+                                    tv.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                                }
                                 // Now set the color of the background button
                                 try {
                                     // Get drawing color
@@ -1069,11 +1083,29 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                         } else {
                             Log.w(TAG, "No toggle-button text view in this layout.");
                         }
+                        break;
+
+                    case R.id.lock_screen_sheath_instruction:
+                        if (prefs.getBoolean(getString(R.string.key_toggle_sheath_instruction), true)) {
+                            view.setVisibility(View.VISIBLE);
+                            mSheathInstructionFlag = true;
+                        } else {
+                            view.setVisibility(View.INVISIBLE);
+                            mSheathInstructionFlag = false;
+                        }
 
                 }
             } catch (ClassCastException e) {
                 Log.e(TAG, "Layout incompatible with activity", e);
                 onFatalError();
+            }
+
+            // Now change the font of the optional views.
+            String font = prefs.getString(
+                    getString(R.string.key_select_accessory_fonts),
+                    getString(R.string.font_default));
+            if (!font.equals(getString(R.string.font_default)) && view instanceof TextView) {
+                ((TextView) view).setTypeface(Typeface.create(font, Typeface.NORMAL));
             }
         }
 

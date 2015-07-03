@@ -1,6 +1,7 @@
 package com.vitaminbacon.lockscreendialer.views;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.preference.ListPreference;
 import android.util.AttributeSet;
@@ -28,6 +29,13 @@ public class MyListPreference extends ListPreference {
 
     public MyListPreference(Context context) {
         super(context);
+    }
+
+    @Override
+    protected void onPrepareDialogBuilder(AlertDialog.Builder builder) {
+        super.onPrepareDialogBuilder(builder);
+        // Get rid of cancel button
+        builder.setNegativeButton(null, null);
     }
 
     @Override
