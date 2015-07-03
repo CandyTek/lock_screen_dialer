@@ -196,14 +196,29 @@ public class ColorPickerDialogFragment extends DialogFragment
             ColorListItem item = getItem(position);
             viewHolder.colorView.setText(item.name);
             viewHolder.colorView.setBackgroundColor(item.color);
-            // TODO: handle this in resources somehow
-            if (item.color != getResources().getColor(R.color.white)) {
+            viewHolder.colorView.setTextColor(getResources().getColor(R.color.white));
+            viewHolder.colorView.setShadowLayer(4, 1, 1, getResources().getColor(R.color.black_cow));
+
+            /*TypedArray darkTypeList =
+                    getResources().obtainTypedArray(R.array.color_req_dark_type_list);
+            boolean useDarkTextColor = false;
+            for (int i=0; i < darkTypeList.length(); i++) {
+                if (item.color == darkTypeList.getColor(i, getResources().getColor(R.color.white))) {
+                    useDarkTextColor = true;
+                    break;
+                }
+            }
+            if (!useDarkTextColor) {
                 viewHolder.colorView.setTextColor(getResources().getColor(R.color.white));
             } else {
-                viewHolder.colorView.setTextColor(getResources().getColor(R.color.gray_goose));
-            }
+                viewHolder.colorView.setTextColor(getResources().getColor(R.color.white));
+                viewHolder.colorView.setShadowLayer(4, 1, 1, Color.BLACK);
+            }*/
             if (!mNoColorSelected && item.color == mColorSelected) {
-                viewHolder.colorView.setTypeface(null, Typeface.BOLD_ITALIC);
+                viewHolder.colorView.setTypeface(Typeface.MONOSPACE, Typeface.BOLD_ITALIC);
+            } else {
+                // To prevent recycling of views with remnants of bold italic
+                viewHolder.colorView.setTypeface(null, Typeface.NORMAL);
             }
 
             return convertView;
@@ -213,5 +228,4 @@ public class ColorPickerDialogFragment extends DialogFragment
             TextView colorView;
         }
     }
-
 }
