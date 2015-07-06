@@ -17,15 +17,15 @@ public class ScreenEventReceiver extends BroadcastReceiver {
     private static boolean mIssueIntentOnScreenOn = false;
 
     public ScreenEventReceiver() {
+
     }
 
     /**
      * ============================================================================================
-     * This method handles the three events that trigger this class:
+     * This method handles the two events that trigger this class:
      * (1) The event the screen is turned off, as denoted by "Intent.ACTION_SCREEN_OFF";
      * (2) The event the screen is turned on, as denoted by "Intent.ACTION_SCREEN_ON";
-     * (3) The event that device boot has completed, as denoted by "Intent.ACTION_BOOT_COMPLETED"
-     * <p/>
+     *
      * Note that the primary method for issuing an intent to the lock screen is via
      * ACTION_SCREEN_OFF.  However, ACTION_SCREEN_ON is invoked in the situation where the screen
      * off event could not be invoked because the user was on the phone.  There, a static flag is

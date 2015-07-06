@@ -39,8 +39,6 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         //mLayoutId = R.layout.activity_lock_screen_keypad_pin;  // must be set before calling super
         super.onCreate(savedInstanceState);
 
-        View wrapperView = getWrapperView();
-
         // Initialize some basic variables
         mNumTries = 0;  // Possibly modified later by onRestoreInstanceState
         mPinStored = getStoredPin();
@@ -54,9 +52,9 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         //Log.d(TAG, "onCreate() calling resetPinEntry()");
         resetPinEntry(getString(R.string.lock_screen_pin_default_display));
 
-        keypadButtons = getKeypadButtons(wrapperView);
-        deleteButton = getDeleteButton(wrapperView);
-        okButton = getOkButton(wrapperView);
+        keypadButtons = getKeypadButtons();
+        deleteButton = getDeleteButton();
+        okButton = getOkButton();
 
         // Set the onClickListeners to the appropriate views
         SharedPreferences dialPrefs = getSharedPreferences(
@@ -99,47 +97,47 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
 
         try {
             if (!font.equals(getString(R.string.font_default))) {
-                TextView pinDisplayView = getPinDisplayView(getWrapperView());
+                TextView pinDisplayView = getPinDisplayView();
 
                 TextView textNum0 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_0);
+                        (TextView) getView(R.id.lock_screen_pin_text_num_0);
                 TextView textNum1 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_1);
+                        (TextView) getView(R.id.lock_screen_pin_text_num_1);
                 TextView textNum2 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_2);
+                        (TextView) getView(R.id.lock_screen_pin_text_num_2);
                 TextView textNum3 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_3);
+                        (TextView) getView(R.id.lock_screen_pin_text_num_3);
                 TextView textNum4 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_4);
+                        (TextView) getView(R.id.lock_screen_pin_text_num_4);
                 TextView textNum5 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_5);
+                        (TextView) getView(R.id.lock_screen_pin_text_num_5);
                 TextView textNum6 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_6);
+                        (TextView) getView(R.id.lock_screen_pin_text_num_6);
                 TextView textNum7 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_7);
+                        (TextView) getView(R.id.lock_screen_pin_text_num_7);
                 TextView textNum8 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_8);
+                        (TextView) getView(R.id.lock_screen_pin_text_num_8);
                 TextView textNum9 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_9);
+                        (TextView) getView(R.id.lock_screen_pin_text_num_9);
                 TextView textNumOK =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_OK);
+                        (TextView) getView(R.id.lock_screen_pin_text_OK);
 
                 TextView alphabetics2 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_alphabetics_2);
+                        (TextView) getView(R.id.lock_screen_pin_alphabetics_2);
                 TextView alphabetics3 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_alphabetics_3);
+                        (TextView) getView(R.id.lock_screen_pin_alphabetics_3);
                 TextView alphabetics4 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_alphabetics_4);
+                        (TextView) getView(R.id.lock_screen_pin_alphabetics_4);
                 TextView alphabetics5 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_alphabetics_5);
+                        (TextView) getView(R.id.lock_screen_pin_alphabetics_5);
                 TextView alphabetics6 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_alphabetics_6);
+                        (TextView) getView(R.id.lock_screen_pin_alphabetics_6);
                 TextView alphabetics7 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_alphabetics_7);
+                        (TextView) getView(R.id.lock_screen_pin_alphabetics_7);
                 TextView alphabetics8 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_alphabetics_8);
+                        (TextView) getView(R.id.lock_screen_pin_alphabetics_8);
                 TextView alphabetics9 =
-                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_alphabetics_9);
+                        (TextView) getView(R.id.lock_screen_pin_alphabetics_9);
 
                 deleteButton.setTypeface(Typeface.create(font, Typeface.NORMAL));
                 okButton.setTypeface(Typeface.create(font, Typeface.NORMAL));
@@ -226,7 +224,7 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         //Log.d(TAG, "onClick() -- digit " + num + "entered, pin display tag is " + mPinInvalidDisplayFlag);
         // Display a new "digit" on the text view
         if (!mPinInvalidDisplayFlag) {// meaning the display is not taken by displaying an invalid pin message
-            TextView pinDisplayView = getPinDisplayView(getWrapperView());
+            TextView pinDisplayView = getPinDisplayView();
             try {
                 if (pinDisplayView.getText().toString().
                         equals(getString(R.string.lock_screen_pin_default_display))) {
@@ -287,20 +285,20 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         return false;
     }
 
-    private Button[] getKeypadButtons(View wrapperView) {
+    private Button[] getKeypadButtons() {
         Button[] keypadButtons = new Button[10];
 
         try {
-            keypadButtons[0] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_0);
-            keypadButtons[1] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_1);
-            keypadButtons[2] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_2);
-            keypadButtons[3] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_3);
-            keypadButtons[4] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_4);
-            keypadButtons[5] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_5);
-            keypadButtons[6] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_6);
-            keypadButtons[7] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_7);
-            keypadButtons[8] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_8);
-            keypadButtons[9] = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_9);
+            keypadButtons[0] = (Button) getView(R.id.lock_screen_pin_button_0);
+            keypadButtons[1] = (Button) getView(R.id.lock_screen_pin_button_1);
+            keypadButtons[2] = (Button) getView(R.id.lock_screen_pin_button_2);
+            keypadButtons[3] = (Button) getView(R.id.lock_screen_pin_button_3);
+            keypadButtons[4] = (Button) getView(R.id.lock_screen_pin_button_4);
+            keypadButtons[5] = (Button) getView(R.id.lock_screen_pin_button_5);
+            keypadButtons[6] = (Button) getView(R.id.lock_screen_pin_button_6);
+            keypadButtons[7] = (Button) getView(R.id.lock_screen_pin_button_7);
+            keypadButtons[8] = (Button) getView(R.id.lock_screen_pin_button_8);
+            keypadButtons[9] = (Button) getView(R.id.lock_screen_pin_button_9);
         } catch (NullPointerException e) {
             Log.e(TAG, "Wrapper view could not be located in this activity.", e);
             onFatalError();  // TODO: find way to gracefully handle these exceptions
@@ -313,10 +311,10 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         return keypadButtons;
     }
 
-    private TextView getPinDisplayView(View wrapperView) {
+    private TextView getPinDisplayView() {
         TextView t;
         try {
-            t = (TextView) wrapperView.findViewById(R.id.lock_screen_pin_display);
+            t = (TextView) getView(R.id.lock_screen_pin_display);
         } catch (NullPointerException e) {
             Log.e(TAG, "Wrapper view could not be located in this activity.", e);
             onFatalError();  // TODO: find way to gracefully handle these exceptions
@@ -334,10 +332,10 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         return t;
     }
 
-    private Button getOkButton(View wrapperView) {
+    private Button getOkButton() {
         Button b;
         try {
-            b = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_OK);
+            b = (Button) getView(R.id.lock_screen_pin_button_OK);
         } catch (NullPointerException e) {
             Log.e(TAG, "Wrapper view could not be located in this activity.", e);
             onFatalError();  // TODO: find way to gracefully handle these exceptions
@@ -350,10 +348,10 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         return b;
     }
 
-    private Button getDeleteButton(View wrapperView) {
+    private Button getDeleteButton() {
         Button b;
         try {
-            b = (Button) wrapperView.findViewById(R.id.lock_screen_pin_button_delete);
+            b = (Button) getView(R.id.lock_screen_pin_button_delete);
         } catch (NullPointerException e) {
             Log.e(TAG, "Wrapper view could not be located in this activity.", e);
             onFatalError();  // TODO: find way to gracefully handle these exceptions
@@ -369,8 +367,8 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
 
 
     private void setPinDisplayToPasswordView(){
-        TextView pinDisplayView = getPinDisplayView(getWrapperView());
-        Button deleteButton = getDeleteButton(getWrapperView());
+        TextView pinDisplayView = getPinDisplayView();
+        Button deleteButton = getDeleteButton();
         try {
             pinDisplayView.setTransformationMethod(new PasswordTransformationMethod());  // Turns the text to dots
             pinDisplayView.setTextScaleX(1.2f); // sets space between the characters
@@ -406,7 +404,7 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         mNumTries++;
         SetTextInViewRunnable r = new SetTextInViewRunnable(
                 getString(R.string.lock_screen_pin_default_display),
-                getPinDisplayView(getWrapperView()));
+                getPinDisplayView());
         Handler h = new Handler();
         h.postDelayed(r, getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay));
 
@@ -418,8 +416,8 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
      * Method that resets the Pin Entry
      */
     private void resetPinEntry(String displayText) {
-        TextView pinDisplayView = getPinDisplayView(getWrapperView());
-        Button deleteButton = getDeleteButton(getWrapperView());
+        TextView pinDisplayView = getPinDisplayView();
+        Button deleteButton = getDeleteButton();
         try {
             pinDisplayView.setText(displayText);
             pinDisplayView.setTransformationMethod(null);

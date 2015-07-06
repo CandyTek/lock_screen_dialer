@@ -25,7 +25,11 @@ public class PhoneStateReceiver extends BroadcastReceiver {
     public static final String EXTRA_PHONE_STATE_RINGING =
             "com.vitaminbacon.lockscreendialer.PHONE_STATE_RINGING";
 
+    // Last state, designed to handle the receipt of extras in Lollipop release
+    private static String lastState;
+
     public PhoneStateReceiver() {
+        lastState = "";
 
         //Log.d(TAG, "Constructor called.");
     }
@@ -38,8 +42,9 @@ public class PhoneStateReceiver extends BroadcastReceiver {
         if (intent.getAction().equals("android.intent.action.PHONE_STATE")) {
             String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
             Log.d(TAG, "PhoneStateReceiver**Call State=" + state);
+            boolean isEchoState = state.equals(lastState);
 
-            if (state.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+            if (state.equals(TelephonyManager.EXTRA_STATE_IDLE) && !isEchoState) {
                 Log.d(TAG, "PhoneStateReceiver**Idle");
                 //Intent lockScreenIntent = new Intent(context, LockScreenLauncherActivity.class);
                 Intent lockScreenIntent = getLockScreenIntent(context);
@@ -49,9 +54,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
                 lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PHONE_STATE_IDLE);
 
                 context.startActivity(lockScreenIntent);
-            }
-
-            else if (state.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+            } else if (state.equals(TelephonyManager.EXTRA_STATE_RINGING) && !isEchoState) {
                 // Incoming call
                 String incomingNumber =
                         intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
@@ -65,9 +68,12 @@ public class PhoneStateReceiver extends BroadcastReceiver {
                 context.startActivity(lockScreenIntent);
 
 
-            } else if (state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
+            } else if (state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK) && !isEchoState) {
 
             }
+            // Doesn't matter whether it is an echo or not, same result
+            lastState = state;
+
         } else if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
             // Outgoing call -- we don't care about this also
             String outgoingNumber = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
@@ -145,6 +151,7 @@ public class PhoneStateReceiver extends BroadcastReceiver {
             } else if (lockScreenType.equals(
                     context.getString(R.string.value_lock_screen_type_keypad_pattern))) {
                 newIntent = new Intent(context, LockScreenKeypadPatternActivity.class);
+                Log.d(TAG, "Phone receiver starting intent to pattern activity");
             } else { //An error of some kind
                 Log.d(TAG, "No value for key " + context
                         .getString(R.string.key_lock_screen_type));

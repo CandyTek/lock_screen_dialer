@@ -48,7 +48,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
         //mLayoutId = R.layout.activity_lock_screen_keypad_pin;  // must be set before calling super
         super.onCreate(savedInstanceState);
 
-        View wrapperView = getWrapperView();
+        View wrapperView = getContainerView();
 
         if (wrapperView == null) {
             // Means the super onCreate is shutting down
@@ -71,12 +71,12 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
         //Log.d(TAG, "onCreate() calling resetPinEntry()");
         resetPatternEntry(getString(R.string.lock_screen_keypad_pattern_instruction_1));
 
-        mPatternBtns = getPatternButtons(wrapperView);
+        mPatternBtns = getPatternButtons();
         try {
-            mPatternDrawView = (DrawView) wrapperView.findViewById(R.id.lock_screen_pattern_canvas);
-            mTouchDrawView = (DrawView) wrapperView.findViewById(R.id.lock_screen_touch_canvas);
+            mPatternDrawView = (DrawView) getView(R.id.lock_screen_pattern_canvas);
+            mTouchDrawView = (DrawView) getView(R.id.lock_screen_touch_canvas);
             TextView patternInstruction =
-                    (TextView) getWrapperView().findViewById(R.id.lock_screen_pattern_display);
+                    (TextView) getView(R.id.lock_screen_pattern_display);
 
 
             String font = prefs.getString(
@@ -124,7 +124,6 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
 
     @Override
     int getFragmentLayout() {
-
         return R.layout.fragment_lock_screen_pattern;
     }
 
@@ -314,7 +313,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
         return true;
     }
 
-    private Button[] getPatternButtons(View wrapperView) {
+    private Button[] getPatternButtons() {
         Button[] patternButtons = new Button[9];
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String font = prefs.getString(
@@ -324,15 +323,15 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
         //((ToggleButton) view).setBackgroundDrawable(sld);
 
         try {
-            patternButtons[0] = (Button) wrapperView.findViewById(R.id.lock_screen_pattern_button_1);
-            patternButtons[1] = (Button) wrapperView.findViewById(R.id.lock_screen_pattern_button_2);
-            patternButtons[2] = (Button) wrapperView.findViewById(R.id.lock_screen_pattern_button_3);
-            patternButtons[3] = (Button) wrapperView.findViewById(R.id.lock_screen_pattern_button_4);
-            patternButtons[4] = (Button) wrapperView.findViewById(R.id.lock_screen_pattern_button_5);
-            patternButtons[5] = (Button) wrapperView.findViewById(R.id.lock_screen_pattern_button_6);
-            patternButtons[6] = (Button) wrapperView.findViewById(R.id.lock_screen_pattern_button_7);
-            patternButtons[7] = (Button) wrapperView.findViewById(R.id.lock_screen_pattern_button_8);
-            patternButtons[8] = (Button) wrapperView.findViewById(R.id.lock_screen_pattern_button_9);
+            patternButtons[0] = (Button) getView(R.id.lock_screen_pattern_button_1);
+            patternButtons[1] = (Button) getView(R.id.lock_screen_pattern_button_2);
+            patternButtons[2] = (Button) getView(R.id.lock_screen_pattern_button_3);
+            patternButtons[3] = (Button) getView(R.id.lock_screen_pattern_button_4);
+            patternButtons[4] = (Button) getView(R.id.lock_screen_pattern_button_5);
+            patternButtons[5] = (Button) getView(R.id.lock_screen_pattern_button_6);
+            patternButtons[6] = (Button) getView(R.id.lock_screen_pattern_button_7);
+            patternButtons[7] = (Button) getView(R.id.lock_screen_pattern_button_8);
+            patternButtons[8] = (Button) getView(R.id.lock_screen_pattern_button_9);
 
 
             for (int i = 0; i < 9; i++) {
@@ -416,7 +415,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
         try {
             SetTextInViewRunnable r = new SetTextInViewRunnable(
                     getString(R.string.lock_screen_keypad_pattern_instruction_1),
-                    (TextView) getWrapperView().findViewById(R.id.lock_screen_pattern_display));
+                    (TextView) getView(R.id.lock_screen_pattern_display));
             Handler h = new Handler();
             h.postDelayed(r, getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay));
 
@@ -435,7 +434,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
      * Method that resets the Pattern Entry
      */
     private void resetPatternEntry(String displayText) {
-        TextView tv = (TextView) getWrapperView().findViewById(R.id.lock_screen_pattern_display);
+        TextView tv = (TextView) getView(R.id.lock_screen_pattern_display);
         try {
             tv.setText(displayText);
         } catch (NullPointerException e) {
