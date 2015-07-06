@@ -2,9 +2,11 @@ package com.vitaminbacon.lockscreendialer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -57,23 +59,28 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         okButton = getOkButton(wrapperView);
 
         // Set the onClickListeners to the appropriate views
-        SharedPreferences sharedPref = getSharedPreferences(
+        SharedPreferences dialPrefs = getSharedPreferences(
                 getString(R.string.speed_dial_preference_file_key),
                 Context.MODE_PRIVATE);
+        SharedPreferences genPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String font = genPrefs.getString(
+                getString(R.string.key_select_lock_screen_fonts),
+                getString(R.string.font_default));
 
         for (int i=0; i < 10; i++) {
             try {
                 keypadButtons[i].setOnClickListener(this); // all buttons will have an onClickListener
                 String filename = getString(R.string.key_number_store_prefix_phone) + i;
 
-                if (sharedPref == null) {
+                if (dialPrefs == null) {
                     Log.w(TAG, "Unable to access shared preferences file"
                             + getString(R.string.speed_dial_preference_file_key) + "; returned null.");
                     continue;
-                } else if (sharedPref.getString(filename, null) != null) { //only set the long click where necessary
+                } else if (dialPrefs.getString(filename, null) != null) { //only set the long click where necessary
                     //Log.d(TAG, "Setting long click on key " + i);
                     keypadButtons[i].setOnTouchListener(this);
                 }
+
             } catch (NullPointerException e) {
                 Log.e(TAG, "Keypad button " + i + " is invalid.", e);
                 onFatalError();
@@ -86,6 +93,79 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
             okButton.setOnClickListener(this);
         } catch (NullPointerException e) {
             Log.e(TAG, "Delete and/or OK button invalid.", e);
+            onFatalError();
+            return;
+        }
+
+        try {
+            if (!font.equals(getString(R.string.font_default))) {
+                TextView pinDisplayView = getPinDisplayView(getWrapperView());
+
+                TextView textNum0 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_0);
+                TextView textNum1 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_1);
+                TextView textNum2 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_2);
+                TextView textNum3 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_3);
+                TextView textNum4 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_4);
+                TextView textNum5 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_5);
+                TextView textNum6 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_6);
+                TextView textNum7 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_7);
+                TextView textNum8 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_8);
+                TextView textNum9 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_num_9);
+                TextView textNumOK =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_text_OK);
+
+                TextView alphabetics2 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_alphabetics_2);
+                TextView alphabetics3 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_alphabetics_3);
+                TextView alphabetics4 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_alphabetics_4);
+                TextView alphabetics5 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_alphabetics_5);
+                TextView alphabetics6 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_alphabetics_6);
+                TextView alphabetics7 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_alphabetics_7);
+                TextView alphabetics8 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_alphabetics_8);
+                TextView alphabetics9 =
+                        (TextView) getWrapperView().findViewById(R.id.lock_screen_pin_alphabetics_9);
+
+                deleteButton.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                okButton.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                pinDisplayView.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                textNum0.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                textNum1.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                textNum2.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                textNum3.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                textNum4.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                textNum5.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                textNum6.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                textNum7.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                textNum8.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                textNum9.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                textNumOK.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                alphabetics2.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                alphabetics3.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                alphabetics4.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                alphabetics5.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                alphabetics6.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                alphabetics7.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                alphabetics8.setTypeface(Typeface.create(font, Typeface.NORMAL));
+                alphabetics9.setTypeface(Typeface.create(font, Typeface.NORMAL));
+            }
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Pin display, delete button, or OK button invalid", e);
             onFatalError();
             return;
         }

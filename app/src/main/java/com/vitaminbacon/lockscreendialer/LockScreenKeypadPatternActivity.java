@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
@@ -26,12 +27,6 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
         implements View.OnClickListener, View.OnTouchListener {
 
     private final static String TAG = "LSPatternActivity";
-
-    // UI elements
-/*    private TextView mPinDisplayView;
-    private Button mDeleteButton;
-    private Button mOkButton;
-    private Button[] mkeypadButtons;*/
 
     // variables relating to the logic of the lockscreen
     private String mPatternStored;
@@ -80,6 +75,18 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
         try {
             mPatternDrawView = (DrawView) wrapperView.findViewById(R.id.lock_screen_pattern_canvas);
             mTouchDrawView = (DrawView) wrapperView.findViewById(R.id.lock_screen_touch_canvas);
+            TextView patternInstruction =
+                    (TextView) getWrapperView().findViewById(R.id.lock_screen_pattern_display);
+
+
+            String font = prefs.getString(
+                    getString(R.string.key_select_lock_screen_fonts),
+                    getString(R.string.font_default));
+            if (!font.equals(getString(R.string.font_default))) {
+                patternInstruction.setTypeface(Typeface.create(font, Typeface.NORMAL));
+            }
+
+
         } catch (NullPointerException e) {
             Log.e(TAG, "Layout has improper elements for this activity", e);
             onFatalError();
@@ -309,6 +316,10 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
 
     private Button[] getPatternButtons(View wrapperView) {
         Button[] patternButtons = new Button[9];
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String font = prefs.getString(
+                getString(R.string.key_select_lock_screen_fonts),
+                getString(R.string.font_default));
 
         //((ToggleButton) view).setBackgroundDrawable(sld);
 
@@ -338,12 +349,17 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                 } else {
                     patternButtons[i].setBackgroundDrawable(sld);
                 }
+
                 // We thought mutate was critical here, but it caused a strange error where
                 // one of the buttons' color would not be changed.  By commenting out mutate(), the
                 // problem goes away...
                 //sld.mutate();
                 int strokeWidth = (int) BitmapToViewHelper.convertDpToPixel(1, this);
                 shape.setStroke(strokeWidth, mButtonColor);
+
+                if (!font.equals(getString(R.string.font_default))) {
+                    patternButtons[i].setTypeface(Typeface.create(font, Typeface.NORMAL));
+                }
             }
 
         } catch (NullPointerException e) {

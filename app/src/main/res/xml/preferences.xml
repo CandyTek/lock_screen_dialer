@@ -158,8 +158,16 @@
             android:defaultValue="@string/font_default"
             android:key="@string/key_select_accessory_fonts"
             android:persistent="true"
-            android:summary="@string/pref_description_accessory_fonts"
-            android:title="@string/pref_title_accessory_fonts" />
+            android:summary="@string/pref_description_select_accessory_fonts"
+            android:title="@string/pref_title_select_accessory_fonts" />
+
+        <Preference
+            android:defaultValue="@string/sans_serif_light"
+            android:key="@string/key_select_lock_screen_fonts"
+            android:persistent="true"
+            android:summary="@string/pref_description_select_lock_screen_fonts"
+            android:title="@string/pref_title_select_lock_screen_fonts" />
+
 
     </PreferenceCategory>
 

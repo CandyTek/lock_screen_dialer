@@ -116,6 +116,14 @@ public class SettingsFragment extends PreferenceFragment
         } catch (NullPointerException e) {
             Log.w(TAG, "Accessory font preference missing from layout");
         }
+
+        try {
+            Preference fontLockScreenPref = getPreferenceScreen()
+                    .findPreference(getString(R.string.key_select_lock_screen_fonts));
+            fontLockScreenPref.setOnPreferenceClickListener(this);
+        } catch (NullPointerException e) {
+            Log.w(TAG, "Accessory font preference missing from layout");
+        }
     }
 
 
@@ -198,6 +206,14 @@ public class SettingsFragment extends PreferenceFragment
                     .getString(preference.getKey(), getString(R.string.font_default));
             dialogFragment = FontPickerDialogFragment
                     .newInstance(font, R.string.key_select_accessory_fonts);
+            dialogFragment.show(getFragmentManager(), "fragment_font_dialog");
+        } else if (preference.getKey().equals(getString(R.string.key_select_lock_screen_fonts))) {
+            FontPickerDialogFragment dialogFragment;
+            String font = PreferenceManager
+                    .getDefaultSharedPreferences(preference.getContext())
+                    .getString(preference.getKey(), getString(R.string.font_default));
+            dialogFragment = FontPickerDialogFragment
+                    .newInstance(font, R.string.key_select_lock_screen_fonts);
             dialogFragment.show(getFragmentManager(), "fragment_font_dialog");
         }
         return false;
@@ -310,7 +326,8 @@ public class SettingsFragment extends PreferenceFragment
     }
 
     public void onFontSelected(String font, int key) {
-        if (key == R.string.key_select_accessory_fonts) {
+        if (key == R.string.key_select_accessory_fonts
+                || key == R.string.key_select_lock_screen_fonts) {
             try {
                 Preference pref = findPreference(getString(key));
                 pref.setSummary(font);
