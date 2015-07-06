@@ -78,6 +78,9 @@
     <string name="pref_title_toggle_sheath_instruction">Display swipe instruction</string>
     <string name="pref_description_toggle_sheath_instruction">%s</string>
 
+    <string name="pref_title_toggle_status_bar_access">View status bar</string>
+    <string name="pref_description_toggle_status_bar_access">Allows viewing, but not access, of the status bar while screen is locked</string>
+
     <string name="pref_summary_on_toggle_sheath_instruction">ON</string>
     <string name="pref_summary_off_toggle_sheath_instruction">OFF</string>
 
@@ -103,6 +106,7 @@
     <string name="key_select_accessory_fonts">key_select_accessory_fonts</string>
     <string name="key_select_lock_screen_fonts">key_select_lock_screen_fonts</string>
     <string name="key_toggle_sheath_instruction">key_toggle_sheath_instruction</string>
+    <string name="key_toggle_status_bar_access">key_toggle_status_bar_access</string>
     <string name="key_lock_screen_type">LOCK_SCREEN_TYPE</string>
 
     <!-- Values for shared preferences -->

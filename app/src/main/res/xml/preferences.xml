@@ -17,6 +17,12 @@
         android:title="@string/pref_title_select_lock_screen_type" />
 
     <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/key_toggle_status_bar_access"
+        android:summary="@string/pref_description_toggle_status_bar_access"
+        android:title="@string/pref_title_toggle_status_bar_access" />
+
+    <CheckBoxPreference
         android:defaultValue="true"
         android:key="@string/key_toggle_sheath_screen"
         android:summary="@string/pref_description_sheath_screen"

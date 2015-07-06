@@ -109,6 +109,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate() called.");
         super.onCreate(savedInstanceState);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         // Check phone call status first, and handle appropriately
         int phoneState = getIntent().getIntExtra(PhoneStateReceiver.EXTRA_PHONE_STATE, 0);
@@ -135,13 +136,21 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         mPhoneCallActiveFlag = false;
         Log.d(TAG, "PHONE CALL FLAG IS NOW FALSE");
 
-        WindowManager.LayoutParams localLayoutParams =
-                new WindowManager.LayoutParams(
-                        WindowManager.LayoutParams.TYPE_SYSTEM_ERROR,
-                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | // To avoid notification bar
-                                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | // Same
-                                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, //Same
-                        PixelFormat.TRANSLUCENT);
+        WindowManager.LayoutParams localLayoutParams;
+        if (prefs.getBoolean(getString(R.string.key_toggle_status_bar_access), false)) {
+            localLayoutParams = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | // To avoid notification bar
+                            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, //Same
+                    PixelFormat.TRANSLUCENT);
+        } else {
+            localLayoutParams = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.TYPE_SYSTEM_ERROR,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | // To avoid notification bar
+                            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | // Same
+                            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, //Same
+                    PixelFormat.TRANSLUCENT);
+        }
         mWindowManager = (WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE);
         getWindow().setAttributes(localLayoutParams);
         //View.inflate(this, R.layout.activity_lock_screen_keypad_pin, mWindowView);
@@ -189,12 +198,17 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         }
 
         // Determine if the sheath screen is enabled and prepare the display
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         mSheathScreenOn = prefs.getBoolean(getString(R.string.key_toggle_sheath_screen), false);
         // Since we never do side animation with the lock screen if we have a sheath, and we want to
         // set up the lock screen animation before the background loading begins and never in onResume
         mBackgroundSetFlag = false;
         mBackgroundView.setVisibility(View.GONE);
+        /*mContainerView.post( new Runnable () {
+                                 public void run() {
+                                     setActivityBackground(mBackgroundView);
+                                 }
+                             });*/
         setActivityBackground(mBackgroundView);
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
 
@@ -208,17 +222,27 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         Log.d(TAG, "onResume() called");
         super.onResume();
         if (!mSheathScreenOn && !mBackgroundSetFlag) {
-            prepareLockScreenAnimation();
+            mContainerView.post(new Runnable() {
+                public void run() {
+                    prepareLockScreenAnimation();
+                }
+
+            });
         }
 
         if (mSheathScreenOn && !mPhoneCallActiveFlag) {
             mFlinged = false;
             if (mBackgroundSetFlag) {
+                // Note no need to do a .post call, because if this flag is set, mContainView's post is already complete
                 prepareSheathScreenAnimation(true);
                 // Covers situation where power button pressed after swiping sheath away
                 doSheathTextAnimation(-1);
             } else {
-                prepareSheathScreenAnimation(false);
+                mContainerView.post(new Runnable() {
+                    public void run() {
+                        prepareSheathScreenAnimation(false);
+                    }
+                });
             }
         } else {
             // Only now set the phone call flag to false.  Previously set in onNewIntent, but useful
@@ -1125,8 +1149,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 getString(R.string.background_file_key),
                 MODE_PRIVATE);
         int color = prefs.getInt(getString(R.string.key_background_color), -1);
-        String filePath = prefs.getString(getString(R.string.key_background_pic), null);
-        int orientation = prefs.getInt(getString(R.string.key_background_orientation), -1);
+        final String filePath = prefs.getString(getString(R.string.key_background_pic), null);
+        final int orientation = prefs.getInt(getString(R.string.key_background_orientation), -1);
         File file = null;
         if (filePath != null) {
             file = new File(filePath);
@@ -1159,12 +1183,23 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         } else if (file != null && file.exists()) { //now we must retrieve and set up the stored picture
             if (!mBackgroundSetFlag) {
                 //Log.d(TAG, "setting background image from stored data");
-                Display display = getWindowManager().getDefaultDisplay();
+                final BitmapToViewHelper.GetBitmapFromTaskInterface activity = this;
+                mContainerView.post(new Runnable() {
+                    public void run() {
+                        Display display = getWindowManager().getDefaultDisplay();
+                        Bitmap bitmap = null;
+                        int w = getDisplayWidth();
+                        int h = getDisplayHeight();
+
+                        BitmapToViewHelper.assignBitmapWithData(activity, filePath, orientation, w, h);
+                    }
+                });
+                /*Display display = getWindowManager().getDefaultDisplay();
                 Bitmap bitmap = null;
                 int w = getDisplayWidth();
                 int h = getDisplayHeight();
 
-                BitmapToViewHelper.assignBitmapWithData(this, filePath, orientation, w, h);  // Calls getBitmapFromTask interface method below to set mBackgroundBitmap
+                BitmapToViewHelper.assignBitmapWithData(this, filePath, orientation, w, h);*/  // Calls getBitmapFromTask interface method below to set mBackgroundBitmap
                 //view.setImageBitmap(mBackgroundBitmap);
                 //BitmapToViewHelper.assignViewWithBitmap(view, filePath, orientation, w, h);
                 //mBackgroundBitmap = ((BitmapDrawable) view.getDrawable()).getBitmap();
@@ -1461,7 +1496,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      * @return
      */
     private int getDisplayHeight(){
-        Display display = getWindowManager().getDefaultDisplay();
+        /*Display display = getWindowManager().getDefaultDisplay();
 
         // Get the right screen size in manner depending on version
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
@@ -1471,7 +1506,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
         } else {
             return display.getHeight();
-        }
+        }*/
+        return mContainerView.getHeight();
     }
 
     protected boolean isSpeedDialEnabled() {

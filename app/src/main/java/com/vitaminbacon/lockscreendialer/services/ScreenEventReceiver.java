@@ -16,6 +16,7 @@ public class ScreenEventReceiver extends BroadcastReceiver {
 
     private static boolean mIssueIntentOnScreenOn = false;
 
+
     public ScreenEventReceiver() {
 
     }
