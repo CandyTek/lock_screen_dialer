@@ -139,35 +139,43 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
      */
     public boolean onTouch(View v, MotionEvent event) {
         if (super.onTouch(v, event)) {
+            // If consumed by the super, then return
             return true;
         }
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 // Check if phone call is active for the interrupt flag logic
-                if (!getPhoneCallActiveFlag()) {
+                /*if (!getPhoneCallActiveFlag()) {
                     mPhoneCallInterruptFlag = true;
                 } else {
                     mPhoneCallInterruptFlag = false;
+                }*/
+                if (mLongPressFlag == true) {
+                    break;
                 }
+
                 try {
-                    // Check to see if we set a dialer runnable
                     Button b = (Button) v;
-                    SharedPreferences sharedPref = getSharedPreferences(
-                            getString(R.string.speed_dial_preference_file_key),
-                            Context.MODE_PRIVATE);
-                    String filename = getString(R.string.key_number_store_prefix_phone)
-                            + getSpeedDialButtonPressed(b.getId(), -1);
-                    //Log.d(TAG, "Setting dialer runnable click on key " + b.getText());
-                    if (sharedPref.getString(filename, null) != null) { //only set the long click where necessary
+                    // Check to see if we set a dialer runnable
+                    if (isSpeedDialEnabled()) {
+                        SharedPreferences sharedPref = getSharedPreferences(
+                                getString(R.string.speed_dial_preference_file_key),
+                                Context.MODE_PRIVATE);
+                        String filename = getString(R.string.key_number_store_prefix_phone)
+                                + getSpeedDialButtonPressed(b.getId(), -1);
                         //Log.d(TAG, "Setting dialer runnable click on key " + b.getText());
-                        mHandler = new Handler();
-                        mRunnable = new DialerRunnable(this, getSpeedDialButtonPressed(v.getId(), -1));
-                        mHandler.postDelayed(
-                                mRunnable,
-                                getResources().getInteger(R.integer.lock_screen_pattern_long_press_delay));
-                        Vibrator vibrator =
-                                (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                        vibrator.vibrate(1);
+                        if (sharedPref.getString(filename, null) != null) { //only set the long click where necessary
+                            //Log.d(TAG, "Setting dialer runnable click on key " + b.getText());
+                            mHandler = new Handler();
+                            mRunnable = new DialerRunnable(this, getSpeedDialButtonPressed(v.getId(), -1));
+                            mHandler.postDelayed(
+                                    mRunnable,
+                                    getResources().getInteger(R.integer.lock_screen_pattern_long_press_delay));
+                            Vibrator vibrator =
+                                    (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                            vibrator.vibrate(1);
+                        }
                     }
 
                     // Now handle pattern logic
@@ -206,17 +214,21 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                     Log.d(TAG, "Correct passcode called");
                     onCorrectPasscode();
                 } else {
-                    if (getPhoneCallActiveFlag() && mPhoneCallInterruptFlag) {
+                    /*if (getPhoneCallActiveFlag() && mPhoneCallInterruptFlag) {
                         // Phone=inactive when pattern started, and phone=active after pattern end
-                        onWrongPatternEntered(false);  // No error message
+                        onWrongPatternEntered(false);  // No error message*/
+                    if (!getPhoneCallActiveFlag() && mLongPressFlag) {
+                        onWrongPatternEntered(getString(R.string.lock_screen_initiate_call));
                     } else {
-                        // Phone=active when pattern started, or phone=inactive now
-                        onWrongPatternEntered(true);
+                        onWrongPatternEntered(getString(R.string.lock_screen_wrong_pattern_entered));
                     }
                 }
                 break;
 
             case MotionEvent.ACTION_MOVE:
+                if (mLongPressFlag) {
+                    break;
+                }
 
                 // Check if user has left last button
                 int index = mLastBtnTouchedNum - 1;
@@ -383,7 +395,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
     }
 
 
-    private void onWrongPatternEntered(boolean displayErrorMessage) {
+    private void onWrongPatternEntered(String displayMessage) {
         // TODO: implement switch statement below
         /*int delay;
         String message;
@@ -395,11 +407,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
             case 1:
 
         }*/
-        if (displayErrorMessage) {
-            resetPatternEntry(getString(R.string.lock_screen_wrong_pattern_entered));
-        } else {
-            resetPatternEntry(getString(R.string.lock_screen_keypad_pattern_instruction_1));
-        }
+        resetPatternEntry(displayMessage);
 
         mNumTries++;
         mPatternEntered = "";
@@ -419,10 +427,6 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
             Handler h = new Handler();
             h.postDelayed(r, getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay));
 
-            if (displayErrorMessage) {
-                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                v.vibrate(200);
-            }
         } catch (ClassCastException e) {
             Log.e(TAG, "Layout element of wrong type to implement pattern display", e);
             onFatalError();
@@ -481,6 +485,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
 
         public void run() {
             view.setText(text);
+            mLongPressFlag = false;
         }
     }
 

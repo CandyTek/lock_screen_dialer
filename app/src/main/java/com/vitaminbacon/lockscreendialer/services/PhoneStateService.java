@@ -11,7 +11,7 @@ public class PhoneStateService extends Service {
 
     private final static String TAG = "PhoneStateService";
     //private final IBinder mBinder = new PhoneStateBinder();
-    private PhoneStateReceiver mReceiver;
+    private static PhoneCallReceiver mReceiver;
 
 
     public PhoneStateService() {
@@ -26,10 +26,10 @@ public class PhoneStateService extends Service {
 
     @Override
     public void onCreate() {
-        //Log.d(TAG, "onCreate called");
+        Log.d(TAG, "onCreate called");
         super.onCreate();
         IntentFilter filter = new IntentFilter(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
-        mReceiver = new PhoneStateReceiver();
+        mReceiver = new PhoneCallReceiver();
         registerReceiver(mReceiver, filter);
     }
 
@@ -45,7 +45,7 @@ public class PhoneStateService extends Service {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
-        //Log.d(TAG, "onStartCommand called");
+        Log.d(TAG, "onStartCommand called");
 
 
         /*IntentFilter filter = new IntentFilter(TelephonyManager.ACTION_PHONE_STATE_CHANGED);

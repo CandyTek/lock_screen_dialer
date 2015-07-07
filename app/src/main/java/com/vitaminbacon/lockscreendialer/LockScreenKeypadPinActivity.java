@@ -2,6 +2,7 @@ package com.vitaminbacon.lockscreendialer;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,6 +32,7 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
     private String mPinEntered;
     private boolean mPinInvalidDisplayFlag;
     private int mNumTries;
+    private int mLastBtnTouchedNum;
 
 
     @Override
@@ -198,9 +200,12 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         super.onClick(view); // Need to call the super to catch click of end call button
 
         // If this method was called by virtue of someone invoking a long press, we swallow it
-        if (mLongPressFlag) {
+        /*if (mLongPressFlag) {
             mLongPressFlag = false;
             resetPinEntry(getString(R.string.lock_screen_pin_default_display));
+            return;
+        }*/
+        if (mLongPressFlag) {
             return;
         }
         int num = getSpeedDialButtonPressed(view.getId(), -1);
@@ -261,26 +266,66 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         if (super.onTouch(v, event)) {
             return true;
         }
+        if (!isSpeedDialEnabled()) {
+            return false;
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                //Log.d(TAG, v.getId() + " down. (" + event.getX() + ", " + event.getY() + "); raw(" + event.getRawX() + ", " + event.getRawY() + ")");
-                if (mHandler == null) { // means there is no pending handler
-                    mHandler = new Handler();
-                    mRunnable = new DialerRunnable(this, getSpeedDialButtonPressed(v.getId(), -1));
-                    mHandler.postDelayed(
-                            mRunnable,
-                            getResources().getInteger(R.integer.lock_screen_pin_long_press_delay));
-                    mLongPressFlag = false;  // flag to let
+                if (mLongPressFlag) {
+                    break;
+                }
+                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                vibrator.vibrate(1);
+                if (!getPhoneCallActiveFlag() && mHandler == null) { // means there is no pending handler
+                    int num = getSpeedDialButtonPressed(v.getId(), -1);
+                    if (num != -1) {
+                        mHandler = new Handler();
+                        mRunnable = new DialerRunnable(this, num);
+                        mHandler.postDelayed(
+                                mRunnable,
+                                getResources().getInteger(R.integer.lock_screen_pin_long_press_delay));
+                        mLongPressFlag = false;
+                        mLastBtnTouchedNum = num;
+                    }
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                //Log.d(TAG, v.getId() + " up. (" + event.getX() + ", " + event.getY() + "); raw(" + event.getRawX() + ", " + event.getRawY() + ")");
-                mHandler.removeCallbacks(mRunnable);
-                mHandler = null;
-                mRunnable = null;
+                if (mHandler != null) {
+                    mHandler.removeCallbacks(mRunnable);
+                    mHandler = null;
+                    mRunnable = null;
+                }
+                if (mLongPressFlag) {
+                    resetPinEntry(getString(R.string.lock_screen_initiate_call));
+                    SetTextInViewRunnable r = new SetTextInViewRunnable(
+                            getString(R.string.lock_screen_pin_default_display),
+                            getPinDisplayView());
+                    Handler h = new Handler();
+                    h.postDelayed(r, getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay));
+                }
                 break;
             case MotionEvent.ACTION_MOVE:
-                //Log.d(TAG, v.getId() + " move. (" + event.getX() + ", " + event.getY() + "); raw(" + event.getRawX() + ", " + event.getRawY() + ")");
+                // Sole purpose is to prevent speed dial if finger press wanders outside of button
+
+                if (mLongPressFlag) {
+                    break;
+                }
+                // Check if user has left last button
+                int[] coord = new int[2];
+                Button[] buttons = getKeypadButtons();
+                buttons[mLastBtnTouchedNum].getLocationOnScreen(coord);
+                Rect r = new Rect(
+                        coord[0],
+                        coord[1],
+                        coord[0] + buttons[mLastBtnTouchedNum].getWidth(),
+                        coord[1] + buttons[mLastBtnTouchedNum].getHeight());
+                if (!r.contains((int) event.getRawX(), (int) event.getRawY())) { // outside last button
+                    if (mHandler != null) {
+                        mHandler.removeCallbacks(mRunnable);
+                        mHandler = null;
+                        mRunnable = null;
+                    }
+                }
         }
         return false;
     }
@@ -387,6 +432,7 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         return sharedPref.getString(getString(R.string.value_lock_screen_passcode), null);
 
     }
+
     private void wrongPinEntered() {
         // TODO: implement switch statement below
         /*int delay;
@@ -492,9 +538,11 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
                 }
                 view.setText(s);
                 setPinDisplayToPasswordView();
+
                 //Log.d(TAG, "Runnable has set pinDisplayVyew to " + s);
             }
             resetPinInvalidDisplayFlag();
+            mLongPressFlag = false;
         }
     }
 

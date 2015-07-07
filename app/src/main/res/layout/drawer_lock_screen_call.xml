@@ -23,6 +23,7 @@
             style="@style/typeface_phone_call_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxLines="1"
             android:text="Callee"/>
         <TextView
             android:id="@+id/drawer_phone_call_description"

@@ -1,167 +1,121 @@
 package com.vitaminbacon.lockscreendialer.services;
 
+/**
+ * Created by nick on 7/6/15.
+ */
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.vitaminbacon.lockscreendialer.ErrorPageActivity;
-import com.vitaminbacon.lockscreendialer.LockScreenKeypadPatternActivity;
-import com.vitaminbacon.lockscreendialer.LockScreenKeypadPinActivity;
-import com.vitaminbacon.lockscreendialer.R;
+import java.util.Date;
 
-public class PhoneStateReceiver extends BroadcastReceiver {
+public abstract class PhoneStateReceiver extends BroadcastReceiver {
 
-    public static final String TAG = "PhoneStateReceiver";
-    public static final String EXTRA_PHONE_DATA_NUMBER =
-            "com.vitaminbacon.lockscreendialer.PHONE_NUM_DATA";
-    public static final String EXTRA_PHONE_STATE =
-            "com.vitaminbacon.lockscreendialer.PHONE_STATE";
-    public static final int PHONE_STATE_IDLE = 1;
-    public static final int PHONE_STATE_RINGING = 2;
-    public static final int PHONE_STATE_OFFHOOK = 3;
-    public static final String EXTRA_PHONE_STATE_RINGING =
-            "com.vitaminbacon.lockscreendialer.PHONE_STATE_RINGING";
+    public static final int STATE_STARTED_INCOMING_CALL = 0;
+    public static final int STATE_STARTED_OUTGOING_CALL = 1;
+    public static final int STATE_ENDED_INCOMING_CALL = 2;
+    public static final int STATE_ENDED_OUTGOING_CALL = 3;
+    public static final int STATE_MISSED_CALL = 4;
 
-    // Last state, designed to handle the receipt of extras in Lollipop release
-    private static String lastState;
 
-    public PhoneStateReceiver() {
-        lastState = "";
+    //The receiver will be recreated whenever android feels like it.  We need a static variable to remember data between instantiations
+    private static String TAG = "PhoneStateReceiver";
+    private static int lastState = TelephonyManager.CALL_STATE_IDLE;
+    private static Date callStartTime;
+    private static boolean isIncoming;
+    private static String savedNumber;  //because the passed incoming is only valid in ringing
 
-        //Log.d(TAG, "Constructor called.");
-    }
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, "Phone state receiver onReceive called");
 
-
-        if (intent.getAction().equals("android.intent.action.PHONE_STATE")) {
-            String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
-            Log.d(TAG, "PhoneStateReceiver**Call State=" + state);
-            boolean isEchoState = state.equals(lastState);
-
-            if (state.equals(TelephonyManager.EXTRA_STATE_IDLE) && !isEchoState) {
-                Log.d(TAG, "PhoneStateReceiver**Idle");
-                //Intent lockScreenIntent = new Intent(context, LockScreenLauncherActivity.class);
-                Intent lockScreenIntent = getLockScreenIntent(context);
-                // Now we need to call the lock screen activity back to the foreground
-                //Strange error -- if this is set along with manifest setting, it doesn't want to call onNewIntent
-                lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PHONE_STATE_IDLE);
-
-                context.startActivity(lockScreenIntent);
-            } else if (state.equals(TelephonyManager.EXTRA_STATE_RINGING) && !isEchoState) {
-                // Incoming call
-                String incomingNumber =
-                        intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
-
-                // Go to launcher activity, since we may need to clear any landscape orientation to avoid Galaxy S4 error
-                Intent lockScreenIntent = getLockScreenIntent(context);
-                lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PHONE_STATE_RINGING);
-                lockScreenIntent.putExtra(EXTRA_PHONE_DATA_NUMBER, incomingNumber);
-
-                context.startActivity(lockScreenIntent);
-
-
-            } else if (state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK) && !isEchoState) {
-
-            }
-            // Doesn't matter whether it is an echo or not, same result
-            lastState = state;
-
-        } else if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
-            // Outgoing call -- we don't care about this also
-            String outgoingNumber = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
-            Log.d(TAG, "PhoneStateReceiver **Outgoing call " + outgoingNumber);
-        } else {
-            Log.d(TAG, "PhoneStateReceiver **unexpected intent.action=" + intent.getAction());
+        //We listen to two intents.  The new outgoing call only tells us of an outgoing call.  We use it to get the number.
+        /*if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
+            savedNumber = intent.getExtras().getString("android.intent.extra.PHONE_NUMBER");
         }
+        else{*/
+        String stateStr = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
+        String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+        int state = 0;
+        if (stateStr.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
+            state = TelephonyManager.CALL_STATE_IDLE;
+        } else if (stateStr.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
+            state = TelephonyManager.CALL_STATE_OFFHOOK;
+        } else if (stateStr.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+            state = TelephonyManager.CALL_STATE_RINGING;
+        }
+
+        //  Need to add robustness to deal with Lollipop's issuing of two intents for each state
+        // change -- we know it is a valid intent if TelephonyManager.getCallState() equals
+        // the value derived above
+        TelephonyManager tm =
+                (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (tm.getCallState() == state) {
+            Log.d(TAG, "Received intent with state " + state);
+            onCallStateChanged(context, state, number);
+        } else {
+            Log.d(TAG, "Received intent with state " + state
+                    + " that is inconsistent with TelephonyManager.getCallState() "
+                    + tm.getCallState());
+        }
+        //}
     }
 
-    /**
-     * I suspect this can just be done in the lock screen activity
-     * @param context
-     * @return
-     */
-    /*public boolean killCall(Context context) {
-        try {
-            // Get the boring old TelephonyManager
-            TelephonyManager telephonyManager =
-                    (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+    //Deals with actual events
 
-            // Get the getITelephony() method
-            Class classTelephony = Class.forName(telephonyManager.getClass().getName());
-            Method methodGetITelephony = classTelephony.getDeclaredMethod("getITelephony");
-
-            // Ignore that the method is supposed to be private
-            methodGetITelephony.setAccessible(true);
-
-            // Invoke getITelephony() to get the ITelephony interface
-            Object telephonyInterface = methodGetITelephony.invoke(telephonyManager);
-
-            // Get the endCall method from ITelephony
-            Class telephonyInterfaceClass =
-                    Class.forName(telephonyInterface.getClass().getName());
-            Method methodEndCall = telephonyInterfaceClass.getDeclaredMethod("endCall");
-
-            // Invoke endCall()
-            methodEndCall.invoke(telephonyInterface);
-
-        } catch (Exception ex) { // Many things can go wrong with reflection calls
-            Log.d(TAG, "PhoneStateReceiver **" + ex.toString());
-            return false;
+    //Incoming call-  goes from IDLE to RINGING when it rings, to OFFHOOK when it's answered, to IDLE when its hung up
+    //Outgoing call-  goes from IDLE to OFFHOOK when it dials out, to IDLE when hung up
+    public void onCallStateChanged(Context context, int state, String number) {
+        Log.d(TAG, "onCallStateChanged:  lastState = " + lastState + " state = " + state);
+        if (lastState == state) {
+            //No change, debounce extras
+            return;
         }
-        return true;
-    }*/
-
-    /**
-     * Because of strange black out errors on the Galaxy S4 when the lock screen is activated over
-     * a rotated activity, we need to route the intent through the defunct lock screen launcher
-     * activity, which now displays a splash screen.
-     *
-     * @param context
-     * @return
-     */
-    private Intent getLockScreenIntent(Context context) {
-
-        SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.file_lock_screen_type),
-                Context.MODE_PRIVATE);
-        String lockScreenType;
-
-        try {
-            lockScreenType = prefs.getString(
-                    context.getString(R.string.key_lock_screen_type),
-                    null);
-        } catch (NullPointerException e) {
-            Log.e(TAG, "Unable to access shared preferences for lock screen type");
-            return null;
+        switch (state) {
+            case TelephonyManager.CALL_STATE_RINGING:
+                isIncoming = true;
+                callStartTime = new Date();
+                savedNumber = number;
+                onIncomingCallStarted(context, number, callStartTime);
+                break;
+            case TelephonyManager.CALL_STATE_OFFHOOK:
+                //Transition of ringing->offhook are pickups of incoming calls.  Nothing done on them
+                if (lastState != TelephonyManager.CALL_STATE_RINGING) {
+                    isIncoming = false;
+                    callStartTime = new Date();
+                    onOutgoingCallStarted(context, savedNumber, callStartTime);
+                }
+                break;
+            case TelephonyManager.CALL_STATE_IDLE:
+                //Went to idle-  this is the end of a call.  What type depends on previous state(s)
+                if (lastState == TelephonyManager.CALL_STATE_RINGING) {
+                    //Ring but no pickup-  a miss
+                    onMissedCall(context, savedNumber, callStartTime);
+                } else if (isIncoming) {
+                    onIncomingCallEnded(context, savedNumber, callStartTime, new Date());
+                } else {
+                    onOutgoingCallEnded(context, savedNumber, callStartTime, new Date());
+                }
+                break;
         }
-
-        Intent newIntent;
-        if (lockScreenType != null) {
-
-            if (lockScreenType.equals(
-                    context.getString(R.string.value_lock_screen_type_keypad_pin))) {
-                newIntent = new Intent(context, LockScreenKeypadPinActivity.class);
-            } else if (lockScreenType.equals(
-                    context.getString(R.string.value_lock_screen_type_keypad_pattern))) {
-                newIntent = new Intent(context, LockScreenKeypadPatternActivity.class);
-                Log.d(TAG, "Phone receiver starting intent to pattern activity");
-            } else { //An error of some kind
-                Log.d(TAG, "No value for key " + context
-                        .getString(R.string.key_lock_screen_type));
-                newIntent = new Intent(context, ErrorPageActivity.class);
-            }
-        } else {
-            Log.e(TAG, "Unable to get the lock screen type from shared preferences.");
-            return null;
-        }
-        //Intent newIntent = new Intent(context, LockScreenLauncherActivity.class);
-        return newIntent;
+        lastState = state;
     }
+
+    protected void resetLastState() {
+        lastState = TelephonyManager.CALL_STATE_IDLE;
+    }
+
+    //Derived classes should override these to respond to specific events of interest
+    abstract protected void onIncomingCallStarted(Context ctx, String number, Date start);
+
+    abstract protected void onOutgoingCallStarted(Context ctx, String number, Date start);
+
+    abstract protected void onIncomingCallEnded(Context ctx, String number, Date start, Date end);
+
+    abstract protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date end);
+
+    abstract protected void onMissedCall(Context ctx, String number, Date start);
 }

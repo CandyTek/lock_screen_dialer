@@ -125,7 +125,7 @@
         </activity>
 
         <receiver
-            android:name=".services.PhoneStateReceiver"
+            android:name=".services.PhoneCallReceiver"
             android:enabled="true"
             android:exported="false" >
             <intent-filter android:priority="0" >

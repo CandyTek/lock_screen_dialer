@@ -12,5 +12,7 @@
 
     <string name="title_activity_lock_screen_keypad_pattern">Lock Screen Keypad Pattern Activity</string>
 
+    <string name="lock_screen_initiate_call">Initiating speed dial...</string>
+
 
 </resources>
