@@ -432,6 +432,9 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
             onFatalError();
         }
 
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        v.vibrate(200);
+
     }
 
     /**
