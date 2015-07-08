@@ -20,6 +20,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -58,6 +59,7 @@ import com.vitaminbacon.lockscreendialer.services.PhoneStateService;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
@@ -1451,11 +1453,23 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     protected void onCorrectPasscode() {
         Log.d(TAG, "Correct passcode entered");
         stopService(new Intent(this, PhoneStateService.class));
-        //View v = getView(R.id.activity_container);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String sound = prefs.getString(
+                getString(R.string.key_select_passcode_correct_sound),
+                getString(R.string.passcode_correct_default));
+        final Uri uri = Uri.parse(sound);
+        final Context ctx = this;
+
         View v = mContainerView;
         // Fade out the lock screen
         if (v != null) {
             v.animate().alpha(0f).setDuration(200).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+                    playSound(ctx, uri);
+                }
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
@@ -1463,7 +1477,24 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 }
             });
         } else {
+            playSound(ctx, uri);
             finish();
+        }
+    }
+
+    private void playSound(Context context, Uri alert) {
+        MediaPlayer mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(context, alert);
+            final AudioManager audioManager = (AudioManager) context
+                    .getSystemService(Context.AUDIO_SERVICE);
+            if (audioManager.getStreamVolume(AudioManager.STREAM_RING) != 0) {
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_RING);
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+            }
+        } catch (IOException e) {
+            System.out.println("OOPS");
         }
     }
 

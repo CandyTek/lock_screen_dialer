@@ -81,6 +81,9 @@
     <string name="pref_title_toggle_status_bar_access">View status bar</string>
     <string name="pref_description_toggle_status_bar_access">Allows viewing, but not access, of the status bar while screen is locked</string>
 
+    <string name="pref_title_select_passcode_correct_sound">Select screen unlock sound</string>
+    <string name="pref_description_select_passcode_correct_sound">%s</string>
+
     <string name="pref_summary_on_toggle_sheath_instruction">ON</string>
     <string name="pref_summary_off_toggle_sheath_instruction">OFF</string>
 
@@ -107,6 +110,7 @@
     <string name="key_select_lock_screen_fonts">key_select_lock_screen_fonts</string>
     <string name="key_toggle_sheath_instruction">key_toggle_sheath_instruction</string>
     <string name="key_toggle_status_bar_access">key_toggle_status_bar_access</string>
+    <string name="key_select_passcode_correct_sound">key_select_passcode_correct_sound</string>
     <string name="key_lock_screen_type">LOCK_SCREEN_TYPE</string>
 
     <!-- Values for shared preferences -->
@@ -114,6 +118,7 @@
     <string name="value_lock_screen_type_keypad_pattern">KEYPAD_PATTERN</string>
     <string name="value_lock_screen_type_none">NONE</string>
     <string name="value_lock_screen_passcode">PASSCODE</string>
+    <string name="value_select_passcode_correct_sound_default">content://settings/system/notification_sound</string>
 
     <string name="date_format">E d MMM yyyy</string>
 
@@ -146,6 +151,17 @@
         <item>boolean</item>
     </array>
 
+    <string-array name="extraRingtones">
+        <item>@string/passcode_correct_default</item>
+    </string-array>
+
+    <string-array name="extraRingtoneTitles">
+        <item>Camera flash</item>
+    </string-array>
+
+    <string name="passcode_correct_default">passcode_correct</string>
+    <string name="silent">Silent</string>
+
     <string name="pref_description_off_toggle_lock_screen">The lock screen is currently OFF</string>
     <string name="pref_description_on_toggle_lock_screen">The lock screen is currently ON</string>
 
@@ -165,6 +181,9 @@
     </array>
 
     <string name="toast_lock_screen_type_not_selected">No lock screen type selected</string>
+
+    <string name="menu_ok">OK</string>
+    <string name="menu_cancel">Cancel</string>
 
 
 </resources>
