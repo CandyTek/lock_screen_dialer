@@ -6,6 +6,8 @@ import android.content.Context;
 import android.preference.ListPreference;
 import android.util.AttributeSet;
 
+import com.vitaminbacon.lockscreendialer.R;
+
 /**
  * Allows us to easily invoke a click of ListPreference with .show()
  */
@@ -34,8 +36,10 @@ public class MyListPreference extends ListPreference {
     @Override
     protected void onPrepareDialogBuilder(AlertDialog.Builder builder) {
         super.onPrepareDialogBuilder(builder);
+        builder.setPositiveButton(R.string.menu_ok, this);
+        builder.setNegativeButton(R.string.menu_cancel, this);
         // Get rid of cancel button
-        builder.setNegativeButton(null, null);
+        //builder.setNegativeButton(null, null);
     }
 
     @Override

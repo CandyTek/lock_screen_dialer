@@ -136,6 +136,9 @@ public class ExtraRingtonePreference extends DialogPreference {
 
         final Map<String, Uri> sounds = new LinkedHashMap<String, Uri>();
 
+        if (mShowSilent)
+            sounds.put(mContext.getString(R.string.silent), Uri.parse(""));
+
         if (mExtraRingtones != null) {
             for (CharSequence extraRingtone : mExtraRingtones) {
                 Uri uri = uriFromRaw(extraRingtone.toString());
@@ -154,10 +157,6 @@ public class ExtraRingtonePreference extends DialogPreference {
                 }
             }
         }
-
-        if (mShowSilent)
-            sounds.put(mContext.getString(R.string.silent), Uri.parse(""));
-
 
         sounds.putAll(getSounds(RingtoneManager.TYPE_NOTIFICATION));
 
