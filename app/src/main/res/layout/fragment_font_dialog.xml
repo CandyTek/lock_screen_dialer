@@ -14,7 +14,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:background="#ff00ddff" />
+        android:background="@color/holo_blue" />
 
     <ListView
         android:id="@+id/font_list"

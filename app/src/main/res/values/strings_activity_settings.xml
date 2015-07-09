@@ -43,7 +43,7 @@
     <string name="pref_description_toggle_speed_dial_button">Toggle speed dial on and off in the lockscreen</string>
 
     <string name="pref_title_select_speed_dial_button_color">Speed dial toggle color</string>
-    <string name="pref_description_select_speed_dial_button_color">The speed dial toggle\'s "on" indicator</string>
+    <string name="pref_description_select_speed_dial_button_color">The speed dial toggle button\'s \"on\" indicator light</string>
 
     <string name="pref_title_display_contact_info">Display other text on lock screen</string>
     <string name="pref_description_display_contact_info">Custom text display, e.g., name and email</string>

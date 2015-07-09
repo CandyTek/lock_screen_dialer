@@ -3,6 +3,7 @@
     android:id="@+id/dialog_assigned_parent"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@color/milk_white"
     android:orientation="vertical">
     <LinearLayout
         android:id="@+id/contact_assigned_instruction_bar"
@@ -14,32 +15,43 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:background="@color/gunmetal"
+            android:background="@color/holo_blue"
+
             android:src="@drawable/ic_dialpad_white_36dp" />
 
         <TextView
             android:id="@+id/contact_assigned_number"
-            style="@style/dialog_title_bar"
+            style="@style/holo_dialog_title_bar"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:text="4" />
+            android:background="@color/holo_blue"
+            android:text="4"
+            android:textColor="@color/white" />
 
 
         <TextView
             android:id="@+id/contact_assigned_instruction"
-            style="@style/dialog_title_bar"
+            style="@style/holo_dialog_title_bar"
             android:layout_width="0dp"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:text="" />
+            android:text="@string/contact_assigned_dialog_instruction" />
         </LinearLayout>
+
+    <View
+        android:id="@+id/contact_assigned_border"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_alignBottom="@id/contact_dialog_instruction"
+        android:layout_below="@id/contact_assigned_instruction_bar"
+        android:background="@color/holo_blue" />
 
 
     <ImageView
         android:id="@+id/contact_assigned_thumbnail"
         android:layout_width="@dimen/contact_image_size"
         android:layout_height="@dimen/contact_image_size"
-        android:layout_below="@id/contact_assigned_instruction_bar"
+        android:layout_below="@id/contact_assigned_border"
         android:layout_margin="@dimen/contact_image_margin"
         android:src="@drawable/default_contact_image" />
 
@@ -93,7 +105,15 @@
             android:text="(310) 867-5309"
             android:textSize="20dp" />
 
+
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignBottom="@id/contact_assigned_phone_info"
+        android:background="@color/gray_goose" />
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -102,8 +122,8 @@
         <Button
             android:id="@+id/contact_assigned_reassign"
             style="@style/dialog_buttons"
-
-            android:text="@string/contact_assigned_reassign" />
+            android:text="@string/contact_assigned_reassign"
+            android:textAllCaps="false" />
 
         <View
             style="@style/key_pad_dividers"
@@ -113,8 +133,8 @@
         <Button
             android:id="@+id/contact_assigned_remove"
             style="@style/dialog_buttons"
-
-            android:text="@string/contact_assigned_remove" />
+            android:text="@string/contact_assigned_remove"
+            android:textAllCaps="false" />
 
     </LinearLayout>
 </RelativeLayout>

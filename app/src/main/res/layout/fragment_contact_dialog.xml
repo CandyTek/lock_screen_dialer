@@ -3,16 +3,21 @@
     android:id="@+id/dialog_parent"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@color/milk_white"
     android:orientation="vertical">
     <TextView
         android:id="@+id/contact_dialog_instruction"
+        style="@style/holo_dialog_title_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/gunmetal"
-        android:padding="20dp"
-        android:text="@string/contact_selected_instruction"
-        android:textColor="@color/white"
-        android:textSize="20sp" />
+        android:text="@string/contact_selected_instruction" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_alignBottom="@id/contact_dialog_instruction"
+        android:background="@color/holo_blue" />
+
     <ImageView
         android:id="@+id/contact_selected_thumbnail"
         android:layout_width="100dp"

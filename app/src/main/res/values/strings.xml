@@ -8,7 +8,8 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_speed_dial_selection">Speed Dial Selection</string>
     <string name="title_activity_contact_selection">Contact Selection</string>
-    <string name="contact_selected_instruction">Select a phone number</string>
+    <string name="contact_selected_instruction">Select a phone number:</string>
+    <string name="contact_assigned_dialog_instruction">Select action:</string>
 
     <string name="phone_type_custom">Custom</string>
     <string name="phone_type_home">Home</string>

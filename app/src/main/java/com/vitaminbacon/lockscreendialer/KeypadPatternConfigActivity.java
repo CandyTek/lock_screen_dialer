@@ -143,6 +143,7 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
         }
         for (int i = 0; i < 9; i++) {
             mPatternBtns[i].setPressed(false);
+            mPatternBtns[i].setTextColor(getResources().getColor(R.color.white));
         }
     }
 
@@ -162,6 +163,7 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
                     } else {
                         mPatternEntered += mLastBtnTouchedNum;
                         b.setPressed(true);
+                        b.setTextColor(getResources().getColor(R.color.lava_red));
                         Log.d(TAG, "Pattern now = " + mPatternEntered);
                         Vibrator vibrator =
                                 (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -223,6 +225,7 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
                                 mPatternEntered += mLastBtnTouchedNum;
                                 //Log.d(TAG, "Pattern now = " + mPatternEntered);
                                 b.setPressed(true);
+                                b.setTextColor(getResources().getColor(R.color.lava_red));
 
                                 Vibrator vibrator =
                                         (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
