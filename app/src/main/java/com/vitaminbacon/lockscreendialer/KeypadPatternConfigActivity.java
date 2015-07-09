@@ -178,6 +178,7 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
                 onPatternSubmitted();
                 mTouchDrawView.clearLines();
                 mTouchDrawView.invalidate();
+                break;
 
             case MotionEvent.ACTION_MOVE:
 

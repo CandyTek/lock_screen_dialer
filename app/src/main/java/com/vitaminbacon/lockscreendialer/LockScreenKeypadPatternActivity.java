@@ -189,6 +189,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                         // Draw the pattern
                         if (mDisplayPatternFlag) {
                             b.setPressed(true);
+                            b.setTextColor(mButtonColor);
                         }
                     }
                 } catch (ClassCastException e) {
@@ -280,6 +281,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                                 if (mDisplayPatternFlag) {
                                     //b.getBackground().mutate();
                                     b.setPressed(true);
+                                    b.setTextColor(mButtonColor);
                                     Paint p = new Paint();
                                     //p.setColor(getResources().getColor(R.color.green));
                                     p.setColor(mDrawColor);
@@ -418,6 +420,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
 
         for (int i = 0; i < 9; i++) {
             mPatternBtns[i].setPressed(false);
+            mPatternBtns[i].setTextColor(getResources().getColor(R.color.white));
         }
 
         try {

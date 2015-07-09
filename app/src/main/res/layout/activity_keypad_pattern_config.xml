@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/milk_white"
     android:orientation="vertical"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.vitaminbacon.lockscreendialer.KeypadPinConfigActivity">
@@ -13,6 +14,11 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:text="Instruction" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/black_cow" />
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -172,10 +178,12 @@
 
             </LinearLayout>
 
-            <View
+            <TextView
+                style="@style/general_instruction"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight=".75" />
+                android:layout_height="wrap_content"
+                android:text="@string/keypad_pattern_config_warning" />
+
         </LinearLayout>
     </RelativeLayout>
 
