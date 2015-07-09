@@ -18,4 +18,5 @@
     <dimen name="typeface_phone_call_description_text_size">20dp</dimen>
 
     <dimen name="pattern_buttons_text_size">35sp</dimen>
+    <dimen name="pin_buttons_padding">12dp</dimen>
 </resources>
