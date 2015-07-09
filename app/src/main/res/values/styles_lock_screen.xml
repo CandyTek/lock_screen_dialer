@@ -4,7 +4,7 @@
     <style name="pattern_buttons_lock_screen">
         <item name="android:typeface">sans</item>
         <item name="android:textColor">@color/milk_white</item>
-        <item name="android:textSize">35sp</item>
+
         <item name="android:layout_width">@dimen/lock_screen_pattern_button_diameter</item>
         <item name="android:layout_height">@dimen/lock_screen_pattern_button_diameter</item>
         <item name="android:layout_centerHorizontal">true</item>

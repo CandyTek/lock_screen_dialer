@@ -1,14 +1,14 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">8dp</dimen>
 
     <dimen name="diameter_circle_toggle">22dp</dimen>
     <dimen name="radius_circle_toggle">11dp</dimen>
     <dimen name="settings_toggle_width">44dp</dimen>
     <dimen name="settings_toggle_height">22dp</dimen>
 
-    <dimen name="lock_screen_pattern_button_diameter">65dp</dimen>
+    <dimen name="lock_screen_pattern_button_diameter">55dp</dimen>
 
     <dimen name="contact_image_size">100dp</dimen>
     <dimen name="contact_image_margin">10dp</dimen>
@@ -16,4 +16,6 @@
     <dimen name="typeface_phone_call_info_text_size">28dp</dimen>
     <dimen name="typeface_phone_call_info_text_margin">12dp</dimen>
     <dimen name="typeface_phone_call_description_text_size">20dp</dimen>
+
+    <dimen name="pattern_buttons_text_size">30sp</dimen>
 </resources>

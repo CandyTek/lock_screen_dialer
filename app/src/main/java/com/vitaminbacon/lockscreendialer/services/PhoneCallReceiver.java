@@ -107,13 +107,14 @@ public class PhoneCallReceiver extends PhoneStateReceiver {
     }
 
     protected void onOutgoingCallStarted(Context ctx, String number, Date start) {
-        Log.d(TAG, "Outgoing call started");
+
         Intent lockScreenIntent = getLockScreenIntent(ctx);
         lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PhoneStateReceiver.STATE_STARTED_OUTGOING_CALL);
         lockScreenIntent.putExtra(EXTRA_PHONE_DATA_NUMBER, number);
 
         ctx.startActivity(lockScreenIntent);
+        Log.d(TAG, "Outgoing call started");
     }
 
     protected void onIncomingCallEnded(Context ctx, String number, Date start, Date end) {

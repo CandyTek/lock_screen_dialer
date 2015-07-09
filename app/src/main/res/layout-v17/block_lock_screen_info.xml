@@ -2,31 +2,31 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@id/lock_screen_info_block"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@id/lock_screen_info_block"
-    android:orientation="vertical"
     android:gravity="right"
+    android:orientation="vertical"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    style="@style/lock_screen_padding">
+    android:paddingTop="@dimen/activity_vertical_margin">
 
     <TextClock
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@id/lock_screen_clock"
         style="@style/lock_screen_clock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         tools:ignore="NewApi" />
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@id/lock_screen_date"
-        style="@style/lock_screen_date"/>
-    <TextView
+        style="@style/lock_screen_date"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
         android:id="@id/lock_screen_info"
-        style="@style/lock_screen_info"/>
+        style="@style/lock_screen_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
