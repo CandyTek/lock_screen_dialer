@@ -174,45 +174,29 @@
                         android:orientation="horizontal"
                         android:visibility="invisible">
 
-                        <RelativeLayout
+                        <Button
+                            android:id="@+id/lock_screen_end_call_button"
                             android:layout_width="0dp"
                             android:layout_height="fill_parent"
-                            android:layout_weight="1">
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/selector_end_call"
+                            android:drawableTop="@drawable/ic_call_end_white_48dp"
+                            android:text="@string/lock_screen_end_call_button_text"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/abc_text_size_large_material" />
 
-                            <ImageButton
-                                android:id="@+id/lock_screen_end_call_button"
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/selector_end_call"
-                                android:src="@drawable/ic_call_end_white_48dp" />
-
-                        </RelativeLayout>
-
-                        <RelativeLayout
+                        <Button
+                            android:id="@+id/lock_screen_speaker_call_button"
                             android:layout_width="0dp"
                             android:layout_height="fill_parent"
-                            android:layout_weight=".5">
-
-                            <Button
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:visibility="invisible" />
-
-                        </RelativeLayout>
-
-                        <RelativeLayout
-                            android:layout_width="0dp"
-                            android:layout_height="fill_parent"
-                            android:layout_weight="1">
-
-                            <ImageButton
-                                android:id="@+id/lock_screen_speaker_call_button"
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/selector_spkr_phone"
-                                android:src="@drawable/ic_volume_up_white_48dp" />
-
-                        </RelativeLayout>
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:background="@drawable/selector_spkr_phone"
+                            android:drawableTop="@drawable/ic_volume_up_white_48dp"
+                            android:text="@string/lock_screen_speaker_call_button_text"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/abc_text_size_large_material" />
 
                     </LinearLayout>
                 </RelativeLayout>

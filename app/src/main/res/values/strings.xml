@@ -82,6 +82,7 @@
     <string name="title_activity_error_page">ErrorPageActivity</string>
 
     <string name="lock_screen_end_call_button_text">End Call</string>
+    <string name="lock_screen_speaker_call_button_text">Speaker</string>
 
     <string name="title_activity_lock_screen_launcher">LockScreenLauncherActivity</string>
     <string name="title_activity_background_selection">Current background:</string>

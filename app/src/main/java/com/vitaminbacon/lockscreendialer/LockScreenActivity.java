@@ -40,6 +40,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -692,7 +693,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         //TextView dialInfoView;
 
         try {
-            final ImageButton endCallBtn, spkrBtn;
+            final Button endCallBtn, spkrBtn;
             final ViewGroup phoneButtons, widgets;
             final TextView phoneCallName, phoneCallDescr, phoneCallNum;
             final ImageView phoneCallThumb;
@@ -772,8 +773,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             // Get the phone button views
             phoneButtons = (ViewGroup) getView(R.id.lock_screen_phone_buttons);
             widgets = (ViewGroup) getView(R.id.lock_screen_additional_widgets);
-            endCallBtn = (ImageButton) getView(R.id.lock_screen_end_call_button);
-            spkrBtn = (ImageButton) getView(R.id.lock_screen_speaker_call_button);
+            endCallBtn = (Button) getView(R.id.lock_screen_end_call_button);
+            spkrBtn = (Button) getView(R.id.lock_screen_speaker_call_button);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
                 // First, animate the display drawer at the top
@@ -1338,13 +1339,17 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             case R.id.lock_screen_speaker_call_button:
                 try {
                     AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                    ImageButton btn = (ImageButton) getView(R.id.lock_screen_speaker_call_button);
+                    Button btn = (Button) getView(R.id.lock_screen_speaker_call_button);
                     if (am.isSpeakerphoneOn()) {
                         am.setSpeakerphoneOn(false);
-                        btn.setImageResource(R.drawable.ic_volume_up_white_48dp);
+                        //btn.setImageResource(R.drawable.ic_volume_up_white_48dp);
+                        btn.setCompoundDrawablesWithIntrinsicBounds(
+                                0, R.drawable.ic_volume_up_white_48dp, 0, 0);
                     } else {
                         am.setSpeakerphoneOn(true);
-                        btn.setImageResource(R.drawable.ic_volume_mute_white_48dp);
+                        //btn.setImageResource(R.drawable.ic_volume_mute_white_48dp);
+                        btn.setCompoundDrawablesWithIntrinsicBounds(
+                                0, R.drawable.ic_volume_mute_white_48dp, 0, 0);
                     }
                     break;
                 } catch (NullPointerException e) {
@@ -1528,8 +1533,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         }
         //  Check that the layout elements are of the right type
         try {
-            ImageButton b = (ImageButton) getView(R.id.lock_screen_end_call_button);
-            RelativeLayout rl = (RelativeLayout) b.getParent(); // ensures the correct encapsulating layout is there
+            Button b = (Button) getView(R.id.lock_screen_end_call_button);
+            ViewGroup vg = (ViewGroup) b.getParent(); // ensures the correct encapsulating layout is there
             // TextView v = (TextView)mWindowView.findViewById(R.id.lock_screen_call_display);
             mBackgroundView = (ImageView) getView(R.id.lock_screen_background_view);
             mBackgroundProgress = (ProgressBar) getView(R.id.lock_screen_background_progress);
