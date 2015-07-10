@@ -97,13 +97,13 @@ public class PhoneCallReceiver extends PhoneStateReceiver {
     }
     */
     protected void onIncomingCallStarted(Context ctx, String number, Date start) {
-        Log.d(TAG, "Incoming call started");
         Intent lockScreenIntent = getLockScreenIntent(ctx);
         lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PhoneStateReceiver.STATE_STARTED_INCOMING_CALL);
         lockScreenIntent.putExtra(EXTRA_PHONE_DATA_NUMBER, number);
 
         ctx.startActivity(lockScreenIntent);
+        Log.d(TAG, "Incoming call started, state " + PhoneStateReceiver.STATE_STARTED_INCOMING_CALL);
     }
 
     protected void onOutgoingCallStarted(Context ctx, String number, Date start) {
@@ -114,38 +114,38 @@ public class PhoneCallReceiver extends PhoneStateReceiver {
         lockScreenIntent.putExtra(EXTRA_PHONE_DATA_NUMBER, number);
 
         ctx.startActivity(lockScreenIntent);
-        Log.d(TAG, "Outgoing call started");
+        Log.d(TAG, "Outgoing call started, state " + PhoneStateReceiver.STATE_STARTED_OUTGOING_CALL);
     }
 
     protected void onIncomingCallEnded(Context ctx, String number, Date start, Date end) {
-        Log.d(TAG, "Outgoing call ended");
         Intent lockScreenIntent = getLockScreenIntent(ctx);
         // Now we need to call the lock screen activity back to the foreground
         //Strange error -- if this is set along with manifest setting, it doesn't want to call onNewIntent
-        lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PhoneStateReceiver.STATE_ENDED_INCOMING_CALL);
 
         ctx.startActivity(lockScreenIntent);
+        Log.d(TAG, "Incoming call ended, state " + PhoneStateReceiver.STATE_ENDED_INCOMING_CALL);
     }
 
     protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date end) {
-        Log.d(TAG, "Outgoing call ended");
         Intent lockScreenIntent = getLockScreenIntent(ctx);
         // Now we need to call the lock screen activity back to the foreground
         //Strange error -- if this is set along with manifest setting, it doesn't want to call onNewIntent
         lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PhoneStateReceiver.STATE_ENDED_OUTGOING_CALL);
         ctx.startActivity(lockScreenIntent);
+        Log.d(TAG, "Outgoing call ended, state " + PhoneStateReceiver.STATE_ENDED_OUTGOING_CALL);
     }
 
     protected void onMissedCall(Context ctx, String number, Date start) {
-        Log.d(TAG, "Device missed call");
         Intent lockScreenIntent = getLockScreenIntent(ctx);
         // Now we need to call the lock screen activity back to the foreground
         //Strange error -- if this is set along with manifest setting, it doesn't want to call onNewIntent
         lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PhoneStateReceiver.STATE_MISSED_CALL);
         ctx.startActivity(lockScreenIntent);
+        Log.d(TAG, "Device missed call, state " + PhoneStateReceiver.STATE_MISSED_CALL);
     }
 
     /**

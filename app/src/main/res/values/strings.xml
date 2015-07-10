@@ -108,4 +108,9 @@
     <string name="contact_search_hint">Type a contact name</string>
 
     <string name="font_selection_instruction">Select a font:</string>
+
+    <string name="error_title_roaming">Error: Roaming</string>
+    <string name="error_description_roaming">Lock screen can\'t initiate call while roaming.</string>
+    <string name="error_title_airplane">Airplane Mode</string>
+    <string name="error_description_airplane">Can\'t initiate call while in airplane mode</string>
 </resources>

@@ -14,7 +14,7 @@
     <string name="monospace">monospace</string>
     <string name="serif">serif</string>
 
-    <string name="font_default">@string/sans_serif_light</string>
+    <string name="font_default">@string/sans_serif</string>
 
     <color name="font_selected_background">@color/platinum</color>
 

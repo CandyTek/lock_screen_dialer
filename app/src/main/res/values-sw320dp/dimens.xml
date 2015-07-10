@@ -11,12 +11,12 @@
     <dimen name="lock_screen_pattern_button_diameter">55dp</dimen>
 
     <dimen name="contact_image_size">100dp</dimen>
-    <dimen name="contact_image_margin">10dp</dimen>
+    <dimen name="contact_image_margin">8dp</dimen>
 
-    <dimen name="typeface_phone_call_info_text_size">28dp</dimen>
-    <dimen name="typeface_phone_call_info_text_margin">12dp</dimen>
-    <dimen name="typeface_phone_call_description_text_size">20dp</dimen>
+    <dimen name="typeface_phone_call_info_text_size">22dp</dimen>
+    <dimen name="typeface_phone_call_info_text_margin">8dp</dimen>
+    <dimen name="typeface_phone_call_description_text_size">16dp</dimen>
 
-    <dimen name="pattern_buttons_text_size">30sp</dimen>
+    <dimen name="pattern_buttons_text_size">25sp</dimen>
     <dimen name="pin_buttons_padding">6dp</dimen>
 </resources>

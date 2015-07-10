@@ -54,7 +54,7 @@ public abstract class PhoneStateReceiver extends BroadcastReceiver {
         TelephonyManager tm =
                 (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         if (tm.getCallState() == state) {
-            Log.d(TAG, "Received intent with state " + state);
+            //Log.d(TAG, "Received intent with state " + state);
             onCallStateChanged(context, state, number);
         } else {
             Log.d(TAG, "Received intent with state " + state

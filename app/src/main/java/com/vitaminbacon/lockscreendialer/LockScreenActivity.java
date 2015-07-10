@@ -29,6 +29,7 @@ import android.os.RemoteException;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
+import android.provider.Settings;
 import android.support.v4.view.GestureDetectorCompat;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
@@ -920,11 +921,19 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     /**
      * Enables the error drawer when the user is in roaming
      */
-    private void enableErrorViewsinView() {
+    private void enableErrorViewsinView(String title, String description, int imageResource) {
         final View drawer, infoBlock;
 
         try {
             drawer = getView(R.id.drawer_lock_screen_call_fail_display);
+            TextView titleView = (TextView) drawer.findViewById(R.id.drawer_phone_call_fail_title);
+            titleView.setText(title);
+            TextView descriptionView = (TextView) drawer
+                    .findViewById(R.id.drawer_phone_call_fail_description);
+            descriptionView.setText(description);
+            ImageView imgView = (ImageView) drawer.findViewById(R.id.drawer_phone_call_fail_thumb);
+            imgView.setImageResource(imageResource);
+
             infoBlock = getView(R.id.lock_screen_info_block);
             final int dDistance = drawer.getHeight();
             drawer.setTranslationY(dDistance * -1);
@@ -1456,7 +1465,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      * Simple method that handles logic when the correct passcode is entered
      */
     protected void onCorrectPasscode() {
-        Log.d(TAG, "Correct passcode entered");
         stopService(new Intent(this, PhoneStateService.class));
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -1467,8 +1475,11 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         final Context ctx = this;
 
         View v = mContainerView;
+        playSound(ctx, uri);
+        finish();
+        Log.d(TAG, "Finish() called");
         // Fade out the lock screen
-        if (v != null) {
+        /*if (v != null) {
             v.animate().alpha(0f).setDuration(200).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationStart(Animator animation) {
@@ -1484,7 +1495,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         } else {
             playSound(ctx, uri);
             finish();
-        }
+        }*/
     }
 
     private void playSound(Context context, Uri alert) {
@@ -1494,7 +1505,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             final AudioManager audioManager = (AudioManager) context
                     .getSystemService(Context.AUDIO_SERVICE);
             if (audioManager.getStreamVolume(AudioManager.STREAM_RING) != 0) {
-                mediaPlayer.setAudioStreamType(AudioManager.STREAM_RING);
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
                 mediaPlayer.prepare();
                 mediaPlayer.start();
             }
@@ -1711,7 +1722,17 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         return mContainerView.findViewById(id);
     }
 
-
+    @SuppressWarnings("deprecation")
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private boolean isAirplaneModeOn() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            return Settings.System.getInt(getContentResolver(),
+                    Settings.System.AIRPLANE_MODE_ON, 0) != 0;
+        } else {
+            return Settings.Global.getInt(getContentResolver(),
+                    Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
+        }
+    }
 
     /**
      * ---------------------------------------------------------------------------------------------
@@ -1765,7 +1786,22 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             // Check for roaming
             TelephonyManager telephony = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
             if (telephony.isNetworkRoaming()) {
-                enableErrorViewsinView();
+                enableErrorViewsinView(
+                        getString(R.string.error_title_roaming),
+                        getString(R.string.error_description_roaming),
+                        R.drawable.ic_signal_cellular_connected_no_internet_2_bar_white_48dp);
+                Handler h = new Handler();
+                h.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        disableErrorViewsInView();
+                    }
+                }, getResources().getInteger(R.integer.lock_screen_phone_error_display_length));
+            } else if (isAirplaneModeOn()) {
+                enableErrorViewsinView(
+                        getString(R.string.error_title_airplane),
+                        getString(R.string.error_description_airplane),
+                        R.drawable.ic_airplanemode_on_white_48dp);
                 Handler h = new Handler();
                 h.postDelayed(new Runnable() {
                     @Override

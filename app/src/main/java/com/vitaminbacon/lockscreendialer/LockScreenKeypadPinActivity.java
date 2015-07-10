@@ -247,7 +247,7 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         }
 
         //  Now check whether the PIN entered so far matches the stored PIN
-        Log.d(TAG, mPinEntered + " vs " + mPinStored);
+
         if (mPinEntered.equals(mPinStored)) {
             onCorrectPasscode();
         }
