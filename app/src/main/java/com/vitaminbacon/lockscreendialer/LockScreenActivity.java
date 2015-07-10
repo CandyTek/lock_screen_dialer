@@ -83,6 +83,10 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     protected Handler mHandler;
     protected DialerRunnable mRunnable;
     protected boolean mLongPressFlag;
+    // A runnable/handler issued to provide notification of an error
+    private Handler mErrorHandler;
+    private Runnable mErrorRunnable;
+    private Runnable mErrorRemoveRunnable;
 
     // Variables to implement TYPE_SYSTEM_ERROR stuff
     private WindowManager mWindowManager;
@@ -163,6 +167,24 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         //  Lock screen was initiated naturally by screen event or by rerouting to the launcher
         startService(new Intent(this, PhoneStateService.class));
 
+        // Set up the error runnables
+        mErrorRunnable = new Runnable() {
+            @Override
+            public void run() {
+                enableErrorViewsinView(
+                        getString(R.string.error_title_offhook),
+                        getString(R.string.error_description_offhook),
+                        R.drawable.ic_dnd_on_white_48dp
+                );
+            }
+        };
+        mErrorRemoveRunnable = new Runnable() {
+            @Override
+            public void run() {
+                disableErrorViewsInView();
+            }
+        };
+        mErrorHandler = new Handler();
         mPhoneCallActiveFlag = false;
         Log.d(TAG, "PHONE CALL FLAG IS NOW FALSE");
 
@@ -310,6 +332,12 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
                     mPhoneCallActiveFlag = true;
                     Log.d(TAG, "PHONE CALL FLAG IS NOW TRUE");
+
+                    // Remove any runnables for error messages
+                    if (mErrorHandler != null) {
+                        mErrorHandler.removeCallbacks(mErrorRunnable);
+                        mErrorHandler.removeCallbacks(mErrorRemoveRunnable);
+                    }
                 }
                 break;
             case PhoneStateReceiver.STATE_STARTED_INCOMING_CALL:
@@ -1734,6 +1762,35 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         }
     }
 
+    protected void setDialerRunnable(int numPressed, int delay) {
+        if (isSpeedDialEnabled() && !getPhoneCallActiveFlag()
+                && numPressed > 0 && numPressed < 10) {
+            SharedPreferences sharedPref = getSharedPreferences(
+                    getString(R.string.speed_dial_preference_file_key),
+                    Context.MODE_PRIVATE);
+            String filename = getString(R.string.key_number_store_prefix_phone)
+                    + numPressed;
+            //Log.d(TAG, "Setting dialer runnable click on key " + b.getText());
+            if (sharedPref.getString(filename, null) != null) {
+                //Log.d(TAG, "Setting dialer runnable click on key " + b.getText());
+                mHandler = new Handler();
+                mRunnable = new DialerRunnable(numPressed);
+                mHandler.postDelayed(mRunnable, delay);
+                Vibrator vibrator =
+                        (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                vibrator.vibrate(1);
+            }
+        }
+    }
+
+    protected void disableDialerRunnable() {
+        if (mHandler != null) {
+            mHandler.removeCallbacks(mRunnable);
+            mHandler = null;
+            mRunnable = null;
+        }
+    }
+
     /**
      * ---------------------------------------------------------------------------------------------
      * ABSTRACT METHODS
@@ -1755,15 +1812,13 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      */
     protected class DialerRunnable implements Runnable {
         private int num; // the digit of the button pressed
-        private Context context;
 
-        public DialerRunnable(Context context, int num) {
+        public DialerRunnable(int num) {
             this.num = num;
-            this.context = context;
         }
 
         public void run() {
-
+            Log.d(TAG, "dialerrunnable running");
             SharedPreferences sharedPref = getSharedPreferences(
                     getString(R.string.speed_dial_preference_file_key),
                     Context.MODE_PRIVATE);
@@ -1819,8 +1874,20 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 v.vibrate(350);
                 enableLongPressFlag();
-                // Logic for implementing views is probably better placed when we receive a new intent
-                //enablePhoneCallActiveFlag();
+
+                // Now set a runnable for the case where a OFF_HOOK intent is not timely received
+                if (mErrorHandler != null && mErrorRunnable != null
+                        && mErrorRemoveRunnable != null) {
+                    int errorDisplayDelay = getResources()
+                            .getInteger(R.integer.lock_screen_phone_error_call_failed_delay);
+                    int errorDisplayLength = getResources()
+                            .getInteger(R.integer.lock_screen_phone_error_display_length);
+                    mErrorHandler.postDelayed(mErrorRunnable, errorDisplayDelay);
+                    mErrorHandler.postDelayed(
+                            mErrorRemoveRunnable,
+                            errorDisplayDelay + errorDisplayLength
+                    );
+                }
             }
 
         }

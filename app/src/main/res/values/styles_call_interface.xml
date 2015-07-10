@@ -27,7 +27,6 @@
     </style>
 
     <style name="typeface_phone_call_info">
-        <item name="android:fontFamily">@string/font_default</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/typeface_phone_call_info_text_size</item>
         <item name="android:layout_marginTop">@dimen/typeface_phone_call_info_text_margin</item>
@@ -35,7 +34,6 @@
     </style>
 
     <style name="typeface_phone_call_description">
-        <item name="android:fontFamily">@string/font_default</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/typeface_phone_call_description_text_size</item>
         <item name="android:layout_marginLeft">@dimen/typeface_phone_call_info_text_margin</item>

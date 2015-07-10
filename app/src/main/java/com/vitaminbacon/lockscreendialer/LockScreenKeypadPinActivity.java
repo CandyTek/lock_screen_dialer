@@ -274,9 +274,9 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
                 if (mLongPressFlag) {
                     break;
                 }
-                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(1);
-                if (!getPhoneCallActiveFlag() && mHandler == null) { // means there is no pending handler
+                /*Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                vibrator.vibrate(1);*/
+                /*if (!getPhoneCallActiveFlag() && mHandler == null) { // means there is no pending handler
                     int num = getSpeedDialButtonPressed(v.getId(), -1);
                     if (num != -1) {
                         mHandler = new Handler();
@@ -287,14 +287,22 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
                         mLongPressFlag = false;
                         mLastBtnTouchedNum = num;
                     }
-                }
+                }*/
+                int num = getSpeedDialButtonPressed(v.getId(), -1);
+                setDialerRunnable(
+                        num,
+                        getResources().getInteger(R.integer.lock_screen_pin_long_press_delay)
+                );
+                mLongPressFlag = false;
+                mLastBtnTouchedNum = num;
                 break;
             case MotionEvent.ACTION_UP:
-                if (mHandler != null) {
+                /*if (mHandler != null) {
                     mHandler.removeCallbacks(mRunnable);
                     mHandler = null;
                     mRunnable = null;
-                }
+                }*/
+                disableDialerRunnable();
                 if (mLongPressFlag) {
                     resetPinEntry(getString(R.string.lock_screen_initiate_call));
                     SetTextInViewRunnable r = new SetTextInViewRunnable(

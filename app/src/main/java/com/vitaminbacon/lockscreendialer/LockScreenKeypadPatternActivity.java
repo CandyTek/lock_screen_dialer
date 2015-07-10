@@ -158,7 +158,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                 try {
                     Button b = (Button) v;
                     // Check to see if we set a dialer runnable
-                    if (isSpeedDialEnabled()) {
+                   /* if (isSpeedDialEnabled()) {
                         SharedPreferences sharedPref = getSharedPreferences(
                                 getString(R.string.speed_dial_preference_file_key),
                                 Context.MODE_PRIVATE);
@@ -176,7 +176,11 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                                     (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                             vibrator.vibrate(1);
                         }
-                    }
+                    }*/
+                    setDialerRunnable(
+                            getSpeedDialButtonPressed(v.getId(), -1),
+                            getResources().getInteger(R.integer.lock_screen_pattern_long_press_delay)
+                    );
 
                     // Now handle pattern logic
                     mLastBtnTouchedNum = Integer.parseInt(b.getText().toString());
@@ -202,11 +206,12 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                 break;
 
             case MotionEvent.ACTION_UP:
-                if (mHandler != null) {
+                /*if (mHandler != null) {
                     mHandler.removeCallbacks(mRunnable);
                     mHandler = null;
                     mRunnable = null;
-                }
+                }*/
+                disableDialerRunnable();
                 if (mDisplayPatternFlag) {
                     mTouchDrawView.clearLines();
                     mTouchDrawView.invalidate();
