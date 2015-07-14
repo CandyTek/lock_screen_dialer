@@ -147,7 +147,6 @@
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/lock_screen_window_theme" />
-
         <activity
             android:name=".BackgroundSelectionActivity"
             android:label="@string/title_activity_background_selection"
@@ -167,6 +166,15 @@
             </intent-filter>
         </receiver>
 
+        <activity
+            android:name=".AppBackgroundActivity"
+            android:label="@string/title_activity_app_background"
+            android:parentActivityName=".SettingsActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.vitaminbacon.lockscreendialer.SettingsActivity" />
+        </activity>
     </application>
 
 </manifest>

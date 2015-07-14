@@ -176,6 +176,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                         getString(R.string.error_description_offhook),
                         R.drawable.ic_dnd_on_white_48dp
                 );
+                endPhoneCall();
             }
         };
         mErrorRemoveRunnable = new Runnable() {
@@ -1324,12 +1325,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             Bitmap bitmap = BitmapFactory.decodeResource(
                     getResources(), R.drawable.background_default);
             mBackgroundView.setImageBitmap(bitmap);
-            /*view.setVisibility(View.VISIBLE);
-            mBackgroundProgress.setVisibility(View.GONE);*/
-            //mBackgroundBitmap = bitmap;
             crossFadeViewsOnStart(mBackgroundView, mBackgroundProgress);
-            //mBackgroundSetFlag = true;
-            //doSheathTextAnimation(-1);
+
 
         } else if (file != null && file.exists()) { //now we must retrieve and set up the stored picture
             if (!mBackgroundSetFlag) {

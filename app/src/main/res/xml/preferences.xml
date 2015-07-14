@@ -73,7 +73,7 @@
         android:key="@string/pref_header_key_display"
         android:title="@string/pref_header_title_display">
 
-
+        <!--
         <Preference
             android:key="key_select_lock_screen_background"
             android:summary="@string/pref_description_select_lock_screen_background"
@@ -83,6 +83,50 @@
                 android:targetClass="com.vitaminbacon.lockscreendialer.BackgroundSelectionActivity"
                 android:targetPackage="com.vitaminbacon.lockscreendialer" />
         </Preference>
+        -->
+        <!--
+        <PreferenceScreen
+            android:key="@string/pref_screen_key_select_lock_screen_background"
+            android:title="@string/pref_title_select_lock_screen_background">
+
+            <Preference
+                android:key="@string/key_current_background_type"
+                android:title="@string/pref_title_preview_current_background"
+                android:summary="%s"
+                android:defaultValue="@string/background_type_default">
+                <intent
+                    android:action="android.intent.action.MAIN"
+                    android:targetClass="com.vitaminbacon.lockscreendialer.BackgroundPreviewActivity"
+                    android:targetPackage="com.vitaminbacon.lockscreendialer" />
+            </Preference>
+
+            <Preference
+                android:key="@string/key_select_lock_screen_background_from_gallery"
+                android:title="@string/pref_title_select_lock_screen_background_from_gallery"
+                android:summary="@string/pref_description_select_lock_screen_background_from_gallery"/>
+
+            <Preference
+                android:key="@string/key_select_lock_screen_background_from_default"
+                android:title="@string/pref_title_select_lock_screen_background_from_default"
+                android:summary="@string/pref_description_select_lock_screen_background_from_default"
+                android:defaultValue="@integer/default_background_random" />
+
+            <com.vitaminbacon.lockscreendialer.views.ColorPreference
+                android:defaultValue="@color/gunmetal"
+                android:key="@string/key_select_lock_screen_background_from_color"
+                android:persistent="true"
+                android:title="@string/pref_title_select_lock_screen_background_from_color"
+                android:summary="@string/pref_description_select_lock_screen_background_from_color"/>
+
+        </PreferenceScreen>
+        -->
+        <com.vitaminbacon.lockscreendialer.views.MyListPreference
+            android:defaultValue="@string/value_background_type_app_content"
+            android:dialogTitle="@string/pref_dialog_title_select_background_type"
+            android:entries="@array/pref_entries_select_background_type"
+            android:entryValues="@array/pref_values_select_background_type"
+            android:key="@string/key_select_background_type"
+            android:title="@string/pref_title_select_background_type" />
 
         <PreferenceScreen
             android:key="@string/pref_screen_key_lock_screen_display"

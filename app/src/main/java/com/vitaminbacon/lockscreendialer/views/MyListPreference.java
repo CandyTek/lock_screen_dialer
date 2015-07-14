@@ -48,7 +48,7 @@ public class MyListPreference extends ListPreference {
 
         if (positiveResult && getEntryValues() != null && mListItemClickListener != null) {
             String value = getValue();
-            mListItemClickListener.onListItemClick(value);
+            mListItemClickListener.onListItemClick(value, getKey());
         }
     }
 
@@ -61,6 +61,6 @@ public class MyListPreference extends ListPreference {
     }
 
     public interface ListItemClickListener {
-        public void onListItemClick(String value);
+        public void onListItemClick(String value, String key);
     }
 }

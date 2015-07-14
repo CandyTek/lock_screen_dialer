@@ -1,0 +1,63 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.vitaminbacon.lockscreendialer.AppBackgroundActivity">
+
+    <!--
+    <TextView
+        android:text="@string/instruction_app_content_flipper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/abc_text_size_large_material"/>
+    -->
+
+    <ViewFlipper
+        android:id="@+id/app_content_view_flipper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+    </ViewFlipper>
+
+    <TextView
+        android:id="@+id/app_content_view_flipper_counter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="6dp"
+        android:text="1/15"
+        android:textSize="@dimen/abc_text_size_medium_material" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/random_background_button"
+            style="@style/dialog_buttons"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_app_background_random_text"
+            android:textAllCaps="false" />
+
+        <View
+            style="@style/key_pad_dividers"
+            android:layout_width="1dp"
+            android:layout_height="fill_parent" />
+
+        <Button
+            android:id="@+id/about_background_button"
+            style="@style/dialog_buttons"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_app_background_about_pics"
+
+            android:textAllCaps="false" />
+    </LinearLayout>
+
+</LinearLayout>

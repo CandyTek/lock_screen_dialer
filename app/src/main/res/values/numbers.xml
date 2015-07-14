@@ -6,7 +6,7 @@
     <integer name="lock_screen_pin_max_pin_display">12</integer>
     <integer name="lock_screen_pattern_long_press_delay">1500</integer>
     <integer name="lock_screen_phone_error_display_length">4500</integer>
-    <integer name="lock_screen_phone_error_call_failed_delay">5000</integer>
+    <integer name="lock_screen_phone_error_call_failed_delay">6000</integer>
     <integer name="swipe_min_distance">120</integer>
     <integer name="swipe_threshold_velocity">200</integer>
     <integer name="swipe_percent_move_tolerance">40</integer>
@@ -15,4 +15,7 @@
     <fraction name="sheath_text_alpha_static">40%</fraction>
     <fraction name="sheath_text_alpha_min">5%</fraction>
     <fraction name="sheath_text_alpha_max">100%</fraction>
+    <integer name="background_swipe_animation">180</integer>
+    <integer name="background_swipe_minimum_dist">60</integer>
+
 </resources>

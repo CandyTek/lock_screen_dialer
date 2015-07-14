@@ -3,6 +3,7 @@ package com.vitaminbacon.lockscreendialer.fragments;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ public class ColorPickerDialogFragment extends DialogFragment
 
     private List<ColorListItem> mItems;
     private OnColorSelectedListener mListener;
+    private OnNoColorSelectedListener mOtherListener;
     private int mColorSelected;
     private boolean mNoColorSelected;
     private int mKey;
@@ -119,6 +121,7 @@ public class ColorPickerDialogFragment extends DialogFragment
         super.onAttach(activity);
         try {
             mListener = (OnColorSelectedListener) activity;
+            // the OnNoColorSelectedListener is not mandatory!
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnColorSelectedListener");
@@ -151,9 +154,25 @@ public class ColorPickerDialogFragment extends DialogFragment
         }
     }
 
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        Log.d(TAG, "onCancel() called");
+        if (mOtherListener != null) {
+            mOtherListener.onNoColorSelected(mKey);
+        }
+        super.onCancel(dialog);
+    }
+
+    public void setOnNoColorSelectedListener(OnNoColorSelectedListener listener) {
+        mOtherListener = listener;
+    }
 
     public interface OnColorSelectedListener {
-        public void onColorSelected(int color, int key);
+        void onColorSelected(int color, int key);
+    }
+
+    public interface OnNoColorSelectedListener {
+        void onNoColorSelected(int key);
     }
 
     public class ColorListItem {

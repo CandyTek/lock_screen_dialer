@@ -18,4 +18,7 @@
     <dimen name="typeface_phone_call_description_text_size"> 20dp</dimen>
 
     <dimen name="scroll_dialog_height">250dp</dimen>
+
+    <dimen name="app_content_flipper_height">350dp</dimen>
+    <dimen name="app_content_flipper_width">210dp</dimen>
 </resources>

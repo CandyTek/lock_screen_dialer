@@ -6,6 +6,8 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
@@ -18,9 +20,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.vitaminbacon.lockscreendialer.AppBackgroundActivity;
 import com.vitaminbacon.lockscreendialer.KeypadPatternConfigActivity;
 import com.vitaminbacon.lockscreendialer.KeypadPinConfigActivity;
 import com.vitaminbacon.lockscreendialer.R;
+import com.vitaminbacon.lockscreendialer.helpers.BitmapToViewHelper;
 import com.vitaminbacon.lockscreendialer.services.LockScreenService;
 import com.vitaminbacon.lockscreendialer.views.ColorPreference;
 import com.vitaminbacon.lockscreendialer.views.MyListPreference;
@@ -31,11 +35,16 @@ import com.vitaminbacon.lockscreendialer.views.MyListPreference;
 public class SettingsFragment extends PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener,
         Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener,
-        MyListPreference.ListItemClickListener {
+        MyListPreference.ListItemClickListener, ColorPickerDialogFragment.OnNoColorSelectedListener {
 
+    public static final String KEY_PREVIOUS_BG_TYPE = "KEY_PREVIOUS_BACKGROUND_TYPE";
     private static final String TAG = "SettingsFragment";
+    private final static int ORIENTATION_UNKNOWN = -1;
+    // Activity for result codes
     private static final int PICK_LOCK_SCREEN_PIN = 1;
     private static final int PICK_LOCK_SCREEN_PATTERN = 2;
+    private static final int PICK_DEVICE_IMAGE = 3;
+    private static final int PICK_APP_IMAGE = 4;
 
 
     public SettingsFragment() {
@@ -46,6 +55,10 @@ public class SettingsFragment extends PreferenceFragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
+
+        // Store the background type to save it in the event it needs to be restored when being saved
+        storePriorBGValue();
+
     }
 
     @Override
@@ -124,6 +137,18 @@ public class SettingsFragment extends PreferenceFragment
         } catch (NullPointerException e) {
             Log.w(TAG, "Accessory font preference missing from layout");
         }
+
+        try {
+            MyListPreference backgroundPref = (MyListPreference)
+                    findPreference(getString(R.string.key_select_background_type));
+            backgroundPref.setOnListItemClickListener(this);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Background type selection preference missing from layout");
+            throw e;
+        }
+
+        // Update the summary
+        updateBackgroundPrefSummary();
     }
 
 
@@ -167,6 +192,61 @@ public class SettingsFragment extends PreferenceFragment
                         Log.e(TAG, "Lock screen enabled preference of wrong type, unable to modify");
                     }
                 }
+                break;
+            case PICK_DEVICE_IMAGE:
+                SharedPreferences prefs1 = getActivity().getSharedPreferences(
+                        getString(R.string.file_background_type),
+                        Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor1 = prefs1.edit();
+                if (resultCode == getActivity().RESULT_OK) {
+                    Uri selectedImage = data.getData();
+                    String filePath = BitmapToViewHelper
+                            .getBitmapFilePath(getActivity(), selectedImage);
+
+                    if (filePath == null) { // unable to access filePath
+                        Log.d(TAG, "Unable to obtain file path from uri: " + selectedImage.toString());
+                        return;
+                    }
+                    editor1.putString(getString(R.string.key_select_background_device_pic), filePath);
+                    int orientation = BitmapToViewHelper.getBitmapOrientation(
+                            getActivity(),
+                            selectedImage,
+                            ORIENTATION_UNKNOWN);
+                    editor1.putInt(getString(R.string.key_background_orientation), orientation);
+                    //editor.remove(getString(R.string.key_background_color)); // used to flag whether to display pic or color
+                    editor1.commit();
+                    Log.d(TAG, "Storing new value to previous value");
+                    storePriorBGValue();
+                    Log.d(TAG, "Stored file path " + filePath + " and orientation " + orientation);
+                } else {
+                    Log.d(TAG, "onActivityResult pick image received result code " + resultCode);
+                    revertPriorBGValue();
+                }
+                Log.d(TAG, "Updating bg summary");
+                updateBackgroundPrefSummary();
+                break;
+            case PICK_APP_IMAGE:
+                Log.d(TAG, "onActivityResult(), PICK APP IMAGE");
+                SharedPreferences prefs2 = getActivity().getSharedPreferences(
+                        getString(R.string.file_background_type),
+                        Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor2 = prefs2.edit();
+                if (resultCode == getActivity().RESULT_OK) {
+                    int resourceId = data.getIntExtra(AppBackgroundActivity.APP_PIC, 0);
+                    if (resourceId != 0) {
+                        editor2.putInt(
+                                getString(R.string.key_select_background_app_content),
+                                resourceId);
+                        editor2.commit();
+                        Log.d(TAG, "Storing new value to previous value");
+                        storePriorBGValue();
+                    }
+                } else {
+                    // Restore the previous background type
+                    Log.d(TAG, "Reverting to prior BG value");
+                    revertPriorBGValue();
+                }
+                updateBackgroundPrefSummary();
                 break;
         }
     }
@@ -283,28 +363,63 @@ public class SettingsFragment extends PreferenceFragment
      *
      * @param value - contains the value of the ListPreference that was clicked
      */
-    public void onListItemClick(String value) {
+    public void onListItemClick(String value, String key) {
         // Reset to no lock screen regardless until get good result in onActivityResult()
-        try {
-            CheckBoxPreference pref = (CheckBoxPreference) findPreference(
-                    getString(R.string.key_toggle_lock_screen));
-            pref.setChecked(false);
-            MyListPreference listPref = (MyListPreference) findPreference(
-                    getString(R.string.key_select_lock_screen_type));
-            listPref.setValue(getString(R.string.value_lock_screen_type_none));
-        } catch (ClassCastException e) {
-            Log.e(TAG, "Lock screen enabled preference of wrong type, unable to modify");
-        }
+        if (key.equals(getString(R.string.key_select_lock_screen_type))) {
+            try {
+                CheckBoxPreference pref = (CheckBoxPreference) findPreference(
+                        getString(R.string.key_toggle_lock_screen));
+                pref.setChecked(false);
+                MyListPreference listPref = (MyListPreference) findPreference(
+                        getString(R.string.key_select_lock_screen_type));
+                listPref.setValue(getString(R.string.value_lock_screen_type_none));
+            } catch (ClassCastException e) {
+                Log.e(TAG, "Lock screen enabled preference of wrong type, unable to modify");
+            }
 
-        if (value.equals(getString(R.string.value_lock_screen_type_keypad_pin))) {
-            //Log.d(TAG, "Selected PIN activity");
-            // Lock screen PIN was selected, need to go to config for that
-            Intent intent = new Intent(getActivity(), KeypadPinConfigActivity.class);
-            startActivityForResult(intent, PICK_LOCK_SCREEN_PIN);
-        } else if (value.equals(getString(R.string.value_lock_screen_type_keypad_pattern))) {
-            // Same logic as above
-            Intent intent = new Intent(getActivity(), KeypadPatternConfigActivity.class);
-            startActivityForResult(intent, PICK_LOCK_SCREEN_PATTERN);
+            if (value.equals(getString(R.string.value_lock_screen_type_keypad_pin))) {
+                //Log.d(TAG, "Selected PIN activity");
+                // Lock screen PIN was selected, need to go to config for that
+                Intent intent = new Intent(getActivity(), KeypadPinConfigActivity.class);
+                startActivityForResult(intent, PICK_LOCK_SCREEN_PIN);
+            } else if (value.equals(getString(R.string.value_lock_screen_type_keypad_pattern))) {
+                // Same logic as above
+                Intent intent = new Intent(getActivity(), KeypadPatternConfigActivity.class);
+                startActivityForResult(intent, PICK_LOCK_SCREEN_PATTERN);
+            }
+        } else if (key.equals(getString(R.string.key_select_background_type))) {
+            MyListPreference preference = (MyListPreference) findPreference(key);
+
+            if (value.equals(getString(R.string.value_background_type_app_content))) {
+                Intent pickAppContentIntent = new Intent(getActivity(), AppBackgroundActivity.class);
+                startActivityForResult(pickAppContentIntent, PICK_APP_IMAGE);
+            } else if (value.equals(getString(R.string.value_background_type_color))) {
+                // Launch a color picker dialog to select a color
+                ColorPickerDialogFragment dialogFragment;
+                SharedPreferences prefs = getActivity().getSharedPreferences(
+                        getString(R.string.file_background_type),
+                        Context.MODE_PRIVATE);
+                int color = prefs.getInt(getString(R.string.key_select_background_color),
+                        getResources().getColor(R.color.default_background_color));
+                dialogFragment = ColorPickerDialogFragment
+                        .newInstance(color, R.string.key_select_background_color);
+                // We need feedback from the dialog here because we are using the modified list preference
+                dialogFragment.setOnNoColorSelectedListener(this);
+                dialogFragment.show(getFragmentManager(), "fragment_color_list_dialog");
+            } else if (value.equals(getString(R.string.value_background_type_user_device))) {
+                // Start intent for result
+                Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                getIntent.setType("image/*");
+
+                Intent pickIntent = new Intent(
+                        Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                pickIntent.setType("image/*");
+
+                Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{pickIntent});
+
+                startActivityForResult(chooserIntent, PICK_DEVICE_IMAGE);
+            }
         }
     }
 
@@ -322,7 +437,29 @@ public class SettingsFragment extends PreferenceFragment
                 Log.e(TAG, "Unable to obtain ColorPreference with key");
             }
 
+        } else if (key == R.string.key_select_background_color) {
+            SharedPreferences prefs = getActivity().getSharedPreferences(
+                    getString(R.string.file_background_type),
+                    Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt(getString(R.string.key_select_background_color), color);
+            editor.commit();
+            Log.d(TAG, "Storing new value to prior value");
+            storePriorBGValue();
+            Log.d(TAG, "Updating bg summary");
+            updateBackgroundPrefSummary();
         }
+    }
+
+    public void onNoColorSelected(int key) {
+
+        if (key == R.string.key_select_background_color) {
+            Log.d(TAG, "onNoColorSelected() called");
+            // Revert to the prior saved value
+            revertPriorBGValue();
+            updateBackgroundPrefSummary();
+        }
+
     }
 
     public void onFontSelected(String font, int key) {
@@ -350,6 +487,119 @@ public class SettingsFragment extends PreferenceFragment
             }
         }
         return false;
+    }
+
+    private void updatePreferenceSummary(String key, String summary) {
+        try {
+            Preference pref = findPreference(key);
+            pref.setSummary(summary);
+        } catch (Exception e) {
+            Log.e(TAG, "Unable to update preference summary; key not tethered to settings preference");
+        }
+    }
+
+    /**
+     * Returns the color name corresponding to an integer as set forth in the xml.  Returns empty
+     * string if color not found.
+     *
+     * @param color
+     * @return
+     */
+    private String getColorName(int color) {
+        String[] colorNames = getResources().getStringArray(R.array.color_name_list);
+        TypedArray colorValues = getResources().obtainTypedArray(R.array.color_value_list);
+        int length = (colorNames.length < colorValues.length()) ?
+                colorNames.length : colorValues.length();
+        for (int i = 0; i < length; i++) {
+            if (colorValues.getColor(i, -1) == color) {
+                return colorNames[i];
+            }
+        }
+        return "";
+    }
+
+    private void updateBackgroundPrefSummary() {
+        MyListPreference bgTypePref =
+                (MyListPreference) findPreference(getString(R.string.key_select_background_type));
+        SharedPreferences prefs = getActivity().getSharedPreferences(
+                getString(R.string.file_background_type),
+                Context.MODE_PRIVATE);
+        String bgType = bgTypePref.getValue();
+        Log.d(TAG, "UPDATE BG Pref: background type is " + bgType);
+
+        if (bgType.equals(getString(R.string.value_background_type_app_content))) {
+            int resourceId = prefs.getInt(getString(R.string.key_select_background_app_content), 0);
+            TypedArray appPics = getResources().obtainTypedArray(R.array.app_pics);
+            String[] appPicsNames = getResources().getStringArray(R.array.app_pics_names);
+            String title;
+            if (resourceId != AppBackgroundActivity.RANDOM_PIC) {
+                title = "unknown";
+                for (int i = 0; i < appPics.length(); i++) {
+                    if (appPics.getResourceId(i, 0) == resourceId) {
+                        title = appPicsNames[i];
+                        break;
+                    }
+                }
+            } else {
+                title = "random";
+            }
+            bgTypePref.setSummary(
+                    getString(R.string.pref_summary_prefix_app_content_background) + " " + title
+            );
+        } else if (bgType.equals(getString(R.string.value_background_type_user_device))) {
+            String filePath = prefs
+                    .getString(getString(R.string.key_select_background_device_pic), "");
+            bgTypePref.setSummary(getString(R.string.pref_summary_prefix_user_device_background)
+                    + " " + filePath.substring(filePath.lastIndexOf("/") + 1));
+
+        } else if (bgType.equals(getString(R.string.value_background_type_color))) {
+
+            int color = prefs.getInt(getString(R.string.key_select_background_color),
+                    getResources().getColor(R.color.default_background_color));
+            bgTypePref.setSummary(getString(R.string.pref_summary_prefix_color_background) + " "
+                    + getColorName(color));
+        }
+
+    }
+
+    private void storePriorBGValue() {
+        SharedPreferences prefs = getActivity().getSharedPreferences(
+                getString(R.string.file_background_type),
+                Context.MODE_PRIVATE);
+        MyListPreference bgPref =
+                (MyListPreference) findPreference(getString(R.string.key_select_background_type));
+        String bgValue = bgPref.getValue();
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(KEY_PREVIOUS_BG_TYPE, bgValue);
+        editor.commit();
+        Log.d(TAG, "STORE PREV VALUE: background type is " + bgValue);
+    }
+
+    private void revertPriorBGValue() {
+        SharedPreferences prefs = getActivity().getSharedPreferences(
+                getString(R.string.file_background_type),
+                Context.MODE_PRIVATE);
+        String value = prefs.getString(
+                KEY_PREVIOUS_BG_TYPE,
+                getString(R.string.value_background_type_app_content));
+        Log.d(TAG, "REVERTING PREV VALUE: background type was " + value);
+
+        /*
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(getString(R.string.key_select_background_type), value);
+        editor.commit();*/
+        // Change the value through the actual preference
+        MyListPreference bgPref =
+                (MyListPreference) findPreference(getString(R.string.key_select_background_type));
+        String[] values = getResources().getStringArray(R.array.pref_values_select_background_type);
+        for (int i = 0; i < values.length; i++) {
+            Log.d(TAG, "values[" + i + "] is " + values[i]);
+            if (values[i].equals(value)) {
+                Log.d(TAG, "setValueIndex for " + values[i]);
+                bgPref.setValueIndex(i);
+                break;
+            }
+        }
     }
 
 

@@ -20,6 +20,8 @@
     <string name="pref_screen_title_colors_animation">Colors &amp; animation</string>
     <string name="pref_screen_key_colors_animation">pref_screen_key_colors_animation</string>
 
+    <string name="pref_screen_key_select_lock_screen_background">pref_screen_key_select_lock_screen_background</string>
+
     <!-- Title/summary pairs for preferences -->
     <string name="pref_title_toggle_lock_screen">Enable lock screen</string>
     <string name="pref_description_toggle_lock_screen">Checked box enables lock screen</string>
@@ -84,11 +86,15 @@
     <string name="pref_title_select_passcode_correct_sound">Select screen unlock sound</string>
     <string name="pref_description_select_passcode_correct_sound">%s</string>
 
+    <string name="pref_title_select_background_type">Select background</string>
+
+
     <string name="pref_summary_on_toggle_sheath_instruction">ON</string>
     <string name="pref_summary_off_toggle_sheath_instruction">OFF</string>
 
     <!-- File strings for shared preferences other than default preferences -->
     <string name="file_lock_screen_type">com.vitaminbacon.lockscreendialer.LOCK_SCREEN_TYPE_FILE</string>
+    <string name="file_background_type">com.vitaminbacon.lockscreendialer.BACKGROUND_TYPE_FILE</string>
 
     <!-- Keys for shared preferences -->
     <string name="key_toggle_lock_screen">key_toggle_lock_screen</string>
@@ -112,6 +118,11 @@
     <string name="key_toggle_status_bar_access">key_toggle_status_bar_access</string>
     <string name="key_select_passcode_correct_sound">key_select_passcode_correct_sound</string>
     <string name="key_lock_screen_type">LOCK_SCREEN_TYPE</string>
+    <string name="key_select_background_type">key_select_background_type</string>
+    <string name="key_select_background_color">key_select_background_color</string>
+    <string name="key_select_background_device_pic">key_select_background_device_pic</string>
+    <string name="key_select_background_app_content">key_select_background_app_content</string>
+
 
     <!-- Values for shared preferences -->
     <string name="value_lock_screen_type_keypad_pin">KEYPAD_PIN</string>
@@ -168,6 +179,8 @@
     <string name="pref_dialog_title_select_lock_screen_type">Select lock screen type:</string>
     <string name="pref_default_value_lock_screen_type">@string/value_lock_screen_type_none</string>
 
+    <string name="pref_dialog_title_select_background_type">Select background source:</string>
+
     <array name="pref_entries_lock_screen_type">
         <item>None</item>
         <item>Keypad PIN</item>
@@ -184,6 +197,38 @@
 
     <string name="menu_ok">OK</string>
     <string name="menu_cancel">Cancel</string>
+
+    <string name="value_background_type_app_content">value_background_type_app_content</string>
+    <string name="value_background_type_color">value_background_type_color</string>
+    <string name="value_background_type_user_device">value_background_type_user_device</string>
+
+    <string-array name="pref_entries_select_background_type">
+        <item>App backgrounds</item>
+        <item>Solid color</item>
+        <item>Select pic from device</item>
+    </string-array>
+    <string-array name="pref_values_select_background_type">
+        <item>@string/value_background_type_app_content</item>
+        <item>@string/value_background_type_color</item>
+        <item>@string/value_background_type_user_device</item>
+    </string-array>
+
+    <integer name="default_background_random">-1</integer>
+    <color name="default_background_color">@color/gunmetal</color>
+    <array name="app_pics">
+        <item>@drawable/background_default</item>
+        <item>@drawable/background_default_2</item>
+        <item>@drawable/background_default_3</item>
+    </array>
+    <string-array name="app_pics_names">
+        <item>Gus looking</item>
+        <item>Bonnie and Khalessi</item>
+        <item>Snake</item>
+    </string-array>
+
+    <string name="pref_summary_prefix_color_background">Color:</string>
+    <string name="pref_summary_prefix_user_device_background">Device pic:</string>
+    <string name="pref_summary_prefix_app_content_background">App content:</string>
 
 
 </resources>
