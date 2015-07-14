@@ -1314,7 +1314,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             if (picResourceId == AppBackgroundActivity.RANDOM_PIC) {
                 TypedArray appPics = getResources().obtainTypedArray(R.array.app_pics);
                 Random rand = new Random();
-                int randomNum = rand.nextInt(appPics.length() + 1);
+                int randomNum = rand.nextInt(appPics.length());
                 Log.d(TAG, "Random number generated is " + randomNum);
                 picResourceId = appPics.getResourceId(randomNum, 0);
             }
