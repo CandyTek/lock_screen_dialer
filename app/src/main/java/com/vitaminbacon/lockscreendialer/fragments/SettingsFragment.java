@@ -215,14 +215,14 @@ public class SettingsFragment extends PreferenceFragment
                     editor1.putInt(getString(R.string.key_background_orientation), orientation);
                     //editor.remove(getString(R.string.key_background_color)); // used to flag whether to display pic or color
                     editor1.commit();
-                    Log.d(TAG, "Storing new value to previous value");
+                    //Log.d(TAG, "Storing new value to previous value");
                     storePriorBGValue();
-                    Log.d(TAG, "Stored file path " + filePath + " and orientation " + orientation);
+                    //Log.d(TAG, "Stored file path " + filePath + " and orientation " + orientation);
                 } else {
                     Log.d(TAG, "onActivityResult pick image received result code " + resultCode);
                     revertPriorBGValue();
                 }
-                Log.d(TAG, "Updating bg summary");
+                //Log.d(TAG, "Updating bg summary");
                 updateBackgroundPrefSummary();
                 break;
             case PICK_APP_IMAGE:
@@ -238,12 +238,12 @@ public class SettingsFragment extends PreferenceFragment
                                 getString(R.string.key_select_background_app_content),
                                 resourceId);
                         editor2.commit();
-                        Log.d(TAG, "Storing new value to previous value");
+                        //Log.d(TAG, "Storing new value to previous value");
                         storePriorBGValue();
                     }
                 } else {
                     // Restore the previous background type
-                    Log.d(TAG, "Reverting to prior BG value");
+                    //Log.d(TAG, "Reverting to prior BG value");
                     revertPriorBGValue();
                 }
                 updateBackgroundPrefSummary();
@@ -444,9 +444,9 @@ public class SettingsFragment extends PreferenceFragment
             SharedPreferences.Editor editor = prefs.edit();
             editor.putInt(getString(R.string.key_select_background_color), color);
             editor.commit();
-            Log.d(TAG, "Storing new value to prior value");
+            //Log.d(TAG, "Storing new value to prior value");
             storePriorBGValue();
-            Log.d(TAG, "Updating bg summary");
+            //Log.d(TAG, "Updating bg summary");
             updateBackgroundPrefSummary();
         }
     }
@@ -525,7 +525,7 @@ public class SettingsFragment extends PreferenceFragment
                 getString(R.string.file_background_type),
                 Context.MODE_PRIVATE);
         String bgType = bgTypePref.getValue();
-        Log.d(TAG, "UPDATE BG Pref: background type is " + bgType);
+        //Log.d(TAG, "UPDATE BG Pref: background type is " + bgType);
 
         if (bgType.equals(getString(R.string.value_background_type_app_content))) {
             int resourceId = prefs.getInt(getString(R.string.key_select_background_app_content), 0);
@@ -572,7 +572,7 @@ public class SettingsFragment extends PreferenceFragment
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(KEY_PREVIOUS_BG_TYPE, bgValue);
         editor.commit();
-        Log.d(TAG, "STORE PREV VALUE: background type is " + bgValue);
+        //Log.d(TAG, "STORE PREV VALUE: background type is " + bgValue);
     }
 
     private void revertPriorBGValue() {
@@ -582,7 +582,7 @@ public class SettingsFragment extends PreferenceFragment
         String value = prefs.getString(
                 KEY_PREVIOUS_BG_TYPE,
                 getString(R.string.value_background_type_app_content));
-        Log.d(TAG, "REVERTING PREV VALUE: background type was " + value);
+        //Log.d(TAG, "REVERTING PREV VALUE: background type was " + value);
 
         /*
         SharedPreferences.Editor editor = prefs.edit();
@@ -592,10 +592,11 @@ public class SettingsFragment extends PreferenceFragment
         MyListPreference bgPref =
                 (MyListPreference) findPreference(getString(R.string.key_select_background_type));
         String[] values = getResources().getStringArray(R.array.pref_values_select_background_type);
+        // Can probably just use setValue now that we are getting the right prev value, but this works so don't fix it
         for (int i = 0; i < values.length; i++) {
-            Log.d(TAG, "values[" + i + "] is " + values[i]);
+            //Log.d(TAG, "values[" + i + "] is " + values[i]);
             if (values[i].equals(value)) {
-                Log.d(TAG, "setValueIndex for " + values[i]);
+                //Log.d(TAG, "setValueIndex for " + values[i]);
                 bgPref.setValueIndex(i);
                 break;
             }

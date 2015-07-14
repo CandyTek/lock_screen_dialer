@@ -70,6 +70,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.TimeZone;
 
 
@@ -1292,70 +1293,69 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      * @param view
      */
     private void setActivityBackground(ImageView view) {
-        /*if (mBackgroundBitmap != null) { // if we already have an instantiated background, return
-            Log.d(TAG, "setActivityBackground() called when background already set");
-            return;
-        }*/
-
-        SharedPreferences prefs = getSharedPreferences(
+        /*SharedPreferences prefs = getSharedPreferences(
                 getString(R.string.background_file_key),
-                MODE_PRIVATE);
-        int color = prefs.getInt(getString(R.string.key_background_color), -1);
-        final String filePath = prefs.getString(getString(R.string.key_background_pic), null);
-        final int orientation = prefs.getInt(getString(R.string.key_background_orientation), -1);
-        File file = null;
-        if (filePath != null) {
-            file = new File(filePath);
-        }
+                MODE_PRIVATE);*/
+        SharedPreferences defPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences bgPrefs = getSharedPreferences(
+                getString(R.string.file_background_type),
+                Context.MODE_PRIVATE);
+        String bgTypeValue = defPrefs.getString(
+                getString(R.string.key_select_background_type),
+                getString(R.string.value_background_type_app_content));
 
-        if (color != -1) { // since color is set, we just set the background to that and return
-            //Log.d(TAG, "setting activity to a color");
-            //view.setImageBitmap(null);
-            view.setBackgroundColor(color);
-            crossFadeViewsOnStart(view, mBackgroundProgress);
-            //view.setVisibility(View.VISIBLE);
-            //mBackgroundProgress.setVisibility(View.GONE);
-            //mBackgroundSetFlag = true;
-            //doSheathTextAnimation(-1);
-            return;
-
-        } else if (filePath == null || (file != null && !file.exists())) { // then we have the default image situation
-            //Log.d(TAG, "setting activity to default image");
-
+        // Set the background according to the background type
+        if (bgTypeValue.equals(getString(R.string.value_background_type_app_content))) {
+            // Set app content to background
+            int picResourceId = bgPrefs.getInt(
+                    getString(R.string.key_select_background_app_content),
+                    AppBackgroundActivity.RANDOM_PIC);
+            // Assign a resource id if it is supposed to be random
+            if (picResourceId == AppBackgroundActivity.RANDOM_PIC) {
+                TypedArray appPics = getResources().obtainTypedArray(R.array.app_pics);
+                Random rand = new Random();
+                int randomNum = rand.nextInt(appPics.length() + 1);
+                Log.d(TAG, "Random number generated is " + randomNum);
+                picResourceId = appPics.getResourceId(randomNum, 0);
+            }
             Bitmap bitmap = BitmapFactory.decodeResource(
-                    getResources(), R.drawable.background_default);
+                    getResources(), picResourceId);
             mBackgroundView.setImageBitmap(bitmap);
             crossFadeViewsOnStart(mBackgroundView, mBackgroundProgress);
-
-
-        } else if (file != null && file.exists()) { //now we must retrieve and set up the stored picture
-            if (!mBackgroundSetFlag) {
-                //Log.d(TAG, "setting background image from stored data");
-                final BitmapToViewHelper.GetBitmapFromTaskInterface activity = this;
-                mContainerView.post(new Runnable() {
-                    public void run() {
-                        Display display = getWindowManager().getDefaultDisplay();
-                        Bitmap bitmap = null;
-                        int w = getDisplayWidth();
-                        int h = getDisplayHeight();
-
-                        BitmapToViewHelper.assignBitmapWithData(activity, filePath, orientation, w, h);
-                    }
-                });
-                /*Display display = getWindowManager().getDefaultDisplay();
-                Bitmap bitmap = null;
-                int w = getDisplayWidth();
-                int h = getDisplayHeight();
-
-                BitmapToViewHelper.assignBitmapWithData(this, filePath, orientation, w, h);*/  // Calls getBitmapFromTask interface method below to set mBackgroundBitmap
-                //view.setImageBitmap(mBackgroundBitmap);
-                //BitmapToViewHelper.assignViewWithBitmap(view, filePath, orientation, w, h);
-                //mBackgroundBitmap = ((BitmapDrawable) view.getDrawable()).getBitmap();
+            return;
+        } else if (bgTypeValue.equals(getString(R.string.value_background_type_user_device))) {
+            final String filePath = bgPrefs
+                    .getString(getString(R.string.key_select_background_device_pic), null);
+            final int orientation = bgPrefs.getInt(getString(R.string.key_background_orientation), -1);
+            File file = null;
+            if (filePath != null) {
+                file = new File(filePath);
             }
-        } else { // this should be an error -- no data for background and no color and no default?
-            Log.e(TAG, "Fatal error in assigning background");
-            onFatalError();
+            if (file != null && file.exists()) {
+                if (!mBackgroundSetFlag) {
+                    //Log.d(TAG, "setting background image from stored data");
+                    final BitmapToViewHelper.GetBitmapFromTaskInterface activity = this;
+                    mContainerView.post(new Runnable() {
+                        public void run() {
+                            Display display = getWindowManager().getDefaultDisplay();
+                            Bitmap bitmap = null;
+                            int w = getDisplayWidth();
+                            int h = getDisplayHeight();
+
+                            BitmapToViewHelper.assignBitmapWithData(activity, filePath, orientation, w, h);
+                        }
+                    });
+                }
+                return;
+            }
+            Log.e(TAG, "Lock screen assigned device pic background with invalid value, defaulting to color");
         }
+        // Set color to background
+        int color = bgPrefs.getInt(
+                getString(R.string.key_select_background_color),
+                getResources().getColor(R.color.default_background_color));
+        view.setBackgroundColor(color);
+        crossFadeViewsOnStart(view, mBackgroundProgress);
     }
 
 
