@@ -145,38 +145,12 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                // Check if phone call is active for the interrupt flag logic
-                /*if (!getPhoneCallActiveFlag()) {
-                    mPhoneCallInterruptFlag = true;
-                } else {
-                    mPhoneCallInterruptFlag = false;
-                }*/
                 if (mLongPressFlag == true) {
                     break;
                 }
 
                 try {
                     Button b = (Button) v;
-                    // Check to see if we set a dialer runnable
-                   /* if (isSpeedDialEnabled()) {
-                        SharedPreferences sharedPref = getSharedPreferences(
-                                getString(R.string.speed_dial_preference_file_key),
-                                Context.MODE_PRIVATE);
-                        String filename = getString(R.string.key_number_store_prefix_phone)
-                                + getSpeedDialButtonPressed(b.getId(), -1);
-                        //Log.d(TAG, "Setting dialer runnable click on key " + b.getText());
-                        if (sharedPref.getString(filename, null) != null) { //only set the long click where necessary
-                            //Log.d(TAG, "Setting dialer runnable click on key " + b.getText());
-                            mHandler = new Handler();
-                            mRunnable = new DialerRunnable(this, getSpeedDialButtonPressed(v.getId(), -1));
-                            mHandler.postDelayed(
-                                    mRunnable,
-                                    getResources().getInteger(R.integer.lock_screen_pattern_long_press_delay));
-                            Vibrator vibrator =
-                                    (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                            vibrator.vibrate(1);
-                        }
-                    }*/
                     setDialerRunnable(
                             getSpeedDialButtonPressed(v.getId(), -1),
                             getResources().getInteger(R.integer.lock_screen_pattern_long_press_delay)

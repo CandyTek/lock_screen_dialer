@@ -249,6 +249,8 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
                                 } else {
                                     // draw an arc
                                     float left, top, right, bottom, startAngle, sweepAngle;
+                                    float rotation = 0;
+                                    // the dimensions of the oval's sides
                                     left = startX < endX ? startX : endX;
                                     right = endX > startX ? endX : startX;
                                     top = startY < endY ? startY : endY;
@@ -256,7 +258,7 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
 
                                     // Need to modify the width of the oval to suit the way the arc will be drawn
                                     int diff = Math.abs(mLastBtnTouchedNum - (i + 1));
-                                    boolean isRotatedArc = false;
+                                    boolean isRotatedArc = false;  // Flag so right function is called later
                                     if (diff == 2) {
                                         // Make horizontal arc
                                         top -= getSpaceAvailableY();
@@ -273,9 +275,12 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
                                                 + (top - bottom) * (top - bottom));
                                         int width = mPatternBtns[5].getWidth(); // add some padding
                                         int[] centerCoords = new int[2];
-                                        mPatternBtns[4].getLocationOnScreen(centerCoords);
+                                        mPatternBtns[4].getLocationOnScreen(centerCoords); // the center button
                                         int diagPadding = getResources()
                                                 .getInteger(R.integer.pattern_diagonal_drawing_padding);
+                                        // Reassign ltrb to be a column in the middle
+                                        rotation = getRotation(mLastBtnTouchedNum, i + 1,
+                                                right - left, bottom - top);
                                         left = centerCoords[0] - diagPadding;
                                         right = centerCoords[0] + width + diagPadding;
                                         top = centerCoords[1] - height / 2 + width / 2;
@@ -303,9 +308,8 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
                                         } else {
                                             mPatternDrawView
                                                     .addRotatedArcWithAbsoluteCoords(left, top,
-                                                            right, bottom,
-                                                            getRotation(mLastBtnTouchedNum, i + 1),
-                                                            startAngle, sweepAngle, false, p);
+                                                            right, bottom, rotation, startAngle,
+                                                            sweepAngle, false, p);
                                         }
                                     } else {
                                         Log.e(TAG, "Error drawing arc; startAngle or sweepAngle invalid");
@@ -516,18 +520,29 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
      * @param b
      * @return
      */
-    private int getRotation(int a, int b) {
+    private float getRotation(int a, int b, float width, float height) {
+
         int difference = Math.abs(a - b);
+        int multiplier;
         switch (difference) {
             case 8:
-                return -45;
+                //return -45;
+                multiplier = -1;
+                break;
             case 4:
                 if (a + b == 10) {
-                    return 45;
+                    //return 45;
+                    multiplier = 1;
+                    break;
                 }
             default:
                 return 0;
         }
+
+        float returnValue = (float) Math.toDegrees(Math.atan(width / height)) * multiplier;
+        Log.d(TAG, "rotation is " + returnValue);
+        return returnValue;
+
     }
 
     private float getSpaceAvailableX() {
