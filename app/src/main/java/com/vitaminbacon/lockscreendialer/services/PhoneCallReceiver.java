@@ -121,7 +121,7 @@ public class PhoneCallReceiver extends PhoneStateReceiver {
         Intent lockScreenIntent = getLockScreenIntent(ctx);
         // Now we need to call the lock screen activity back to the foreground
         //Strange error -- if this is set along with manifest setting, it doesn't want to call onNewIntent
-        //lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PhoneStateReceiver.STATE_ENDED_INCOMING_CALL);
 
         ctx.startActivity(lockScreenIntent);
