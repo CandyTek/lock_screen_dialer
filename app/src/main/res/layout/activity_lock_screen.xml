@@ -19,7 +19,7 @@
                 <View
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
-                    android:background="@color/gunmetal" />
+                    android:background="@android:color/black" />
 
                 <ImageView
                     android:id="@+id/lock_screen_background_view"
@@ -37,8 +37,8 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
-                    android:background="@color/gunmetal" />
-                />
+                    android:background="@android:color/black"
+                    android:visibility="invisible" />
 
             </RelativeLayout>
 

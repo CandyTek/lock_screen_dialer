@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -35,7 +36,8 @@ import com.vitaminbacon.lockscreendialer.views.MyListPreference;
 public class SettingsFragment extends PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener,
         Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener,
-        MyListPreference.ListItemClickListener, ColorPickerDialogFragment.OnNoColorSelectedListener {
+        MyListPreference.ListItemClickListener, ColorPickerDialogFragment.OnNoColorSelectedListener,
+        BitmapToViewHelper.GetBitmapFromTaskInterface {
 
     public static final String KEY_PREVIOUS_BG_TYPE = "KEY_PREVIOUS_BACKGROUND_TYPE";
     private static final String TAG = "SettingsFragment";
@@ -219,14 +221,14 @@ public class SettingsFragment extends PreferenceFragment
                     storePriorBGValue();
                     //Log.d(TAG, "Stored file path " + filePath + " and orientation " + orientation);
                 } else {
-                    Log.d(TAG, "onActivityResult pick image received result code " + resultCode);
+                    //Log.d(TAG, "onActivityResult pick image received result code " + resultCode);
                     revertPriorBGValue();
                 }
                 //Log.d(TAG, "Updating bg summary");
                 updateBackgroundPrefSummary();
                 break;
             case PICK_APP_IMAGE:
-                Log.d(TAG, "onActivityResult(), PICK APP IMAGE");
+                //Log.d(TAG, "onActivityResult(), PICK APP IMAGE");
                 SharedPreferences prefs2 = getActivity().getSharedPreferences(
                         getString(R.string.file_background_type),
                         Context.MODE_PRIVATE);
@@ -475,6 +477,10 @@ public class SettingsFragment extends PreferenceFragment
                 Log.e(TAG, "Unable to obtain FontPreference with key");
             }
         }
+    }
+
+    public void getBitmapFromTask(Bitmap bitmap) {
+
     }
 
 

@@ -356,17 +356,17 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 break;
             default:
                 if (!mSheathScreenOn && !mBackgroundSetFlag) {
+                    //if (!mSheathScreenOn && !mPhoneCallActiveFlag) {
                     mContainerView.post(new Runnable() {
                         public void run() {
                             prepareLockScreenAnimation();
                         }
-
                     });
                 } else if (mSheathScreenOn && !mPhoneCallActiveFlag) {
                     mFlinged = false;
                     if (mBackgroundSetFlag) {
                         // Note no need to do a .post call, because if this flag is set, mContainView's post is already complete
-                        prepareSheathScreenAnimation(true);
+                        //prepareSheathScreenAnimation(true);
                         // Covers situation where power button pressed after swiping sheath away
                         doSheathTextAnimation(-1);
                     } else {
@@ -669,6 +669,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      * @param b
      */
     private void crossFadeViewsOnStart(final View a, final View b) {
+        Log.d(TAG, "Crossfading views");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
             a.setAlpha(0f);
             a.setVisibility(View.VISIBLE);
@@ -1296,6 +1297,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         /*SharedPreferences prefs = getSharedPreferences(
                 getString(R.string.background_file_key),
                 MODE_PRIVATE);*/
+
         SharedPreferences defPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences bgPrefs = getSharedPreferences(
                 getString(R.string.file_background_type),
@@ -1479,6 +1481,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     public void getBitmapFromTask(Bitmap bitmap) {
         mBackgroundView.setImageBitmap(bitmap);
         //mBackgroundSetFlag = true;
+        Log.d(TAG, "About to crossfade bitmap background");
         crossFadeViewsOnStart(mBackgroundView, mBackgroundProgress);
     }
     /**
@@ -1758,6 +1761,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
         }
     }
+
 
     protected void setDialerRunnable(int numPressed, int delay) {
         if (isSpeedDialEnabled() && !getPhoneCallActiveFlag()
