@@ -88,6 +88,9 @@
 
     <string name="pref_title_select_background_type">Select background</string>
 
+    <string name="pref_title_toggle_phone_call_animations">Enable phone animations</string>
+    <string name="pref_description_toggle_phone_call_animations">Toggle the info screen and phone button animations</string>
+
 
     <string name="pref_summary_on_toggle_sheath_instruction">ON</string>
     <string name="pref_summary_off_toggle_sheath_instruction">OFF</string>
@@ -122,6 +125,7 @@
     <string name="key_select_background_color">key_select_background_color</string>
     <string name="key_select_background_device_pic">key_select_background_device_pic</string>
     <string name="key_select_background_app_content">key_select_background_app_content</string>
+    <string name="key_toggle_phone_call_animations">key_toggle_phone_call_animations</string>
 
 
     <!-- Values for shared preferences -->

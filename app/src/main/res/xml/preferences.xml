@@ -214,6 +214,13 @@
                 android:summary="@string/pref_description_select_pattern_button_pressed_color"
                 android:title="@string/pref_title_select_pattern_button_pressed_color" />
 
+            <CheckBoxPreference
+                android:defaultValue="true"
+                android:key="@string/key_toggle_phone_call_animations"
+                android:persistent="true"
+                android:summary="@string/pref_description_toggle_phone_call_animations"
+                android:title="@string/pref_title_toggle_phone_call_animations" />
+
         </PreferenceScreen>
 
         <Preference

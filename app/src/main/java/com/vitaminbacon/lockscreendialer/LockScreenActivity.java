@@ -108,6 +108,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     private String mContactNameOnCall;
     private int mSpeedDialNumPressed;
     private boolean mBackgroundSetFlag;
+    private boolean mPhoneCallAnimOn;
 
     // Sheath screen related variables
     private GestureDetectorCompat mDetector;
@@ -254,6 +255,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         // Determine if the sheath screen is enabled and prepare the display
 
         mSheathScreenOn = prefs.getBoolean(getString(R.string.key_toggle_sheath_screen), false);
+        mPhoneCallAnimOn = prefs
+                .getBoolean(getString(R.string.key_toggle_phone_call_animations), true);
         // Since we never do side animation with the lock screen if we have a sheath, and we want to
         // set up the lock screen animation before the background loading begins and never in onResume
         mBackgroundSetFlag = false;
@@ -808,7 +811,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             endCallBtn = (Button) getView(R.id.lock_screen_end_call_button);
             spkrBtn = (Button) getView(R.id.lock_screen_speaker_call_button);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1 && mPhoneCallAnimOn) {
                 // First, animate the display drawer at the top
                 final int dDistance = drawer.getHeight();
                 drawer.setTranslationY(dDistance * -1);
@@ -891,7 +894,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             infoBlock = getView(R.id.lock_screen_info_block);
 
 
-            if (animationFlag && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+            if (animationFlag && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1
+                    && mPhoneCallAnimOn) {
                 // Position the widgets
                 int bDistance = widgets.getWidth();
                 widgets.setTranslationX(bDistance * -1);
