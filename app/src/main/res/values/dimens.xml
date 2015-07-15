@@ -21,4 +21,6 @@
 
     <dimen name="app_content_flipper_height">350dp</dimen>
     <dimen name="app_content_flipper_width">210dp</dimen>
+
+    <dimen name="pattern_buttons_layout_margin">12dp</dimen>
 </resources>

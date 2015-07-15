@@ -17,5 +17,6 @@
     <fraction name="sheath_text_alpha_max">100%</fraction>
     <integer name="background_swipe_animation">180</integer>
     <integer name="background_swipe_minimum_dist">60</integer>
+    <integer name="pattern_diagonal_drawing_padding">30</integer>
 
 </resources>

@@ -8,7 +8,7 @@
         <item name="android:layout_width">@dimen/lock_screen_pattern_button_diameter</item>
         <item name="android:layout_height">@dimen/lock_screen_pattern_button_diameter</item>
         <item name="android:layout_centerHorizontal">true</item>
-        <item name="android:layout_margin">12dp</item>
+        <item name="android:layout_margin">@dimen/pattern_buttons_layout_margin</item>
         <item name="android:shadowColor">#000000</item>
         <item name="android:shadowDx">2</item>
         <item name="android:shadowDy">2</item>

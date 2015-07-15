@@ -22,7 +22,9 @@
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/gunmetal">
 
         <com.vitaminbacon.lockscreendialer.views.DrawView
             android:id="@+id/lock_screen_pattern_canvas"
@@ -41,6 +43,7 @@
             android:orientation="vertical">
 
             <View
+                android:id="@+id/lock_screen_config_row_spacer"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1" />
@@ -52,7 +55,7 @@
                 <View
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight=".5" />
+                    android:layout_weight="1" />
 
                 <Button
                     android:id="@+id/lock_screen_pattern_button_1"
@@ -60,6 +63,7 @@
                     android:text="1" />
 
                 <View
+                    android:id="@+id/lock_screen_config_col_spacer"
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
                     android:layout_weight="1" />
@@ -82,7 +86,7 @@
                 <View
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight=".5" />
+                    android:layout_weight="1" />
 
             </LinearLayout>
 
@@ -98,7 +102,7 @@
                 <View
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight=".5" />
+                    android:layout_weight="1" />
 
                 <Button
                     android:id="@+id/lock_screen_pattern_button_4"
@@ -128,7 +132,7 @@
                 <View
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight=".5" />
+                    android:layout_weight="1" />
 
             </LinearLayout>
 
@@ -144,7 +148,7 @@
                 <View
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight=".5" />
+                    android:layout_weight="1" />
 
                 <Button
                     android:id="@+id/lock_screen_pattern_button_7"
@@ -174,17 +178,28 @@
                 <View
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight=".5" />
+                    android:layout_weight="1" />
 
             </LinearLayout>
 
-            <TextView
-                style="@style/general_instruction"
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/keypad_pattern_config_warning" />
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
         </LinearLayout>
     </RelativeLayout>
+
+    <TextView
+        style="@style/ancilliary_instruction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/keypad_pattern_config_rules_1" />
+
+    <TextView
+        style="@style/ancilliary_instruction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/keypad_pattern_config_rules_2" />
 
 </LinearLayout>
