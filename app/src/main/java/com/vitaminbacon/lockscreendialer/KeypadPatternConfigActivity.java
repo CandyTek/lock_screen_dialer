@@ -327,6 +327,7 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
                                 mTouchDrawView.clearLines();
                                 mTouchDrawView.invalidate();
                                 drawToTouch = false;
+                                // update the last touched button and add the button to the pattern
                                 mLastBtnTouchedNum = Integer.parseInt(b.getText().toString());
                                 mPatternEntered += mLastBtnTouchedNum;
                                 break;

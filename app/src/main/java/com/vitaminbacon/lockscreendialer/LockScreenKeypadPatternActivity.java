@@ -249,8 +249,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                                 return false;
                             } else if (!mPatternEntered.contains(mPatternBtns[i].getText().toString())) {
                                 // Makes sure the digit doesn't already exist in the pattern entered
-                                mLastBtnTouchedNum = Integer.parseInt(b.getText().toString());
-                                mPatternEntered += mLastBtnTouchedNum;
+
                                 //Log.d(TAG, "Pattern now = " + mPatternEntered);
 
                                 Vibrator vibrator =
@@ -261,25 +260,39 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                                     //b.getBackground().mutate();
                                     b.setPressed(true);
                                     b.setTextColor(mButtonColor);
-                                    Paint p = new Paint();
-                                    //p.setColor(getResources().getColor(R.color.green));
-                                    p.setColor(mDrawColor);
-                                    p.setStrokeWidth(3f);
+
 
                                     int[] startCoord = new int[2];
                                     int[] endCoord = new int[2];
                                     last.getLocationOnScreen(startCoord);
                                     b.getLocationOnScreen(endCoord);
-                                    mPatternDrawView.addLineWithAbsoluteCoords(
-                                            startCoord[0] + last.getWidth() / 2f,
-                                            startCoord[1] + last.getHeight() / 2f,
-                                            endCoord[0] + b.getWidth() / 2f,
-                                            endCoord[1] + b.getHeight() / 2f,
-                                            p);
+
+                                    float startX = startCoord[0] + last.getWidth() / 2f;
+                                    float startY = startCoord[1] + last.getHeight() / 2f;
+                                    float endX = endCoord[0] + b.getWidth() / 2f;
+                                    float endY = endCoord[1] + b.getHeight() / 2f;
+                                    if (!lineRequiresArc(i + 1, mLastBtnTouchedNum)) {
+                                        // Draw a line
+                                        Paint p = new Paint();
+                                        p.setColor(mDrawColor);
+                                        p.setStrokeWidth(3f);
+                                        mPatternDrawView.addLineWithAbsoluteCoords(
+                                                startX,
+                                                startY,
+                                                endX,
+                                                endY,
+                                                p);
+                                    } else {
+                                        // Now we must draw an arc
+                                        drawArc(mLastBtnTouchedNum, i + 1, startX, startY, endX, endY);
+                                    }
                                     mPatternDrawView.invalidate();
                                     mTouchDrawView.clearLines();
                                     mTouchDrawView.invalidate();
                                     drawToTouch = false;
+                                    // update the last touched button and add the button to the pattern
+                                    mLastBtnTouchedNum = Integer.parseInt(b.getText().toString());
+                                    mPatternEntered += mLastBtnTouchedNum;
                                 }
                                 break;
                             }
@@ -456,6 +469,236 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
             default:
                 return defaultReturn;
         }
+    }
+
+    /**
+     * Draws an arc between start and end.  Integers a and b represent the digits touched, with "a"
+     * first
+     *
+     * @param a
+     * @param b
+     * @param startX
+     * @param startY
+     * @param endX
+     * @param endY
+     */
+    private void drawArc(int a, int b, float startX, float startY, float endX, float endY) {
+        float left, top, right, bottom, startAngle, sweepAngle;
+        float rotation = 0;
+        // the dimensions of the oval's sides
+        left = startX < endX ? startX : endX;
+        right = endX > startX ? endX : startX;
+        top = startY < endY ? startY : endY;
+        bottom = endY > startY ? endY : startY;
+
+        // Need to modify the width of the oval to suit the way the arc will be drawn
+        int diff = Math.abs(a - b);
+        boolean isRotatedArc = false;  // Flag so right function is called later
+        if (diff == 2) {
+            // Make horizontal arc
+            top -= getSpaceAvailableY();
+            bottom += getSpaceAvailableY();
+        } else if (diff == 6) {
+            // Make vertical arc
+            left -= getSpaceAvailableX();
+            right += getSpaceAvailableX();
+        } else {
+            // Make diagonal arc, needing rotated oval!
+            isRotatedArc = true;
+            // Get dimensions of the RectF
+            float height = (float) Math.sqrt((left - right) * (left - right)
+                    + (top - bottom) * (top - bottom));
+            int width = mPatternBtns[5].getWidth(); // add some padding
+            int[] centerCoords = new int[2];
+            mPatternBtns[4].getLocationOnScreen(centerCoords); // the center button
+            int diagPadding = getResources()
+                    .getInteger(R.integer.pattern_diagonal_drawing_padding);
+            // Reassign ltrb to be a column in the middle
+            rotation = getRotation(a, b, right - left, bottom - top);
+            left = centerCoords[0] - diagPadding;
+            right = centerCoords[0] + width + diagPadding;
+            top = centerCoords[1] - height / 2 + width / 2;
+            bottom = centerCoords[1] + height / 2 + width / 2;
+        }
+
+        startAngle = getStartAngle(a, b);
+        sweepAngle = getSweepAngle(a, b);
+
+        Log.d(TAG, "left = " + left + " top = " + top + " right = "
+                + right + " bottom = " + bottom + " startAngle = "
+                + startAngle + " sweepAngle = " + sweepAngle);
+
+        if (startAngle != -1 && sweepAngle != -1) {
+            Paint p = new Paint();
+            p.setColor(mDrawColor);
+            p.setStrokeWidth(6f);
+            p.setAntiAlias(true);
+            p.setStrokeCap(Paint.Cap.ROUND);
+            p.setStyle(Paint.Style.STROKE);
+            if (!isRotatedArc) {
+                mPatternDrawView
+                        .addArcWithAbsoluteCoords(left, top, right, bottom,
+                                startAngle, sweepAngle, false, p);
+            } else {
+                mPatternDrawView
+                        .addRotatedArcWithAbsoluteCoords(left, top,
+                                right, bottom, rotation, startAngle,
+                                sweepAngle, false, p);
+            }
+        } else {
+            Log.e(TAG, "Error drawing arc; startAngle or sweepAngle invalid");
+        }
+    }
+
+    /**
+     * Returns true if, based on a square 9 digit keypad, int a and b requires an arc to draw a line
+     * between them without traversing another digit.
+     *
+     * @param a
+     * @param b
+     * @return
+     */
+    private boolean lineRequiresArc(int a, int b) {
+        int difference = Math.abs(a - b);
+        switch (difference) {
+            case 6:
+                return true;
+            case 4:
+                if (a + b != 10) {
+                    return false;
+                }
+                // Continue on, must be 3 & 7 so return true!
+            case 8:
+                return true;
+            case 2:
+                if ((a % 3 == 1 && b % 3 == 0) || (b % 3 == 1 && a % 3 == 0)) {
+                    return true;
+                }
+                break;
+        }
+        return false;
+    }
+
+    /**
+     * Method assumes that an arc is appropriate already
+     *
+     * @param a
+     * @param b
+     * @return
+     */
+    private float getStartAngle(int a, int b) {
+        int difference = Math.abs(a - b);
+        switch (difference) {
+            case 2:
+                if (a < b) {
+                    return 180;
+                } else {
+                    return 0;
+                }
+
+            case 6:
+                if (a < b) {
+                    return 270;
+                } else {
+                    return 90;
+                }
+
+            case 4:
+                if (a + b == 10) {
+                    if (a < b) {
+                        return 315;
+                    } else {
+                        return 135;
+                    }
+
+                }
+                break;
+            case 8:
+                if (a < b) {
+                    return 225;
+                } else {
+                    return 45;
+                }
+        }
+        return -1;
+    }
+
+    private float getSweepAngle(int a, int b) {
+        int difference = Math.abs(a - b);
+        switch (difference) {
+            case 2:
+                if (a < b) {
+                    // Note: Samsung Galaxy S4 exhibited strange error if we tried to put the arc
+                    // b/t 7 and 9 below the digits in that it would continue to display the line
+                    // after it was cleared.  This implementation is therefore not ideal, but
+                    // necessary unless we want to go obscure bug chasing on what appears to be
+                    // one device
+                    return 180;
+                } else {
+                    return -180;
+                }
+
+            case 6:
+                if ((a < b && (a == 1 || a == 2)) || (b < a && a == 9)) {
+                    return -180;
+                } else {
+                    return 180;
+                }
+
+            case 4:
+                if (a + b != 10) {
+                    break;
+                }
+            case 8:
+                return 180;
+        }
+        return -1;
+    }
+
+    /**
+     * Returns oval rotation based on configuring the dominating length of the oval in the y direction
+     *
+     * @param a
+     * @param b
+     * @return
+     */
+    private float getRotation(int a, int b, float width, float height) {
+
+        int difference = Math.abs(a - b);
+        int multiplier;
+        switch (difference) {
+            case 8:
+                //return -45;
+                multiplier = -1;
+                break;
+            case 4:
+                if (a + b == 10) {
+                    //return 45;
+                    multiplier = 1;
+                    break;
+                }
+            default:
+                return 0;
+        }
+
+        float returnValue = (float) Math.toDegrees(Math.atan(width / height)) * multiplier;
+        Log.d(TAG, "rotation is " + returnValue);
+        return returnValue;
+
+    }
+
+    private float getSpaceAvailableX() {
+        int margin = (int) getResources().getDimension(R.dimen.pattern_buttons_layout_margin);
+        int width = mPatternBtns[0].getWidth();
+        int colSpacer = getView(R.id.lock_screen_pattern_col_spacer).getWidth();
+        return margin + width / 2 + colSpacer / 2;
+    }
+
+    private float getSpaceAvailableY() {
+        int margin = (int) getResources().getDimension(R.dimen.pattern_buttons_layout_margin);
+        int height = mPatternBtns[0].getHeight();
+        int rowSpacer = getView(R.id.lock_screen_pattern_row_spacer).getHeight();
+        return margin + height / 2 + rowSpacer / 2;
     }
 
 
