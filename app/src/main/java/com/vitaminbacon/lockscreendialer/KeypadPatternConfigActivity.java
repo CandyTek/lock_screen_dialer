@@ -28,11 +28,13 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
     private DrawView mPatternDrawView, mTouchDrawView;
     private int mLastBtnTouchedNum;
     private String mPatternEntered, mPatternStored;
+    private boolean mTouchInactiveFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_keypad_pattern_config);
+        mTouchInactiveFlag = false;
     }
 
     @Override
@@ -105,11 +107,22 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
         mKeyPadEntryInstructions.setText(getString(R.string.keypad_pattern_config_instructions_2));
         mPatternStored = pattern;
         mPatternEntered = "";
-        resetPatternButtons();
-        mPatternDrawView.clearLines();
-        mPatternDrawView.invalidate();
-        mTouchDrawView.clearLines();
-        mTouchDrawView.invalidate();
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                resetPatternButtons();
+                mPatternDrawView.clearLines();
+                mPatternDrawView.invalidate();
+                mTouchDrawView.clearLines();
+                mTouchDrawView.invalidate();
+                mTouchInactiveFlag = false;
+            }
+        };
+        handler.postDelayed(
+                runnable,
+                getResources().getInteger(R.integer.lock_screen_pattern_confirm_delay));
+        mTouchInactiveFlag = true;
+
     }
 
     private Button[] getPatternButtons() {
@@ -148,6 +161,10 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
     }
 
     public boolean onTouch(View v, MotionEvent event) {
+
+        if (mTouchInactiveFlag) {
+            return true;
+        }
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:

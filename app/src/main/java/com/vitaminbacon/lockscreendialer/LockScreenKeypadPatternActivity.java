@@ -275,7 +275,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                                         // Draw a line
                                         Paint p = new Paint();
                                         p.setColor(mDrawColor);
-                                        p.setStrokeWidth(3f);
+                                        p.setStrokeWidth(6f);
                                         mPatternDrawView.addLineWithAbsoluteCoords(
                                                 startX,
                                                 startY,
@@ -391,7 +391,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
 
     private void onWrongPatternEntered(String displayMessage) {
         // TODO: implement switch statement below
-        /*int delay;
+        int delay;
         String message;
         switch (mNumTries / 3) {
             case 0:  // meaning there have been less than 3 tries
@@ -400,7 +400,8 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                 break;
             case 1:
 
-        }*/
+        }
+
         resetPatternEntry(displayMessage);
 
         mNumTries++;
