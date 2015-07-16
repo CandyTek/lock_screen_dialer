@@ -13,9 +13,11 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +33,8 @@ import com.vitaminbacon.lockscreendialer.helpers.BitmapToViewHelper;
 import com.vitaminbacon.lockscreendialer.services.LockScreenService;
 import com.vitaminbacon.lockscreendialer.views.ColorPreference;
 import com.vitaminbacon.lockscreendialer.views.MyListPreference;
+
+import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -63,6 +67,7 @@ public class SettingsFragment extends PreferenceFragment
         // Store the background type to save it in the event it needs to be restored when being saved
         storePriorBGValue();
 
+
     }
 
     @Override
@@ -75,6 +80,21 @@ public class SettingsFragment extends PreferenceFragment
         if (!isServiceRunning(LockScreenService.class) && checkPref.isChecked()) {
             //Log.d(TAG, "Turning off lock screen in onResume()");
             checkPref.setChecked(false);
+        }
+
+        try {
+            reviseDateFormatListPrefEntries();
+            ListPreference dateFormatPref =
+                    (ListPreference) findPreference(getString(R.string.key_date_format));
+            String value = dateFormatPref.getValue();
+            if (!value.equals(getString(R.string.date_format_default_local))) {
+                java.util.Date dateTime = Calendar.getInstance().getTime();
+                value = DateFormat.format(value, dateTime).toString();
+                dateFormatPref.setSummary(value);
+            }
+
+        } catch (Exception e) {
+            Log.w(TAG, "Date format preference not valid");
         }
 
     }
@@ -148,6 +168,15 @@ public class SettingsFragment extends PreferenceFragment
             backgroundPref.setOnListItemClickListener(this);
         } catch (NullPointerException e) {
             Log.e(TAG, "Background type selection preference missing from layout");
+            throw e;
+        }
+
+        try {
+            ListPreference dateFormatPref =
+                    (ListPreference) findPreference(getString(R.string.key_date_format));
+            dateFormatPref.setOnPreferenceChangeListener(this);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Date format list preference missing from layout");
             throw e;
         }
 
@@ -328,6 +357,18 @@ public class SettingsFragment extends PreferenceFragment
                 // Show the lock screen selection dialog
                 pref.show();
                 return false;
+            }
+        } else if (preference.getKey().equals(getString(R.string.key_date_format))) {
+            // Need to update the preference summary to reflect chosen value
+            try {
+                java.util.Date dateTime = Calendar.getInstance().getTime();
+                String dateString = (String) newValue;
+                if (!dateString.equals(getString(R.string.date_format_default_local))) {
+                    dateString = DateFormat.format(dateString, dateTime).toString();
+                }
+                preference.setSummary(dateString);
+            } catch (ClassCastException e) {
+                Log.e(TAG, "Unable to update date format preference summary because value not of type String", e);
             }
         }
         return true;
@@ -644,6 +685,18 @@ public class SettingsFragment extends PreferenceFragment
             alertDialog.show();
         }
 
+    }
+
+    private void reviseDateFormatListPrefEntries() {
+        ListPreference pref = (ListPreference) findPreference(getString(R.string.key_date_format));
+        String[] dateFormats = getResources().getStringArray(R.array.pref_values_date_format);
+        java.util.Date dateTime = Calendar.getInstance().getTime();
+        for (int i = 0; i < dateFormats.length; i++) {
+            if (!dateFormats[i].equals(getString(R.string.date_format_default_local))) {
+                dateFormats[i] = DateFormat.format(dateFormats[i], dateTime).toString();
+            }
+        }
+        pref.setEntries(dateFormats);
     }
 
 

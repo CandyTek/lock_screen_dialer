@@ -91,6 +91,8 @@
     <string name="pref_title_toggle_phone_call_animations">Enable phone animations</string>
     <string name="pref_description_toggle_phone_call_animations">Toggle the info screen and phone button animations</string>
 
+    <string name="pref_title_date_format">Date format</string>
+
 
     <string name="pref_summary_on_toggle_sheath_instruction">ON</string>
     <string name="pref_summary_off_toggle_sheath_instruction">OFF</string>
@@ -127,6 +129,7 @@
     <string name="key_select_background_app_content">key_select_background_app_content</string>
     <string name="key_toggle_phone_call_animations">key_toggle_phone_call_animations</string>
     <string name="key_is_first_time">key_is_first_time</string>
+    <string name="key_date_format">key_date_format</string>
 
 
     <!-- Values for shared preferences -->
@@ -230,6 +233,80 @@
         <item>Bonnie and Khalessi</item>
         <item>Snake</item>
     </string-array>
+
+    <string-array name="pref_entries_date_format">
+        <item>@string/date_format_default_local</item>
+        <item>@string/date_format_yyyy_MMMM_dd</item>
+        <item>@string/date_format_yyyy_MMM_dd</item>
+        <item>@string/date_format_yyyy_slash_MM_slash_dd</item>
+        <item>@string/date_format_yy_slash_MM_slash_dd</item>
+        <item>@string/date_format_yyyy_dash_MM_dash_dd</item>
+        <item>@string/date_format_yy_dash_MM_dash_dd</item>
+        <item>@string/date_format_dd_MMMM_yyyy</item>
+        <item>@string/date_format_dd_MMM_yyyy</item>
+        <item>@string/date_format_dd_MMMM_yy</item>
+        <item>@string/date_format_dd_MMM_yy</item>
+        <item>@string/date_format_dd_slash_MM_slash_yyyy</item>
+        <item>@string/date_format_dd_slash_MM_slash_yy</item>
+        <item>@string/date_format_dd_dash_MM_dash_yyyy</item>
+        <item>@string/date_format_dd_dash_MM_dash_yy</item>
+        <item>@string/date_format_MMMM_dd_comma_yyyy</item>
+        <item>@string/date_format_MMM_dd_comma_yyyy</item>
+        <item>@string/date_format_dd_MMMM</item>
+        <item>@string/date_format_dd_MMM</item>
+        <item>@string/date_format_MMMM_dd</item>
+        <item>@string/date_format_MMM_dd</item>
+    </string-array>
+
+    <string-array name="pref_values_date_format">
+        <item>@string/date_format_default_local</item>
+        <item>@string/date_format_yyyy_MMMM_dd</item>
+        <item>@string/date_format_yyyy_MMM_dd</item>
+        <item>@string/date_format_yyyy_slash_MM_slash_dd</item>
+        <item>@string/date_format_yy_slash_MM_slash_dd</item>
+        <item>@string/date_format_yyyy_dash_MM_dash_dd</item>
+        <item>@string/date_format_yy_dash_MM_dash_dd</item>
+        <item>@string/date_format_dd_MMMM_yyyy</item>
+        <item>@string/date_format_dd_MMM_yyyy</item>
+        <item>@string/date_format_dd_MMMM_yy</item>
+        <item>@string/date_format_dd_MMM_yy</item>
+        <item>@string/date_format_dd_slash_MM_slash_yyyy</item>
+        <item>@string/date_format_dd_slash_MM_slash_yy</item>
+        <item>@string/date_format_dd_dash_MM_dash_yyyy</item>
+        <item>@string/date_format_dd_dash_MM_dash_yy</item>
+        <item>@string/date_format_MMMM_dd_comma_yyyy</item>
+        <item>@string/date_format_MMM_dd_comma_yyyy</item>
+        <item>@string/date_format_dd_MMMM</item>
+        <item>@string/date_format_dd_MMM</item>
+        <item>@string/date_format_MMMM_dd</item>
+        <item>@string/date_format_MMM_dd</item>
+    </string-array>
+
+    <string name="date_format_default_local">Default local</string>
+    <string name="date_format_yyyy_MMMM_dd">yyyy MMMM dd</string>
+    <string name="date_format_yyyy_MMM_dd">yyyy MMM dd</string>
+    <string name="date_format_yyyy_slash_MM_slash_dd">yyyy/MM/dd</string>
+    <string name="date_format_yy_slash_MM_slash_dd">yy/MM/dd</string>
+    <string name="date_format_yyyy_dash_MM_dash_dd">yyyy-MM-dd</string>
+    <string name="date_format_yy_dash_MM_dash_dd">yy-MM-dd</string>
+    <string name="date_format_dd_MMMM_yyyy">dd MMMM yyyy</string>
+    <string name="date_format_dd_MMM_yyyy">dd MMM yyyy</string>
+    <string name="date_format_dd_MMMM_yy">dd MMMM yy</string>
+    <string name="date_format_dd_MMM_yy">dd MMM yy</string>
+    <string name="date_format_dd_slash_MM_slash_yyyy">dd/MM/yyyy</string>
+    <string name="date_format_dd_slash_MM_slash_yy">dd/MM/yy</string>
+    <string name="date_format_dd_dash_MM_dash_yyyy">dd-MM-yyyy</string>
+    <string name="date_format_dd_dash_MM_dash_yy">dd-MM-yy</string>
+    <string name="date_format_MMMM_dd_comma_yyyy">MMMM dd, yyyy</string>
+    <string name="date_format_MMM_dd_comma_yyyy">MMM dd, yyyy</string>
+    <string name="date_format_dd_MMMM">dd MMMM</string>
+    <string name="date_format_dd_MMM">dd MMM</string>
+    <string name="date_format_MMMM_dd">MMMM dd</string>
+    <string name="date_format_MMM_dd">MMM dd</string>
+
+    <string name="pref_default_value_date_format">@string/date_format_default_local</string>
+    <string name="pref_dialog_title_date_format">Select date format:</string>
+
 
     <string name="pref_summary_prefix_color_background">Color:</string>
     <string name="pref_summary_prefix_user_device_background">Device pic:</string>
