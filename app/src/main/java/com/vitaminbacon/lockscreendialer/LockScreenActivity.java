@@ -33,6 +33,7 @@ import android.provider.Settings;
 import android.support.v4.view.GestureDetectorCompat;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Display;
 import android.view.GestureDetector;
@@ -116,6 +117,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     private boolean mFlinged;
     private boolean mSheathScreenOn;
     private boolean mSheathInstructionFlag;
+
+    private java.util.Date mDate; // To check whether date needs updating
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -229,6 +232,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
         try {
             instantiateOptionalViewsInView();
+            mDate = new Date();
         } catch (IllegalLayoutException e) {
             Log.e(TAG, e.getMessage(), e);
             onFatalError();
@@ -389,6 +393,9 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             mPhoneCallActiveFlag = false;
             Log.d(TAG, "PHONE CALL FLAG IS NOW FALSE");
         }*/
+
+        //See if we need to update the date
+        updateDateViews();
 
         // For backwards compatibility, we need to manually set the "clock" text view
         // to the current time
@@ -1136,8 +1143,13 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 switch (viewId) {
                     case R.id.lock_screen_date:
                         if (prefs.getBoolean(keys.getString(i), false)) {
-                            SimpleDateFormat df = new SimpleDateFormat(getString(R.string.date_format));
-                            ((TextView) view).setText(df.format(new Date()));
+                            /*String dateFormat = prefs.getString(
+                                    getString(R.string.key_date_format),
+                                    getString(R.string.pref_default_value_date_format));
+                            java.util.Date dateTime = Calendar.getInstance().getTime();
+                            String dateString = DateFormat.format(dateFormat, dateTime).toString();*/
+                            //SimpleDateFormat df = new SimpleDateFormat(getString(R.string.date_format));
+                            ((TextView) view).setText(getFormattedDate());
                             view.setVisibility(View.VISIBLE);
 
                         } else {
@@ -1148,8 +1160,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
                     case R.id.sheath_screen_date:
                         if (prefs.getBoolean(keys.getString(i), false)) {
-                            SimpleDateFormat df = new SimpleDateFormat(getString(R.string.date_format));
-                            ((TextView) view).setText(df.format(new Date()));
+                            //SimpleDateFormat df = new SimpleDateFormat(getString(R.string.date_format));
+                            ((TextView) view).setText(getFormattedDate());
                             view.setVisibility(View.VISIBLE);
                         } else {
                             view.setVisibility(View.INVISIBLE);
@@ -1754,6 +1766,40 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
 
     protected View getView(int id) {
         return mContainerView.findViewById(id);
+    }
+
+    private String getFormattedDate() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String dateFormat = prefs.getString(
+                getString(R.string.key_date_format),
+                getString(R.string.pref_default_value_date_format));
+        if (!dateFormat.equals(getString(R.string.pref_default_value_date_format))) {
+            java.util.Date dateTime = Calendar.getInstance().getTime();
+            return DateFormat.format(dateFormat, dateTime).toString();
+        } else {
+            // Return a default locale formatted date
+            java.util.Date date = new Date();
+            return DateFormat.getDateFormat(this).format(date);
+        }
+    }
+
+    private void updateDateViews() {
+        try {
+            java.util.Date currentDate = new Date();
+            if (currentDate.getDate() != mDate.getDate()) {
+                //Log.d(TAG, "Comparing mDate with currentDate; currentDate is " + currentDate.toString() + " and mDate is " + mDate.toString());
+                TextView sheathDate, lockDate;
+                String dateString;
+                sheathDate = (TextView) getView(R.id.sheath_screen_date);
+                lockDate = (TextView) getView(R.id.lock_screen_date);
+                dateString = getFormattedDate();
+                sheathDate.setText(dateString);
+                lockDate.setText(dateString);
+                mDate = currentDate;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Activity unable to update date views", e);
+        }
     }
 
     @SuppressWarnings("deprecation")
