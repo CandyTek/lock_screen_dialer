@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -121,8 +122,15 @@ public class KeypadPinConfigActivity extends Activity {
         String pin = mEditText.getText().toString();
         if (mPinEntered.equals("")) { //Activity is in first state
             if (pin.length() < 4) {
-                makeToast(getString(R.string.err_keypad_pin_config_too_short));
-                setActivityToFirstState();
+                mKeyPadEntryInstructions.setText(getString(R.string.err_keypad_pin_config_too_short));
+                Handler h = new Handler();
+                Runnable r = new Runnable() {
+                    public void run() {
+                        setActivityToFirstState();
+                    }
+                };
+                /*makeToast(getString(R.string.err_keypad_pin_config_too_short));
+                setActivityToFirstState();*/
                 return;
             }
             if (pin.length() > 6) {  // Just a sys check to see if XML limit works
@@ -134,8 +142,16 @@ public class KeypadPinConfigActivity extends Activity {
         }
         else { // Activity is in second state
             if (!mPinEntered.equals(pin)) {
-                makeToast(getString(R.string.err_keypad_pin_config_not_matching));
-                setActivityToFirstState();
+                //makeToast(getString(R.string.err_keypad_pin_config_not_matching));
+                mKeyPadEntryInstructions.setText(getString(R.string.err_keypad_pin_config_not_matching));
+                Handler h = new Handler();
+                Runnable r = new Runnable() {
+                    public void run() {
+                        setActivityToFirstState();
+                    }
+                };
+                h.postDelayed(r, getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_begin));
+
             }
             else {
                 SharedPreferences sharedPref = this.getSharedPreferences(
@@ -154,15 +170,12 @@ public class KeypadPinConfigActivity extends Activity {
 
                 editor.commit();
 
-                makeToast(getString(R.string.keypad_pin_config_success));
+                //makeToast(getString(R.string.keypad_pin_config_success));
 
                 // Finish up with result.
                 Intent returnIntent = new Intent();
                 setResult(RESULT_OK, returnIntent);
                 finish();
-                /*Intent intent = new Intent(this, SettingsActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);*/
             }
         }
 
