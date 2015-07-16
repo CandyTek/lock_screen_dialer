@@ -137,7 +137,8 @@
         <item name="android:shadowDx">3</item>
         <item name="android:shadowDy">3</item>
         <item name="android:shadowRadius">5</item>
-        <item name="android:textSize">25dp</item>
+        <item name="android:textSize">@dimen/pattern_instruction_text_size</item>
+        <item name="android:maxLines">1</item>
         <item name="android:fontFamily">@string/font_default</item>
     </style>
 

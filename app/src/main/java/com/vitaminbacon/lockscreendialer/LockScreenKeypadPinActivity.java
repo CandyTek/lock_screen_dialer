@@ -33,7 +33,9 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
     private boolean mPinInvalidDisplayFlag;
     private int mNumTries;
     private int mLastBtnTouchedNum;
-
+    private boolean mTouchInactiveFlag;
+    private Handler mSetTextInViewHandler;
+    private SetTextInViewRunnable mSetTextInViewRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,7 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         mNumTries = 0;  // Possibly modified later by onRestoreInstanceState
         mPinStored = getStoredPin();
         mPinInvalidDisplayFlag = false;
+        mTouchInactiveFlag = false;
 
         Button[] keypadButtons;
         Button deleteButton, okButton;
@@ -59,9 +62,7 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         okButton = getOkButton();
 
         // Set the onClickListeners to the appropriate views
-        SharedPreferences dialPrefs = getSharedPreferences(
-                getString(R.string.speed_dial_preference_file_key),
-                Context.MODE_PRIVATE);
+
         SharedPreferences genPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         String font = genPrefs.getString(
                 getString(R.string.key_select_lock_screen_fonts),
@@ -70,16 +71,7 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
         for (int i=0; i < 10; i++) {
             try {
                 keypadButtons[i].setOnClickListener(this); // all buttons will have an onClickListener
-                String filename = getString(R.string.key_number_store_prefix_phone) + i;
-
-                if (dialPrefs == null) {
-                    Log.w(TAG, "Unable to access shared preferences file"
-                            + getString(R.string.speed_dial_preference_file_key) + "; returned null.");
-                    continue;
-                } else if (dialPrefs.getString(filename, null) != null) { //only set the long click where necessary
-                    //Log.d(TAG, "Setting long click on key " + i);
-                    keypadButtons[i].setOnTouchListener(this);
-                }
+                keypadButtons[i].setOnTouchListener(this);
 
             } catch (NullPointerException e) {
                 Log.e(TAG, "Keypad button " + i + " is invalid.", e);
@@ -198,13 +190,6 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
     @Override
     public void onClick (View view) {
         super.onClick(view); // Need to call the super to catch click of end call button
-
-        // If this method was called by virtue of someone invoking a long press, we swallow it
-        /*if (mLongPressFlag) {
-            mLongPressFlag = false;
-            resetPinEntry(getString(R.string.lock_screen_pin_default_display));
-            return;
-        }*/
         if (mLongPressFlag) {
             return;
         }
@@ -263,10 +248,32 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
      * @return
      */
     public boolean onTouch(View v, MotionEvent event) {
-        if (super.onTouch(v, event)) {
+        if (super.onTouch(v, event) || mTouchInactiveFlag) {
             return true;
         }
         if (!isSpeedDialEnabled()) {
+            return false;
+        }
+        // Check that the view has speed dial enabled
+        try {
+            int num = getSpeedDialButtonPressed(v.getId(), -1);
+
+            SharedPreferences dialPrefs = getSharedPreferences(
+                    getString(R.string.speed_dial_preference_file_key),
+                    Context.MODE_PRIVATE);
+
+            String filename = getString(R.string.key_number_store_prefix_phone) + num;
+
+            if (dialPrefs == null) {
+                Log.w(TAG, "Unable to access shared preferences file"
+                        + getString(R.string.speed_dial_preference_file_key) + "; returned null.");
+                return false;
+            } else if (dialPrefs.getString(filename, null) == null) {
+                // No speed dial assigned
+                return false;
+            }
+        } catch (Exception e) {
+            Log.d(TAG, "Exception in determining whether button with text has speed dial", e);
             return false;
         }
         switch (event.getAction()) {
@@ -274,20 +281,7 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
                 if (mLongPressFlag) {
                     break;
                 }
-                /*Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                vibrator.vibrate(1);*/
-                /*if (!getPhoneCallActiveFlag() && mHandler == null) { // means there is no pending handler
-                    int num = getSpeedDialButtonPressed(v.getId(), -1);
-                    if (num != -1) {
-                        mHandler = new Handler();
-                        mRunnable = new DialerRunnable(this, num);
-                        mHandler.postDelayed(
-                                mRunnable,
-                                getResources().getInteger(R.integer.lock_screen_pin_long_press_delay));
-                        mLongPressFlag = false;
-                        mLastBtnTouchedNum = num;
-                    }
-                }*/
+
                 int num = getSpeedDialButtonPressed(v.getId(), -1);
                 setDialerRunnable(
                         num,
@@ -297,11 +291,6 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
                 mLastBtnTouchedNum = num;
                 break;
             case MotionEvent.ACTION_UP:
-                /*if (mHandler != null) {
-                    mHandler.removeCallbacks(mRunnable);
-                    mHandler = null;
-                    mRunnable = null;
-                }*/
                 disableDialerRunnable();
                 if (mLongPressFlag) {
                     resetPinEntry(getString(R.string.lock_screen_initiate_call));
@@ -442,25 +431,48 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
     }
 
     private void wrongPinEntered() {
-        // TODO: implement switch statement below
-        /*int delay;
-        String message;
+
+        int delay;
+        final String message;
         switch (mNumTries / 3) {
             case 0:  // meaning there have been less than 3 tries
-                delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay);
                 message = getString(R.string.lock_screen_wrong_pin_entered);
+                delay = 0;
                 break;
             case 1:
-
-        }*/
-        resetPinEntry(getString(R.string.lock_screen_wrong_pin_entered));
+                delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_begin);
+                message = getString(R.string.lock_screen_wrong_entry_3_times);
+                break;
+            case 2: // meaning there have been at least 6 attempts
+                delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_plus);
+                message = getString(R.string.lock_screen_wrong_entry_6_times);
+                break;
+            default: // many many tries
+                delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_max);
+                message = getString(R.string.lock_screen_wrong_entry_max_times);
+        }
+        resetPinEntry(message);
         mPinInvalidDisplayFlag = true;
+        mTouchInactiveFlag = true;
         mNumTries++;
-        SetTextInViewRunnable r = new SetTextInViewRunnable(
-                getString(R.string.lock_screen_pin_default_display),
-                getPinDisplayView());
-        Handler h = new Handler();
-        h.postDelayed(r, getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay));
+        if (mSetTextInViewHandler != null && mSetTextInViewRunnable != null) {
+            mSetTextInViewHandler.removeCallbacks(mSetTextInViewRunnable);
+        }
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                mTouchInactiveFlag = false;
+                mSetTextInViewRunnable = new SetTextInViewRunnable(
+                        getString(R.string.lock_screen_pin_default_display),
+                        getPinDisplayView());
+                if (mSetTextInViewHandler == null) {
+                    mSetTextInViewHandler = new Handler();
+                }
+                mSetTextInViewHandler.postDelayed(mSetTextInViewRunnable,
+                        getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay));
+            }
+        };
+        handler.postDelayed(runnable, delay);
 
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         v.vibrate(200);
