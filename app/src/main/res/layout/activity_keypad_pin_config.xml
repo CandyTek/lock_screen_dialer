@@ -9,21 +9,22 @@
     tools:context="com.vitaminbacon.lockscreendialer.KeypadPinConfigActivity">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Instruction"
-        android:gravity="center_horizontal"
         android:id="@+id/keypad_pin_config_instruction"
-        style="@style/general_instruction"/>
-    <EditText
+        style="@style/general_instruction"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/keypad_pin_config_edittext"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:minWidth="40dp"
-        android:inputType="numberPassword"
         android:gravity="center_horizontal"
-        android:maxLength="6"/>
+        android:lines="2"
+        android:text="Instruction" />
+    <EditText
+        android:id="@+id/keypad_pin_config_edittext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:inputType="numberPassword"
+        android:maxLength="6"
+        android:minWidth="40dp"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
     <View
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,23 +35,23 @@
 
         <Button
             android:id="@+id/btn_keypad_pin_config_submit"
+            style="@style/dialog_buttons"
             android:onClick="submitButtonClicked"
-            android:textAllCaps="false"
 
-            style="@style/dialog_buttons"/>
+            android:textAllCaps="false" />
 
         <View
+            style="@style/key_pad_dividers"
             android:layout_width="1dp"
-            android:layout_height="match_parent"
-            style="@style/key_pad_dividers"/>
+            android:layout_height="match_parent" />
 
         <Button
             android:id="@+id/contact_assigned_remove"
-            android:text="@string/btn_keypad_pin_config_cancel"
+            style="@style/dialog_buttons"
             android:onClick="cancelButtonClicked"
-            android:textAllCaps="false"
+            android:text="@string/btn_keypad_pin_config_cancel"
 
-            style="@style/dialog_buttons"/>
+            android:textAllCaps="false" />
 
     </LinearLayout>
 
