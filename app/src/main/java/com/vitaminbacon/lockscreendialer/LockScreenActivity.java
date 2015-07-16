@@ -1507,11 +1507,11 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         final Context ctx = this;
 
         View v = mContainerView;
-        playSound(ctx, uri);
-        finish();
+        /*playSound(ctx, uri);
+        finish();*/
         Log.d(TAG, "Finish() called");
         // Fade out the lock screen
-        /*if (v != null) {
+        if (v != null) {
             v.animate().alpha(0f).setDuration(200).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationStart(Animator animation) {
@@ -1527,7 +1527,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         } else {
             playSound(ctx, uri);
             finish();
-        }*/
+        }
     }
 
     private void playSound(Context context, Uri alert) {
@@ -1537,6 +1537,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             final AudioManager audioManager = (AudioManager) context
                     .getSystemService(Context.AUDIO_SERVICE);
             if (audioManager.getStreamVolume(AudioManager.STREAM_RING) != 0) {
+                float log1 = (float) (Math.log(25) / Math.log(50)); //half volume
+                mediaPlayer.setVolume(1 - log1, 1 - log1);
                 mediaPlayer.setAudioStreamType(AudioManager.STREAM_NOTIFICATION);
                 mediaPlayer.prepare();
                 mediaPlayer.start();
