@@ -19,4 +19,5 @@
 
     <dimen name="pattern_buttons_text_size">25sp</dimen>
     <dimen name="pin_buttons_padding">6dp</dimen>
+
 </resources>

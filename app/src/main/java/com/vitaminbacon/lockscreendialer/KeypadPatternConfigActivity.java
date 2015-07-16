@@ -384,7 +384,7 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
                         mKeyPadEntryInstructions);
                 Handler h = new Handler();
                 h.postDelayed(r, getResources()
-                        .getInteger(R.integer.lock_screen_pattern_wrong_entry_delay));
+                        .getInteger(R.integer.lock_screen_pattern_config_wrong_entry_delay));
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 v.vibrate(200);
                 return;
@@ -417,7 +417,7 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
                         mKeyPadEntryInstructions);
                 Handler h = new Handler();
                 h.postDelayed(r, getResources()
-                        .getInteger(R.integer.lock_screen_pattern_wrong_entry_delay));
+                        .getInteger(R.integer.lock_screen_pattern_config_wrong_entry_delay));
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 v.vibrate(200);
                 return;

@@ -37,6 +37,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
     private DrawView mPatternDrawView, mTouchDrawView;
     private boolean mPhoneCallInterruptFlag;
     private boolean mDisplayPatternFlag;
+    private boolean mTouchInactiveFlag;
     private int mDrawColor;
     private int mButtonColor;
 
@@ -59,6 +60,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
         mNumTries = 0;  // Possibly modified later by onRestoreInstanceState
         mPatternStored = getStoredPattern();
         mPatternEntered = "";
+        mTouchInactiveFlag = false;
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         mDisplayPatternFlag = prefs.getBoolean(getString(R.string.key_enable_pattern_draw), true);
         mDrawColor = prefs.getInt(getString(R.string.key_select_pattern_draw_color),
@@ -69,7 +71,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
         // In case returning to this display from elsewhere, want to reset
         // Will also catch error when there is improper layout
         //Log.d(TAG, "onCreate() calling resetPinEntry()");
-        resetPatternEntry(getString(R.string.lock_screen_keypad_pattern_instruction_1));
+        resetPatternInstruction(getString(R.string.lock_screen_keypad_pattern_instruction_1));
 
         mPatternBtns = getPatternButtons();
         try {
@@ -138,7 +140,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
      * @return
      */
     public boolean onTouch(View v, MotionEvent event) {
-        if (super.onTouch(v, event)) {
+        if (super.onTouch(v, event) || mTouchInactiveFlag) {
             // If consumed by the super, then return
             return true;
         }
@@ -389,45 +391,59 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
     }
 
 
-    private void onWrongPatternEntered(String displayMessage) {
+    private void onWrongPatternEntered(final String displayMessage) {
         // TODO: implement switch statement below
         int delay;
-        String message;
+        final String message;
         switch (mNumTries / 3) {
             case 0:  // meaning there have been less than 3 tries
-                delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay);
-                message = getString(R.string.lock_screen_wrong_pin_entered);
+                message = displayMessage;
+                delay = 0;
                 break;
             case 1:
-
+                delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_begin);
+                message = getString(R.string.lock_screen_wrong_entry_3_times);
+                break;
+            case 2: // meaning there have been at least 6 attempts
+                delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_plus);
+                message = getString(R.string.lock_screen_wrong_entry_6_times);
+                break;
+            default: // many many tries
+                delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_max);
+                message = getString(R.string.lock_screen_wrong_entry_max_times);
         }
-
-        resetPatternEntry(displayMessage);
-
         mNumTries++;
         mPatternEntered = "";
-        mPatternDrawView.clearLines();
-        mPatternDrawView.invalidate();
-        mTouchDrawView.clearLines();
-        mTouchDrawView.invalidate();
+        resetPatternInstruction(message);
+        mTouchInactiveFlag = true;
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            public void run() {
+                mPatternDrawView.clearLines();
+                mPatternDrawView.invalidate();
+                mTouchDrawView.clearLines();
+                mTouchDrawView.invalidate();
+                mTouchInactiveFlag = false;
 
-        for (int i = 0; i < 9; i++) {
-            mPatternBtns[i].setPressed(false);
-            mPatternBtns[i].setTextColor(getResources().getColor(R.color.white));
-        }
+                for (int i = 0; i < 9; i++) {
+                    mPatternBtns[i].setPressed(false);
+                    mPatternBtns[i].setTextColor(getResources().getColor(R.color.white));
+                }
+                resetPatternInstruction(message);
+                try {
+                    SetTextInViewRunnable r = new SetTextInViewRunnable(
+                            getString(R.string.lock_screen_keypad_pattern_instruction_1),
+                            (TextView) getView(R.id.lock_screen_pattern_display));
+                    Handler h = new Handler();
+                    h.postDelayed(r, getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay));
 
-        try {
-            SetTextInViewRunnable r = new SetTextInViewRunnable(
-                    getString(R.string.lock_screen_keypad_pattern_instruction_1),
-                    (TextView) getView(R.id.lock_screen_pattern_display));
-            Handler h = new Handler();
-            h.postDelayed(r, getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay));
-
-        } catch (ClassCastException e) {
-            Log.e(TAG, "Layout element of wrong type to implement pattern display", e);
-            onFatalError();
-        }
-
+                } catch (ClassCastException e) {
+                    Log.e(TAG, "Layout element of wrong type to implement pattern display", e);
+                    onFatalError();
+                }
+            }
+        };
+        handler.postDelayed(runnable, delay);
         Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         v.vibrate(200);
 
@@ -436,7 +452,7 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
     /**
      * Method that resets the Pattern Entry
      */
-    private void resetPatternEntry(String displayText) {
+    private void resetPatternInstruction(String displayText) {
         TextView tv = (TextView) getView(R.id.lock_screen_pattern_display);
         try {
             tv.setText(displayText);

@@ -19,6 +19,7 @@
 
     <dimen name="pattern_buttons_text_size">35sp</dimen>
     <dimen name="pin_buttons_padding">12dp</dimen>
+    <dimen name="pattern_instruction_text_size">25dp</dimen>
 
     <dimen name="app_content_flipper_height">425dp</dimen>
     <dimen name="app_content_flipper_width">255dp</dimen>

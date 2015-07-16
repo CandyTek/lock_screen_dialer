@@ -23,4 +23,6 @@
     <dimen name="app_content_flipper_width">210dp</dimen>
 
     <dimen name="pattern_buttons_layout_margin">12dp</dimen>
+
+    <dimen name="pattern_instruction_text_size">22dp</dimen>
 </resources>
