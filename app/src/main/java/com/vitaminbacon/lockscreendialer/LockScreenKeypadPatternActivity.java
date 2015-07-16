@@ -40,6 +40,8 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
     private boolean mTouchInactiveFlag;
     private int mDrawColor;
     private int mButtonColor;
+    private Handler mSetTextInViewHandler;
+    private SetTextInViewRunnable mSetTextInViewRunnable;
 
 
 
@@ -416,6 +418,9 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
         mPatternEntered = "";
         resetPatternInstruction(message);
         mTouchInactiveFlag = true;
+        if (mSetTextInViewHandler != null && mSetTextInViewRunnable != null) {
+            mSetTextInViewHandler.removeCallbacks(mSetTextInViewRunnable);
+        }
         Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             public void run() {
@@ -425,17 +430,20 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                 mTouchDrawView.invalidate();
                 mTouchInactiveFlag = false;
 
+
                 for (int i = 0; i < 9; i++) {
                     mPatternBtns[i].setPressed(false);
                     mPatternBtns[i].setTextColor(getResources().getColor(R.color.white));
                 }
                 resetPatternInstruction(message);
                 try {
-                    SetTextInViewRunnable r = new SetTextInViewRunnable(
+                    mSetTextInViewRunnable = new SetTextInViewRunnable(
                             getString(R.string.lock_screen_keypad_pattern_instruction_1),
                             (TextView) getView(R.id.lock_screen_pattern_display));
-                    Handler h = new Handler();
-                    h.postDelayed(r, getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay));
+                    if (mSetTextInViewHandler == null) {
+                        mSetTextInViewHandler = new Handler();
+                    }
+                    mSetTextInViewHandler.postDelayed(mSetTextInViewRunnable, getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay));
 
                 } catch (ClassCastException e) {
                     Log.e(TAG, "Layout element of wrong type to implement pattern display", e);
