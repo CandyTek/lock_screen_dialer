@@ -394,7 +394,6 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
 
 
     private void onWrongPatternEntered(final String displayMessage) {
-        // TODO: implement switch statement below
         int delay;
         final String message;
         switch (mNumTries / 3) {

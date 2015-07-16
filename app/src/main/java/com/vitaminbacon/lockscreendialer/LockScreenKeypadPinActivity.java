@@ -503,7 +503,7 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
 
     private int getSpeedDialButtonPressed(int id, int defaultReturn){
         switch (id) {
-            // TODO: set zero key as a lock screen dialer?
+
             case R.id.lock_screen_pin_button_0:
                 return 0;
             case R.id.lock_screen_pin_button_1:

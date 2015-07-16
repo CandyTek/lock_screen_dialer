@@ -116,9 +116,13 @@
     <string name="error_title_offhook">Call Error</string>
     <string name="error_description_offhook">Device failed to initiate call</string>
     <string name="title_activity_app_background">Select App Background</string>
+    <string name="error_title_invalid_number">Number invalid</string>
+    <string name="error_description_invalid_number">Stored speed dial number invalid</string>
 
     <string name="instruction_app_content_flipper">Select a background:</string>
     <string name="button_app_background_random_text">Randomize</string>
     <string name="button_app_background_about_pics">About</string>
     <string name="instruction_app_content_swipe">Swipe to browse</string>
+
+
 </resources>

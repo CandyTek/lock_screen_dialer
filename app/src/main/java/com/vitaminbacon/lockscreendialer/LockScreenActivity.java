@@ -1839,7 +1839,17 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     getString(R.string.key_number_store_prefix_phone) + num, null);
             if (telNum == null) {
                 Log.e(TAG, "Unable to make call because phone number invalid");
-                // TODO: handle this with an error drawer of some kind?
+                enableErrorViewsinView(
+                        getString(R.string.error_title_invalid_number),
+                        getString(R.string.error_description_invalid_number),
+                        R.drawable.ic_error_white_48dp);
+                Handler h = new Handler();
+                h.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        disableErrorViewsInView();
+                    }
+                }, getResources().getInteger(R.integer.lock_screen_phone_error_display_length));
                 return;
             }
 
