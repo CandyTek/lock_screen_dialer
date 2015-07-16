@@ -2,8 +2,10 @@ package com.vitaminbacon.lockscreendialer.fragments;
 
 
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
@@ -175,6 +177,7 @@ public class SettingsFragment extends PreferenceFragment
                         checkPref.setChecked(true);
                         // Since onChangedListener not registered yet when this call is made, need to create service
                         getActivity().startService(new Intent(getActivity(), LockScreenService.class));
+                        showAlertDialogOnFirstTime();
                     } catch (ClassCastException e) {
                         Log.e(TAG, "Lock screen enabled preference of wrong type, unable to modify");
                     }
@@ -190,6 +193,7 @@ public class SettingsFragment extends PreferenceFragment
                                 getString(R.string.key_toggle_lock_screen));
                         checkPref.setChecked(true);
                         getActivity().startService(new Intent(getActivity(), LockScreenService.class));
+                        showAlertDialogOnFirstTime();
                     } catch (ClassCastException e) {
                         Log.e(TAG, "Lock screen enabled preference of wrong type, unable to modify");
                     }
@@ -608,6 +612,40 @@ public class SettingsFragment extends PreferenceFragment
             }
         }
     }
+
+    /**
+     * Shows an alert dialog on the user's first time using the app, instructing user to
+     * disable the device's native lock screen
+     */
+    private void showAlertDialogOnFirstTime() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        boolean isFirstTime = prefs.getBoolean(getString(R.string.key_is_first_time), true);
+        if (isFirstTime) {
+            // Be sure to store the value so it doesn't come up again!
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean(getString(R.string.key_is_first_time), false);
+            editor.commit();
+
+            // Now build an alert dialog to display
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+            dialogBuilder.setTitle(getString(R.string.alert_dialog_title_first_time));
+            dialogBuilder
+                    .setMessage(getString(R.string.alert_dialog_message_first_time))
+                    .setCancelable(false)
+                    .setNegativeButton(getString(R.string.alert_dialog_button_text_first_time),
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+            AlertDialog alertDialog = dialogBuilder.create();
+            alertDialog.show();
+        }
+
+    }
+
 
 
 }

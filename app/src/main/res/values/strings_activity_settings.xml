@@ -126,6 +126,7 @@
     <string name="key_select_background_device_pic">key_select_background_device_pic</string>
     <string name="key_select_background_app_content">key_select_background_app_content</string>
     <string name="key_toggle_phone_call_animations">key_toggle_phone_call_animations</string>
+    <string name="key_is_first_time">key_is_first_time</string>
 
 
     <!-- Values for shared preferences -->
@@ -233,6 +234,10 @@
     <string name="pref_summary_prefix_color_background">Color:</string>
     <string name="pref_summary_prefix_user_device_background">Device pic:</string>
     <string name="pref_summary_prefix_app_content_background">App content:</string>
+
+    <string name="alert_dialog_title_first_time">Important!</string>
+    <string name="alert_dialog_message_first_time">For this app to work properly, make sure that you have disabled any other lock screens, especially the Android system lock screen.  Go to Settings &#8658; click the \"My Device\" tab &#8658; click \"Lock screen\" &#8658; and change the screen lock to \"None\".  (Android doesn\'t let us do this for you, sorry.) </string>
+    <string name="alert_dialog_button_text_first_time">Got it!</string>
 
 
 </resources>
