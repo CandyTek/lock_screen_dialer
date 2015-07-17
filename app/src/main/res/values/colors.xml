@@ -44,4 +44,6 @@
         <item>@string/gunmetal</item>
     </string-array>
 
+    <color name="default_pullback_color">@color/gunmetal</color>
+
 </resources>

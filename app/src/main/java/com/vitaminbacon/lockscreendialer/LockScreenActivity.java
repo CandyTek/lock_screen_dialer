@@ -13,6 +13,7 @@ import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Typeface;
@@ -59,6 +60,7 @@ import com.vitaminbacon.lockscreendialer.services.LockScreenService;
 import com.vitaminbacon.lockscreendialer.services.PhoneCallReceiver;
 import com.vitaminbacon.lockscreendialer.services.PhoneStateReceiver;
 import com.vitaminbacon.lockscreendialer.services.PhoneStateService;
+import com.vitaminbacon.lockscreendialer.views.PullBackView;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -373,7 +375,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     mFlinged = false;
                     if (mBackgroundSetFlag) {
                         // Note no need to do a .post call, because if this flag is set, mContainView's post is already complete
-                        //prepareSheathScreenAnimation(true);
+                        prepareSheathScreenAnimation(true);
                         // Covers situation where power button pressed after swiping sheath away
                         doSheathTextAnimation(-1);
                     } else {
@@ -467,41 +469,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         int phoneState = intent.getIntExtra(PhoneCallReceiver.EXTRA_PHONE_STATE, -1);
         Log.d(TAG, "onNewIntent called with phoneState = " + phoneState);
         setIntent(intent); // Sets up to handle all logic in onResume()
-
-
-        // Enable the call views and stop the screen service --
-        // User has initiated a speed dial.
-
-        /*if (phoneState == PhoneCallReceiver.PHONE_STATE_IDLE) {
-            // Phone was just hung up
-            if (!mPhoneCallActiveFlag) {
-                Log.d(TAG, "restarting activity");
-                // Received new intent in situation where we may need to reset the screen if it is rotated b/c of galaxy error
-                startActivity(new Intent(this, LockScreenLauncherActivity.class));
-                finish();
-                return;
-            }
-            mContactNameOnCall = mPhoneNumOnCall = mPhoneTypeOnCall = null;
-            disableCallViewsInView(true);
-            try {
-                enableOptionalViewsInView();
-            } catch (IllegalLayoutException e) {
-                Log.e(TAG, "Layout renders activity unable to handle calls", e);
-                onFatalError();
-            }
-
-            startService(new Intent(this, LockScreenService.class)); // reenable the off-screen receiver
-        }
-        else if (phoneState == PhoneCallReceiver.PHONE_STATE_RINGING) { // a call has been received, we should handle lock screen in case user returns there
-            //Log.d(TAG, "onNewIntent received intent with phone state ringing; stopping screen service");
-            // This implementation ends the lock screen, but it should be recalled by the receiver once the call is over
-            stopService(new Intent(this, LockScreenService.class));  // don't want the lock screen to keep popping up during a phone call in this implementation
-            finish();
-        }
-        else if (phoneState == PhoneCallReceiver.PHONE_STATE_OFFHOOK) {
-            // Currently requires no implementation
-            return;
-        }*/
     }
 
     @Override
@@ -1419,7 +1386,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             return true;
         }
         final View interactionScreen = getView(R.id.lock_screen_interaction_container);
-
+        int moveTolerance = getResources()
+                .getInteger(R.integer.swipe_percent_move_tolerance);
         try {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
@@ -1432,15 +1400,56 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     mDetector.onTouchEvent(event);
                     float sheathPos = view.getTranslationY();
                     float interactionPos = interactionScreen.getTranslationY();
-                    view.setTranslationY(sheathPos + (event.getRawY() - mLastMoveCoord));
-                    interactionScreen.setTranslationY(interactionPos + (event.getRawY() - mLastMoveCoord));
+                    // If statement to create pushback when user tries to pull sheath down
+                    if (sheathPos < view.getHeight() * (moveTolerance / 2) * 0.01) {
+                        // Move the sheath screen in natural fashion
+                        PullBackView pbv = (PullBackView) getView(R.id.pull_back_view);
+                        if (pbv.isPullBackActivated()) {
+                            if (sheathPos <= 0) {
+                                pbv.deactivate();
+                            } else {
+                                drawPullbackView(event.getRawX(), event.getRawY());
+                            }
+                        }
+                        view.setTranslationY(sheathPos + (event.getRawY() - mLastMoveCoord));
+                        interactionScreen
+                                .setTranslationY(interactionPos + (event.getRawY() - mLastMoveCoord));
+
+                    } else {
+                        // Show the pull back regardless
+                        try {
+                            PullBackView pbv = (PullBackView) getView(R.id.pull_back_view);
+                            if (!pbv.isPullBackActivated()) {
+                                // Starts a reference point for the pull back view
+                                pbv.setTouchStartPos(event.getRawY());
+                            }
+                            drawPullbackView(event.getRawX(), event.getRawY());
+                        } catch (Exception e) {
+                            Log.e(TAG, "Unable to animate pull back because view is not in layout or otherwise invalid", e);
+                        }
+                        if (sheathPos >= view.getHeight() * (moveTolerance / 2) * 0.01) {
+
+                            if (event.getRawY() < mLastMoveCoord) { // Only move sheath if touch is going up
+                                view.setTranslationY(sheathPos + (event.getRawY() - mLastMoveCoord));
+                                interactionScreen
+                                        .setTranslationY(interactionPos + (event.getRawY() - mLastMoveCoord));
+                            }
+                        }
+                    }
                     mLastMoveCoord = event.getRawY();
 
                     break;
                 case MotionEvent.ACTION_UP:
                     mDetector.onTouchEvent(event);
-                    int moveTolerance = getResources()
-                            .getInteger(R.integer.swipe_percent_move_tolerance);
+
+                    // Kill the pull back view
+                    try {
+                        PullBackView pbv = (PullBackView) getView(R.id.pull_back_view);
+                        pbv.deactivate();
+                    } catch (Exception e) {
+
+                        Log.e(TAG, "Unable to animate pull back because view is not in layout or otherwise invalid", e);
+                    }
                     if (view.getTranslationY() / view.getHeight() < (-0.01 * moveTolerance)
                             && !mFlinged) {
                         // Animate sheath
@@ -1458,6 +1467,17 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             onFatalError();
         }
         return true;
+    }
+
+    private void drawPullbackView(float x, float y) {
+        PullBackView pbv = (PullBackView) getView(R.id.pull_back_view);
+
+        Paint p = new Paint();
+        p.setColor(getResources().getColor(R.color.default_pullback_color));
+        p.setAntiAlias(true);
+        p.setAlpha(getResources().getInteger(R.integer.default_pullback_alpha));
+
+        pbv.paintPullBackAtTop(p, x, y);
     }
 
     /**
