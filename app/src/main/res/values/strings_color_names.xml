@@ -9,4 +9,23 @@
     <string name="green">green</string>
     <string name="lava_red">lava red</string>
     <string name="gunmetal">gunmetal</string>
+    <string name="lapis_blue">lapis blue</string>
+    <string name="blue_ivy">blue ivy</string>
+    <string name="light_aquamarine">light aquamarine</string>
+    <string name="jelly_fish">jelly fish</string>
+    <string name="sea_turtle">sea turtle</string>
+    <string name="zombie_green">zombie green</string>
+    <string name="mint_green">mint green</string>
+    <string name="cantaloupe">cantaloupe</string>
+    <string name="rubber_ducky">rubber ducky</string>
+    <string name="coral">coral</string>
+    <string name="bean_red">bean red</string>
+    <string name="plum_velvet">plum velvet</string>
+    <string name="cotton_candy">cotton candy</string>
+    <string name="pink_lemonade">pink lemonade</string>
+    <string name="purple_flower">purple flower</string>
+    <string name="crimson">crimson</string>
+    <string name="watermelon">watermelon</string>
+    <string name="powder_blue">powder blue</string>
+    <string name="black_cow">black cow</string>
 </resources>

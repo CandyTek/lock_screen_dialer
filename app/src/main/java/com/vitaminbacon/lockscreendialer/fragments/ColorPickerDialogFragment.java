@@ -233,6 +233,7 @@ public class ColorPickerDialogFragment extends DialogFragment
             }*/
             if (!mNoColorSelected && item.color == mColorSelected) {
                 viewHolder.colorView.setTypeface(Typeface.MONOSPACE, Typeface.BOLD_ITALIC);
+                viewHolder.colorView.setText(item.name + " (*)");
             } else {
                 // To prevent recycling of views with remnants of bold italic
                 viewHolder.colorView.setTypeface(null, Typeface.NORMAL);

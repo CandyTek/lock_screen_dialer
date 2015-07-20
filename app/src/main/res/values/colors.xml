@@ -4,6 +4,7 @@
     <color name="white">#FFFFFF</color>
 
     <color name="holo_blue">#ff00ddff</color>
+
     <color name="pressed">#7F737CA1</color>
     <color name="black_cow">#4C4646</color>
     <color name="divider">#646D7E</color>
@@ -21,27 +22,81 @@
     <color name="ocean_blue">#2B65EC</color>
     <color name="milk_white">#FEFCFF</color>
 
+    <color name="lapis_blue">#15317E</color>
+    <color name="blue_ivy">#3090C7</color>
+    <color name="light_aquamarine">#93FFE8</color>
+    <color name="jelly_fish">#46C7C7</color>
+    <color name="sea_turtle">#438D80</color>
+    <color name="zombie_green">#54C571</color>
+    <color name="mint_green">#98FF98</color>
+    <color name="cantaloupe">#FFA62F</color>
+    <color name="rubber_ducky">#FFD801</color>
+    <color name="coral">#FF7F50</color>
+    <color name="bean_red">#F75D59</color>
+    <color name="plum_velvet">#7D0552</color>
+    <color name="cotton_candy">#FCDFFF</color>
+    <color name="pink_lemonade">#E4287C</color>
+    <color name="purple_flower">#A74AC7</color>
+    <color name="crimson">#E238EC</color>
+    <color name="watermelon">#FC6C85</color>
+    <color name="powder_blue">#C6DEFF</color>
+
+
     <array name="color_value_list">
         <item>@color/white</item>
         <item>@color/beige</item>
         <item>@color/platinum</item>
+        <item>@color/powder_blue</item>
+        <item>@color/light_aquamarine</item>
         <item>@color/blue_diamond</item>
-        <item>@color/turquoise</item>
+        <item>@color/jelly_fish</item>
         <item>@color/ocean_blue</item>
+        <item>@color/blue_ivy</item>
+        <item>@color/lapis_blue</item>
+        <item>@color/sea_turtle</item>
+        <item>@color/zombie_green</item>
         <item>@color/green</item>
+        <item>@color/mint_green</item>
+        <item>@color/cantaloupe</item>
+        <item>@color/rubber_ducky</item>
+        <item>@color/coral</item>
+        <item>@color/bean_red</item>
         <item>@color/lava_red</item>
+        <item>@color/plum_velvet</item>
+        <item>@color/pink_lemonade</item>
+        <item>@color/crimson</item>
+        <item>@color/watermelon</item>
+        <item>@color/cotton_candy</item>
         <item>@color/gunmetal</item>
+        <item>@color/black_cow</item>
     </array>
     <string-array name="color_name_list">
         <item>@string/white</item>
         <item>@string/beige</item>
         <item>@string/platinum</item>
+        <item>@string/powder_blue</item>
+        <item>@string/light_aquamarine</item>
         <item>@string/blue_diamond</item>
-        <item>@string/turquoise</item>
+        <item>@string/jelly_fish</item>
         <item>@string/ocean_blue</item>
+        <item>@string/blue_ivy</item>
+        <item>@string/lapis_blue</item>
+        <item>@string/sea_turtle</item>
+        <item>@string/zombie_green</item>
         <item>@string/green</item>
+        <item>@string/mint_green</item>
+        <item>@string/cantaloupe</item>
+        <item>@string/rubber_ducky</item>
+        <item>@string/coral</item>
+        <item>@string/bean_red</item>
         <item>@string/lava_red</item>
+        <item>@string/plum_velvet</item>
+        <item>@string/pink_lemonade</item>
+        <item>@string/crimson</item>
+        <item>@string/watermelon</item>
+        <item>@string/cotton_candy</item>
         <item>@string/gunmetal</item>
+        <item>@string/black_cow</item>
     </string-array>
 
     <color name="default_pullback_color">@color/gunmetal</color>
