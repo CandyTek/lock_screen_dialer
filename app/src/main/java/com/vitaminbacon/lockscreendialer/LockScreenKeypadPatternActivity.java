@@ -396,24 +396,30 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
     private void onWrongPatternEntered(final String displayMessage) {
         int delay;
         final String message;
-        switch (mNumTries / 3) {
-            case 0:  // meaning there have been less than 3 tries
-                message = displayMessage;
-                delay = 0;
-                break;
-            case 1:
-                delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_begin);
-                message = getString(R.string.lock_screen_wrong_entry_3_times);
-                break;
-            case 2: // meaning there have been at least 6 attempts
-                delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_plus);
-                message = getString(R.string.lock_screen_wrong_entry_6_times);
-                break;
-            default: // many many tries
-                delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_max);
-                message = getString(R.string.lock_screen_wrong_entry_max_times);
+        if (mLongPressFlag) {
+            // If the person has activated a long press, then we don't want to set an error message
+            message = displayMessage;
+            delay = 0;
+        } else {
+            switch (mNumTries / 3) {
+                case 0:  // meaning there have been less than 3 tries
+                    message = displayMessage;
+                    delay = 0;
+                    break;
+                case 1:
+                    delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_begin);
+                    message = getString(R.string.lock_screen_wrong_entry_3_times);
+                    break;
+                case 2: // meaning there have been at least 6 attempts
+                    delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_plus);
+                    message = getString(R.string.lock_screen_wrong_entry_6_times);
+                    break;
+                default: // many many tries
+                    delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_max);
+                    message = getString(R.string.lock_screen_wrong_entry_max_times);
+            }
+            mNumTries++;
         }
-        mNumTries++;
         mPatternEntered = "";
         resetPatternInstruction(message);
         mTouchInactiveFlag = true;

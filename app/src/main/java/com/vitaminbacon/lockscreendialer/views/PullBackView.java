@@ -98,7 +98,7 @@ public class PullBackView extends View {
     }
 
     public void paintPullBackAtLeft(Paint p, float arcCenter, float touchPos) {
-        float touchDelta = touchPos - mTouchStartPos;
+        float touchDelta = (touchPos - mTouchStartPos) / 2;
         p.setAlpha(adjustAlphaIfOverThreshold(p.getAlpha(), getWidth(), touchDelta));
         float arcHeight = adjustArcHeightIfOverThreshold(getHeight(), touchDelta);
         mPaint = p;
