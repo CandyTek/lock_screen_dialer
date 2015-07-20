@@ -56,7 +56,7 @@ public class PullBackView extends View {
     }
 
     public void paintPullBackAtTop(Paint p, float touchCenter, float touchPos) {
-        float touchDelta = touchPos - mTouchStartPos;
+        float touchDelta = (touchPos - mTouchStartPos) / 2;
         p.setAlpha(adjustAlphaIfOverThreshold(p.getAlpha(), getHeight(), touchDelta));
         float arcHeight = adjustArcHeightIfOverThreshold(getHeight(), touchDelta);
         mPaint = p;
@@ -82,7 +82,7 @@ public class PullBackView extends View {
     }
 
     public void paintPullBackAtBottom(Paint p, float arcCenter, float touchPos) {
-        float touchDelta = touchPos - mTouchStartPos;
+        float touchDelta = (touchPos - mTouchStartPos) / 2;
         p.setAlpha(adjustAlphaIfOverThreshold(p.getAlpha(), getHeight(), touchDelta));
         float arcHeight = adjustArcHeightIfOverThreshold(getHeight(), touchDelta);
         mPaint = p;
@@ -114,7 +114,7 @@ public class PullBackView extends View {
     }
 
     public void paintPullBackAtRight(Paint p, float arcCenter, float touchPos) {
-        float touchDelta = touchPos - mTouchStartPos;
+        float touchDelta = (touchPos - mTouchStartPos) / 2;
         p.setAlpha(adjustAlphaIfOverThreshold(p.getAlpha(), getWidth(), touchDelta));
         float arcHeight = adjustArcHeightIfOverThreshold(getHeight(), touchDelta);
         mPaint = p;
