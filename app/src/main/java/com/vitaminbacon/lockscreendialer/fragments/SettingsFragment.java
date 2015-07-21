@@ -3,6 +3,7 @@ package com.vitaminbacon.lockscreendialer.fragments;
 
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,11 +18,15 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.preference.PreferenceScreen;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +62,48 @@ public class SettingsFragment extends PreferenceFragment
 
     public SettingsFragment() {
         // Required empty public constructor
+    }
+
+    public static void initializeActionBar(PreferenceScreen prefScreen) {
+        final Dialog dialog = prefScreen.getDialog();
+
+        if (dialog != null) {
+            // Inialize the action bar
+            dialog.getActionBar().setDisplayHomeAsUpEnabled(true);
+
+            // Apply custom home button area click listener to close the PreferenceScreen because PreferenceScreens are dialogs which swallow
+            // events instead of passing to the activity
+            // Related Issue: https://code.google.com/p/android/issues/detail?id=4611
+            View homeBtn = dialog.findViewById(android.R.id.home);
+
+            if (homeBtn != null) {
+                View.OnClickListener dismissDialogClickListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                };
+
+                // Prepare yourselves for some hacky programming
+                ViewParent homeBtnContainer = homeBtn.getParent();
+
+                // The home button is an ImageView inside a FrameLayout
+                if (homeBtnContainer instanceof FrameLayout) {
+                    ViewGroup containerParent = (ViewGroup) homeBtnContainer.getParent();
+
+                    if (containerParent instanceof LinearLayout) {
+                        // This view also contains the title text, set the whole view as clickable
+                        ((LinearLayout) containerParent).setOnClickListener(dismissDialogClickListener);
+                    } else {
+                        // Just set it on the home button
+                        ((FrameLayout) homeBtnContainer).setOnClickListener(dismissDialogClickListener);
+                    }
+                } else {
+                    // The 'If all else fails' default case
+                    homeBtn.setOnClickListener(dismissDialogClickListener);
+                }
+            }
+        }
     }
 
     @Override
@@ -184,11 +231,26 @@ public class SettingsFragment extends PreferenceFragment
         updateBackgroundPrefSummary();
     }
 
-
     @Override
     public void onPause() {
         super.onPause();
         getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    /**
+     * Method that initiates the action bar initialization on a preference screen
+     *
+     * @param prefScreen
+     * @param pref
+     * @return
+     */
+    @Override
+    public boolean onPreferenceTreeClick(PreferenceScreen prefScreen, Preference pref) {
+        super.onPreferenceTreeClick(prefScreen, pref);
+        if (pref instanceof PreferenceScreen) {
+            initializeActionBar((PreferenceScreen) pref);
+        }
+        return false;
     }
 
     @Override
