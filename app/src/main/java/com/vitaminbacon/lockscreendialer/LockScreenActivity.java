@@ -405,8 +405,14 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             try {
                 TextView lockClock = (TextView) getView(R.id.lock_screen_clock);
                 TextView sheathClock = (TextView) getView(R.id.sheath_screen_clock);
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
                 Calendar cal = Calendar.getInstance(TimeZone.getDefault());
-                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm a", Locale.getDefault());
+                SimpleDateFormat sdf;
+                if (DateFormat.is24HourFormat(this)) {
+                    sdf = new SimpleDateFormat("H:mm", Locale.getDefault());
+                } else {
+                    sdf = new SimpleDateFormat("h:mm a", Locale.getDefault());
+                }
                 lockClock.setText(sdf.format(cal.getTime()));
                 sheathClock.setText(sdf.format(cal.getTime()));
             } catch (ClassCastException e) {
@@ -759,19 +765,6 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     }
 
                 }
-                /*else {
-                    *//**
-                 * This else statement is no longer applicable given new API target
-                 *//*
-                    Log.d(TAG, "thumbUri = " + thumbUri);
-                    final Uri contactUri = Uri.withAppendedPath(
-                            ContactsContract.Contacts.CONTENT_URI, thumbUri);
-
-                    phoneCallThumb.setImageURI(Uri.withAppendedPath(
-                            contactUri,
-                            ContactsContract.Contacts.Photo.CONTENT_DIRECTORY
-                    ));
-                }*/
                 if (phoneCallThumb.getDrawable() == null) {
                     //Log.d(TAG, "Thumb drawable null");
                 }
@@ -1063,6 +1056,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     if (prefs.getBoolean(keys.getString(i), false)) {
                         view.setVisibility(value);
                     }
+
                     break;
                 case R.id.lock_screen_date:
                     if (prefs.getBoolean(keys.getString(i), false)) {
@@ -1138,6 +1132,11 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     case R.id.lock_screen_clock:
                         if (prefs.getBoolean(keys.getString(i), false)) {
                             view.setVisibility(View.VISIBLE);
+                            /*if (Build.VERSION.SDK_INT >= 17 && view instanceof TextClock
+                                    && prefs.getBoolean(getString(R.string.key_toggle_24_hr_clock), false)) {
+                                TextClock tc = (TextClock) view;
+                                tc.setFormat24Hour("HH:mm");
+                            }*/
                         } else {
                             view.setVisibility(View.INVISIBLE);
                         }
@@ -1146,6 +1145,12 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     case R.id.sheath_screen_clock:
                         if (prefs.getBoolean(keys.getString(i), false)) {
                             view.setVisibility(View.VISIBLE);
+                            /*if (Build.VERSION.SDK_INT >= 17 && view instanceof TextClock
+                                    && prefs.getBoolean(getString(R.string.key_toggle_24_hr_clock), false)) {
+                                Log.d(TAG, "Setting to 24 hr mode");
+                                TextClock tc = (TextClock) view;
+                                tc.setFormat24Hour("H:mm");
+                            }*/
                         } else {
                             view.setVisibility(View.INVISIBLE);
                         }

@@ -183,6 +183,14 @@
             android:summary="%s"
             android:title="@string/pref_title_date_format" />
 
+        <!-- Ditched in favor of just relying on system time format
+        <CheckBoxPreference
+            android:key="@string/key_toggle_24_hr_clock"
+            android:defaultValue="false"
+            android:title="@string/pref_title_toggle_24_hr_clock"
+            android:summary="@string/pref_description_toggle_24_hr_clock"/>
+            -->
+
         <Preference
             android:defaultValue="@string/font_default"
             android:key="@string/key_select_accessory_fonts"

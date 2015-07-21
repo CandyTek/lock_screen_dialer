@@ -93,6 +93,9 @@
 
     <string name="pref_title_date_format">Date format</string>
 
+    <string name="pref_title_toggle_24_hr_clock">Enable 24-hr clock</string>
+    <string name="pref_description_toggle_24_hr_clock">Use 24-hour time keeping</string>
+
 
     <string name="pref_summary_on_toggle_sheath_instruction">ON</string>
     <string name="pref_summary_off_toggle_sheath_instruction">OFF</string>
@@ -130,6 +133,7 @@
     <string name="key_toggle_phone_call_animations">key_toggle_phone_call_animations</string>
     <string name="key_is_first_time">key_is_first_time</string>
     <string name="key_date_format">key_date_format</string>
+    <string name="key_toggle_24_hr_clock">key_toggle_24_hr_clock</string>
 
 
     <!-- Values for shared preferences -->
