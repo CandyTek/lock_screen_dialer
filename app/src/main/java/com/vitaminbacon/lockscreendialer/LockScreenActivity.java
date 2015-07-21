@@ -1115,7 +1115,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                             view.setVisibility(View.VISIBLE);
 
                         } else {
-                            view.setVisibility(View.INVISIBLE);
+                            view.setVisibility(View.GONE);
                         }
 
                         break;
