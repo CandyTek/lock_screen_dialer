@@ -25,4 +25,10 @@
     <dimen name="pattern_buttons_layout_margin">12dp</dimen>
 
     <dimen name="pattern_instruction_text_size">22dp</dimen>
+
+    <dimen name="sheath_screen_main_info_size">55sp</dimen>
+    <dimen name="sheath_screen_minor_info_size">25sp</dimen>
+
+    <dimen name="lock_screen_main_info_size">40sp</dimen>
+    <dimen name="lock_screen_minor_info_size">18sp</dimen>
 </resources>

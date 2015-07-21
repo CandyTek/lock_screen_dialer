@@ -36,6 +36,7 @@ import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -1138,7 +1139,14 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                                 tc.setFormat24Hour("HH:mm");
                             }*/
                         } else {
-                            view.setVisibility(View.INVISIBLE);
+                            view.setVisibility(View.GONE);
+                            // Now let's set the date to the dominate view
+                            TextView lockDate = (TextView) getView(R.id.lock_screen_date);
+                            if (lockDate != null) {
+                                float size = getResources().getDimensionPixelSize(R.dimen.lock_screen_main_info_size);
+                                Log.d(TAG, "Size value is " + size);
+                                lockDate.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+                            }
                         }
                         break;
 
@@ -1152,7 +1160,13 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                                 tc.setFormat24Hour("H:mm");
                             }*/
                         } else {
-                            view.setVisibility(View.INVISIBLE);
+                            view.setVisibility(View.GONE);
+                            // Now let's set the date to the dominate view
+                            TextView sheathDate = (TextView) getView(R.id.sheath_screen_date);
+                            if (sheathDate != null) {
+                                float size = getResources().getDimensionPixelSize(R.dimen.sheath_screen_main_info_size);
+                                sheathDate.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
+                            }
                         }
                         break;
 

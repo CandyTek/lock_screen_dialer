@@ -29,7 +29,7 @@
 
     <style name="lock_screen_clock">
         <item name="android:fontFamily">@string/font_default</item>
-        <item name="android:textSize">40sp</item>
+        <item name="android:textSize">@dimen/lock_screen_main_info_size</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:shadowColor">#000000</item>
         <item name="android:shadowDx">3</item>
@@ -39,7 +39,7 @@
 
     <style name="lock_screen_date">
         <item name="android:fontFamily">@string/font_default</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">@dimen/lock_screen_minor_info_size</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:shadowColor">#000000</item>
         <item name="android:shadowDx">3</item>
@@ -49,7 +49,7 @@
 
     <style name="sheath_screen_clock">
         <item name="android:fontFamily">@string/font_default</item>
-        <item name="android:textSize">55sp</item>
+        <item name="android:textSize">@dimen/sheath_screen_main_info_size</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:gravity">center</item>
         <item name="android:shadowColor">#000000</item>
@@ -60,7 +60,7 @@
 
     <style name="sheath_screen_date">
         <item name="android:fontFamily">@string/font_default</item>
-        <item name="android:textSize">25sp</item>
+        <item name="android:textSize">@dimen/sheath_screen_minor_info_size</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:gravity">center</item>
         <item name="android:shadowColor">#000000</item>
@@ -71,7 +71,7 @@
 
     <style name="lock_screen_info">
         <item name="android:fontFamily">@string/font_default</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">@dimen/lock_screen_minor_info_size</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:shadowColor">#000000</item>
         <item name="android:shadowDx">3</item>
