@@ -1144,7 +1144,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                             TextView lockDate = (TextView) getView(R.id.lock_screen_date);
                             if (lockDate != null) {
                                 float size = getResources().getDimensionPixelSize(R.dimen.lock_screen_main_info_size);
-                                Log.d(TAG, "Size value is " + size);
+                                //Log.d(TAG, "Size value is " + size);
                                 lockDate.setTextSize(TypedValue.COMPLEX_UNIT_PX, size);
                             }
                         }

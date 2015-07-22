@@ -20,4 +20,9 @@
     <dimen name="pattern_buttons_text_size">25sp</dimen>
     <dimen name="pin_buttons_padding">6dp</dimen>
 
+    <dimen name="sheath_screen_main_info_size">45sp</dimen>
+    <dimen name="sheath_screen_minor_info_size">23sp</dimen>
+
+    <dimen name="lock_screen_main_info_size">38sp</dimen>
+    <dimen name="lock_screen_minor_info_size">18sp</dimen>
 </resources>
