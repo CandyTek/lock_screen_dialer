@@ -5,7 +5,7 @@
     android:background="@color/milk_white"
     android:orientation="vertical"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.vitaminbacon.lockscreendialer.KeypadPinConfigActivity">
+    tools:context="com.vitbac.speeddiallocker.KeypadPinConfigActivity">
 
     <TextView
         android:id="@+id/keypad_pin_config_instruction"
@@ -26,12 +26,12 @@
         android:layout_weight="1"
         android:background="@color/gunmetal">
 
-        <com.vitaminbacon.lockscreendialer.views.DrawView
+        <com.vitbac.speeddiallocker.views.DrawView
             android:id="@+id/lock_screen_pattern_canvas"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
 
-        <com.vitaminbacon.lockscreendialer.views.DrawView
+        <com.vitbac.speeddiallocker.views.DrawView
             android:id="@+id/lock_screen_touch_canvas"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />

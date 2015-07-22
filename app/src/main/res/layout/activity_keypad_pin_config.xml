@@ -6,7 +6,7 @@
 
     android:paddingTop="@dimen/activity_vertical_margin"
 
-    tools:context="com.vitaminbacon.lockscreendialer.KeypadPinConfigActivity">
+    tools:context="com.vitbac.speeddiallocker.KeypadPinConfigActivity">
 
     <TextView
         android:id="@+id/keypad_pin_config_instruction"

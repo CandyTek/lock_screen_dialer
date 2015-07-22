@@ -8,7 +8,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:orientation="vertical"
-    tools:context="com.vitaminbacon.lockscreendialer.LockScreenSelectionActivity">
+    tools:context="com.vitbac.speeddiallocker.LockScreenSelectionActivity">
 
     <TextView
         android:text="@string/lock_screen_selection_instruction"

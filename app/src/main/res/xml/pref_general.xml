@@ -7,7 +7,7 @@
         android:summaryOn="@string/pref_description_on_toggle_lock_screen"
         android:title="@string/pref_title_toggle_lock_screen" />
 
-    <com.vitaminbacon.lockscreendialer.views.MyListPreference
+    <com.vitbac.speeddiallocker.views.MyListPreference
         android:defaultValue="@string/pref_default_value_lock_screen_type"
         android:dialogTitle="@string/pref_dialog_title_select_lock_screen_type"
         android:entries="@array/pref_entries_lock_screen_type"

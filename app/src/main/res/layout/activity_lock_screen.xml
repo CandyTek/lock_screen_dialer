@@ -40,7 +40,7 @@
                     android:background="@android:color/black"
                     android:visibility="invisible" />
 
-                <com.vitaminbacon.lockscreendialer.views.PullBackView
+                <com.vitbac.speeddiallocker.views.PullBackView
                     android:id="@+id/pull_back_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
@@ -82,7 +82,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:visibility="invisible"
-                tools:context="com.vitaminbacon.lockscreendialer.LockScreenActivity">
+                tools:context="com.vitbac.speeddiallocker.LockScreenActivity">
 
                 <RelativeLayout
                     android:layout_width="match_parent"

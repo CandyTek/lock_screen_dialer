@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="package_name">com.vitaminbacon.lockscreendialer</string>
-    <string name="app_name">Lock Screen Dialer</string>
+    <string name="package_name">com.vitbac.speeddiallocker</string>
+    <string name="app_name">Speed Dial Locker</string>
     <string name="title_activity_lock_screen">Lock Screen</string>
 
     <string name="hello_world">Hello world!</string>

@@ -9,7 +9,7 @@
         android:summaryOn="@string/pref_description_on_toggle_lock_screen"
         android:title="@string/pref_title_toggle_lock_screen" />
 
-    <com.vitaminbacon.lockscreendialer.views.MyListPreference
+    <com.vitbac.speeddiallocker.views.MyListPreference
         android:defaultValue="@string/pref_default_value_lock_screen_type"
         android:dialogTitle="@string/pref_dialog_title_select_lock_screen_type"
         android:entries="@array/pref_entries_lock_screen_type"
@@ -18,7 +18,7 @@
         android:summary="%s"
         android:title="@string/pref_title_select_lock_screen_type" />
 
-    <com.vitaminbacon.lockscreendialer.views.ExtraRingtonePreference
+    <com.vitbac.speeddiallocker.views.ExtraRingtonePreference
         android:defaultValue="passcode_correct"
         android:key="@string/key_select_passcode_correct_sound"
         android:ringtoneType="notification"
@@ -73,7 +73,7 @@
         android:key="@string/pref_header_key_display"
         android:title="@string/pref_header_title_display">
 
-        <com.vitaminbacon.lockscreendialer.views.MyListPreference
+        <com.vitbac.speeddiallocker.views.MyListPreference
             android:defaultValue="@string/value_background_type_app_content"
             android:dialogTitle="@string/pref_dialog_title_select_background_type"
             android:entries="@array/pref_entries_select_background_type"
@@ -144,21 +144,21 @@
             android:key="@string/pref_screen_key_colors_animation"
             android:title="@string/pref_screen_title_colors_animation">
 
-            <com.vitaminbacon.lockscreendialer.views.ColorPreference
+            <com.vitbac.speeddiallocker.views.ColorPreference
                 android:defaultValue="@color/blue_diamond"
                 android:key="@string/key_select_speed_dial_button_color"
                 android:persistent="true"
                 android:summary="@string/pref_description_select_speed_dial_button_color"
                 android:title="@string/pref_title_select_speed_dial_button_color" />
 
-            <com.vitaminbacon.lockscreendialer.views.ColorPreference
+            <com.vitbac.speeddiallocker.views.ColorPreference
                 android:defaultValue="@color/green"
                 android:key="@string/key_select_pattern_draw_color"
                 android:persistent="true"
                 android:summary="@string/pref_description_select_pattern_draw_color"
                 android:title="@string/pref_title_select_pattern_draw_color" />
 
-            <com.vitaminbacon.lockscreendialer.views.ColorPreference
+            <com.vitbac.speeddiallocker.views.ColorPreference
                 android:defaultValue="@color/lava_red"
                 android:key="@string/key_select_pattern_button_pressed_color"
                 android:persistent="true"

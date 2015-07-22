@@ -5,7 +5,7 @@ android {
     buildToolsVersion "22.0.0"
 
     defaultConfig {
-        applicationId "com.vitaminbacon.lockscreendialer"
+        applicationId "com.vitbac.speeddiallocker"
         minSdkVersion 15
         targetSdkVersion 22
         versionCode 1
