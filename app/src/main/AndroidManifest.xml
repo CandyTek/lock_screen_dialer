@@ -9,9 +9,6 @@
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
@@ -43,13 +40,7 @@
             android:exported="false" >
         </receiver>
 
-        <activity
-            android:name="com.vitbac.speeddiallocker.LockScreenActivity"
-            android:label="@string/title_activity_lock_screen"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.NoBackground" >
-        </activity>
+
         <activity
             android:name="com.vitbac.speeddiallocker.SpeedDialSelectionActivity"
             android:label="@string/title_activity_speed_dial_selection"
@@ -59,6 +50,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.vitbac.speeddiallocker.SettingsActivity" />
         </activity>
+
         <activity
             android:name="com.vitbac.speeddiallocker.ContactSelectionActivity"
             android:label="@string/title_activity_contact_selection"
@@ -83,6 +75,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.vitbac.speeddiallocker.SettingsActivity" />
         </activity>
+
         <activity
             android:name="com.vitbac.speeddiallocker.KeypadPatternConfigActivity"
             android:label="@string/title_activity_keypad_pattern_config"
@@ -92,6 +85,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.vitbac.speeddiallocker.LockScreenSelectionActivity" />
         </activity>
+
         <activity
             android:name="com.vitbac.speeddiallocker.KeypadPinConfigActivity"
             android:label="@string/title_activity_keypad_pin_config"
@@ -102,6 +96,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.vitbac.speeddiallocker.LockScreenSelectionActivity" />
         </activity>
+
         <activity
             android:name="com.vitbac.speeddiallocker.LockScreenKeypadPinActivity"
             android:configChanges="keyboardHidden|screenSize|orientation"
@@ -110,6 +105,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/lock_screen_window_theme">
         </activity>
+
         <activity
             android:name="com.vitbac.speeddiallocker.LockScreenKeypadPatternActivity"
             android:configChanges="keyboardHidden|screenSize|orientation"
@@ -117,6 +113,7 @@
             android:launchMode="singleInstance"
             android:screenOrientation="portrait"
             android:theme="@style/lock_screen_window_theme" />
+
         <activity
             android:name="com.vitbac.speeddiallocker.ErrorPageActivity"
             android:label="@string/title_activity_error_page"
@@ -147,15 +144,7 @@
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/lock_screen_window_theme" />
-        <activity
-            android:name="com.vitbac.speeddiallocker.BackgroundSelectionActivity"
-            android:label="@string/title_activity_background_selection"
-            android:parentActivityName="com.vitbac.speeddiallocker.SettingsActivity"
-            android:screenOrientation="portrait" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.vitbac.speeddiallocker.SettingsActivity" />
-        </activity>
+
 
         <receiver
             android:name="com.vitbac.speeddiallocker.services.BootReceiver"

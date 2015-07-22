@@ -175,14 +175,19 @@
     </array>
 
     <string-array name="extraRingtones">
-        <item>@string/passcode_correct_default</item>
+        <item>@string/camera_flash_raw</item>
+        <item>@string/door_unlock_raw</item>
     </string-array>
 
     <string-array name="extraRingtoneTitles">
         <item>Camera flash</item>
+        <item>Door unlock</item>
     </string-array>
 
-    <string name="passcode_correct_default">passcode_correct</string>
+    <string name="camera_flash_raw">camera_flash</string>
+    <string name="door_unlock_raw">door_unlock</string>
+
+    <string name="passcode_correct_default">camera_flash</string>
     <string name="silent">Silent</string>
 
     <string name="pref_description_off_toggle_lock_screen">The lock screen is currently OFF</string>
@@ -227,6 +232,7 @@
 
     <integer name="default_background_random">-1</integer>
     <color name="default_background_color">@color/gunmetal</color>
+    <!--
     <array name="app_pics">
         <item>@drawable/background_default</item>
         <item>@drawable/background_default_2</item>
@@ -236,6 +242,24 @@
         <item>Gus looking</item>
         <item>Bonnie and Khalessi</item>
         <item>Snake</item>
+    </string-array>
+    -->
+    <array name="app_pics">
+        <item>@drawable/blue_abstract_balls_spheres</item>
+        <item>@drawable/lights_abstract_things_bubbles</item>
+        <item>@drawable/lights_night_dark_abstract</item>
+        <item>@drawable/mountains_adventure_wild_beauty</item>
+        <item>@drawable/nature_forest_trees_wilderness</item>
+        <item>@drawable/night_clouds_trees_stars</item>
+    </array>
+
+    <string-array name="app_pics_names">
+        <item>Blue spheres</item>
+        <item>Pearl bubbles</item>
+        <item>Abstract lights</item>
+        <item>Mountain path</item>
+        <item>Pine forest</item>
+        <item>Night sky</item>
     </string-array>
 
     <string-array name="pref_entries_date_format">

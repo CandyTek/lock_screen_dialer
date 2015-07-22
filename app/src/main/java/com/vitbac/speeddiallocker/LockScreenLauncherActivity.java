@@ -17,7 +17,7 @@ import android.util.Log;
 public class LockScreenLauncherActivity extends Activity {
 
     private static final String TAG = "LauncherActivity";
-    private static final int SPLASH_TIME_OUT = 500;
+    private static final int SPLASH_TIME_OUT = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

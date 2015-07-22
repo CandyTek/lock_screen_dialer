@@ -57,8 +57,8 @@
             android:title="@string/pref_title_assign_speed_dial_contacts">
             <intent
                 android:action="android.intent.action.MAIN"
-                android:targetClass="com.vitaminbacon.lockscreendialer.SpeedDialSelectionActivity"
-                android:targetPackage="com.vitaminbacon.lockscreendialer" />
+                android:targetClass="com.vitbac.speeddiallocker.SpeedDialSelectionActivity"
+                android:targetPackage="com.vitbac.speeddiallocker" />
         </Preference>
 
         <CheckBoxPreference
@@ -85,13 +85,13 @@
             android:key="@string/pref_screen_key_lock_screen_display"
             android:title="@string/pref_screen_title_lock_screen_display">
             <CheckBoxPreference
-                android:defaultValue="true"
+                android:defaultValue="false"
                 android:key="@string/key_toggle_clock_display"
                 android:summary="@string/pref_description_toggle_lock_clock"
                 android:title="@string/pref_title_toggle_lock_clock" />
 
             <CheckBoxPreference
-                android:defaultValue="true"
+                android:defaultValue="false"
                 android:key="@string/key_toggle_date_display"
                 android:summary="@string/pref_description_toggle_lock_date"
                 android:title="@string/pref_title_toggle_lock_date" />

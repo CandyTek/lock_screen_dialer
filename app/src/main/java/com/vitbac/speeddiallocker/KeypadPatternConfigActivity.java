@@ -116,6 +116,7 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
                 mTouchDrawView.clearLines();
                 mTouchDrawView.invalidate();
                 mTouchInactiveFlag = false;
+                mKeyPadEntryInstructions.setText(getString(R.string.keypad_pattern_config_instructions_3));
             }
         };
         handler.postDelayed(
@@ -259,7 +260,7 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
                                 if (!lineRequiresArc(i + 1, mLastBtnTouchedNum)) {
                                     // draw a line
                                     Paint p = new Paint();
-                                    p.setColor(getResources().getColor(R.color.green));
+                                    p.setColor(getResources().getColor(R.color.lava_red));
                                     p.setStrokeWidth(6f);
                                     mPatternDrawView
                                             .addLineWithAbsoluteCoords(startX, startY, endX, endY, p);
@@ -313,7 +314,7 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
 
                                     if (startAngle != -1 && sweepAngle != -1) {
                                         Paint p = new Paint();
-                                        p.setColor(getResources().getColor(R.color.green));
+                                        p.setColor(getResources().getColor(R.color.lava_red));
                                         p.setStrokeWidth(6f);
                                         p.setAntiAlias(true);
                                         p.setStrokeCap(Paint.Cap.ROUND);

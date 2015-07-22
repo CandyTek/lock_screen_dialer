@@ -641,7 +641,9 @@ public class SettingsFragment extends PreferenceFragment
         //Log.d(TAG, "UPDATE BG Pref: background type is " + bgType);
 
         if (bgType.equals(getString(R.string.value_background_type_app_content))) {
-            int resourceId = prefs.getInt(getString(R.string.key_select_background_app_content), 0);
+            int resourceId = prefs.getInt(
+                    getString(R.string.key_select_background_app_content),
+                    AppBackgroundActivity.RANDOM_PIC);
             TypedArray appPics = getResources().obtainTypedArray(R.array.app_pics);
             String[] appPicsNames = getResources().getStringArray(R.array.app_pics_names);
             String title;

@@ -4,7 +4,9 @@
 
     <string name="lock_screen_wrong_pattern_entered">Invalid pattern</string>
 
-    <string name="keypad_pattern_config_instructions_2">Confirm pattern</string>
+    <string name="keypad_pattern_config_instructions_2">Pattern entered</string>
+
+    <string name="keypad_pattern_config_instructions_3">Confirm pattern</string>
 
     <string name="keypad_pattern_config_warning">Be sure to TOUCH each digit you want in your passcode -- pattern line can go through unused digits!</string>
 
