@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -1353,6 +1354,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 }
                 return;
             }*/
+
             try {
                 FileInputStream streamIn =
                         openFileInput(getString(R.string.stored_background_file_name));

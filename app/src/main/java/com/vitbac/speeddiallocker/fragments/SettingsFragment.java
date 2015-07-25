@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -300,10 +301,10 @@ public class SettingsFragment extends PreferenceFragment
                 SharedPreferences prefs1 = getActivity().getSharedPreferences(
                         getString(R.string.file_background_type),
                         Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor1 = prefs1.edit();
+                final SharedPreferences.Editor editor1 = prefs1.edit();
                 if (resultCode == getActivity().RESULT_OK) {
                     Uri selectedImage = data.getData();
-                    String filePath = BitmapToViewHelper
+                    final String filePath = BitmapToViewHelper
                             .getBitmapFilePath(getActivity(), selectedImage);
 
                     if (filePath == null) { // unable to access filePath
@@ -312,7 +313,7 @@ public class SettingsFragment extends PreferenceFragment
                         return;
                     }
                     //editor1.putString(getString(R.string.key_select_background_device_pic), filePath);
-                    int orientation = BitmapToViewHelper.getBitmapOrientation(
+                    final int orientation = BitmapToViewHelper.getBitmapOrientation(
                             getActivity(),
                             selectedImage,
                             ORIENTATION_UNKNOWN);
@@ -320,21 +321,33 @@ public class SettingsFragment extends PreferenceFragment
                     //editor1.commit();
 
                     // TODO: progress screen of some kind here
-                    try {
-                        BitmapToViewHelper.resizeBitmapToNewFile(getActivity(), filePath,
-                                getString(R.string.stored_background_file_name), orientation,
-                                getDisplayWidth(), getDisplayHeight());
-                        // Utilize the below shared prefs for the pref summary
-                        editor1.putString(getString(R.string.key_select_background_device_pic), filePath);
-                        editor1.commit();
-                        storePriorBGValue();
-                    } catch (FileNotFoundException e) {
-                        Log.e(TAG, "Unable to store resized bitmap", e);
-                        revertPriorBGValue();
-                    } catch (IOException e) {
-                        Log.e(TAG, "IO error in storing resized bitmap", e);
-                        revertPriorBGValue();
-                    }
+                    final ProgressDialog dialog = ProgressDialog.show(
+                            getActivity(),
+                            getString(R.string.progress_dialog_instruction),
+                            getString(R.string.progress_dialog_info),
+                            false);
+                    new Thread(new Runnable() {
+                       @Override
+                        public void run() {
+                           try {
+                               BitmapToViewHelper.resizeBitmapToNewFile(getActivity(), filePath,
+                                       getString(R.string.stored_background_file_name), orientation,
+                                       getDisplayWidth(), getDisplayHeight());
+                               // Utilize the below shared prefs for the pref summary
+                               editor1.putString(getString(R.string.key_select_background_device_pic), filePath);
+                               editor1.commit();
+                               storePriorBGValue();
+                           } catch (FileNotFoundException e) {
+                               Log.e(TAG, "Unable to store resized bitmap", e);
+                               revertPriorBGValue();
+                           } catch (IOException e) {
+                               Log.e(TAG, "IO error in storing resized bitmap", e);
+                               revertPriorBGValue();
+                           }
+                           dialog.dismiss();
+                       }
+                    }).start();
+
 
                     // TODO: implement the below
                     //BitmapCropDialogFragment frag = BitmapCropDialogFragment.newInstance(filePath, orientation);

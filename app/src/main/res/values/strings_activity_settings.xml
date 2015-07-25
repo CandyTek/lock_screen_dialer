@@ -347,6 +347,8 @@
     <string name="bitmap_crop_instruction">Crop image:</string>
 
     <string name="stored_background_file_name">com.vitbac.speeddiallocker.background</string>
+    <string name="progress_dialog_instruction">Please wait ...</string>
+    <string name="progress_dialog_info">Resizing and storing bitmap</string>
 
 
 </resources>
