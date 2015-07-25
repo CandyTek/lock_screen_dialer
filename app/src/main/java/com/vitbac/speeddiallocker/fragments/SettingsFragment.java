@@ -11,8 +11,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
@@ -22,6 +24,7 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +43,9 @@ import com.vitbac.speeddiallocker.services.LockScreenService;
 import com.vitbac.speeddiallocker.views.ColorPreference;
 import com.vitbac.speeddiallocker.views.MyListPreference;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Calendar;
 
 /**
@@ -302,22 +308,37 @@ public class SettingsFragment extends PreferenceFragment
 
                     if (filePath == null) { // unable to access filePath
                         Log.d(TAG, "Unable to obtain file path from uri: " + selectedImage.toString());
+                        // TODO: how to handle this error?
                         return;
                     }
-                    editor1.putString(getString(R.string.key_select_background_device_pic), filePath);
+                    //editor1.putString(getString(R.string.key_select_background_device_pic), filePath);
                     int orientation = BitmapToViewHelper.getBitmapOrientation(
                             getActivity(),
                             selectedImage,
                             ORIENTATION_UNKNOWN);
-                    editor1.putInt(getString(R.string.key_background_orientation), orientation);
-                    //editor.remove(getString(R.string.key_background_color)); // used to flag whether to display pic or color
-                    editor1.commit();
-                    //Log.d(TAG, "Storing new value to previous value");
-                    storePriorBGValue();
-                    //Log.d(TAG, "Stored file path " + filePath + " and orientation " + orientation);
+                    //editor1.putInt(getString(R.string.key_background_orientation), orientation);
+                    //editor1.commit();
 
-                    BitmapCropDialogFragment frag = BitmapCropDialogFragment.newInstance(filePath, orientation);
-                    frag.show(getFragmentManager(), "Bitmap Crop Dialog Frag");
+                    // TODO: progress screen of some kind here
+                    try {
+                        BitmapToViewHelper.resizeBitmapToNewFile(getActivity(), filePath,
+                                getString(R.string.stored_background_file_name), orientation,
+                                getDisplayWidth(), getDisplayHeight());
+                        // Utilize the below shared prefs for the pref summary
+                        editor1.putString(getString(R.string.key_select_background_device_pic), filePath);
+                        editor1.commit();
+                        storePriorBGValue();
+                    } catch (FileNotFoundException e) {
+                        Log.e(TAG, "Unable to store resized bitmap", e);
+                        revertPriorBGValue();
+                    } catch (IOException e) {
+                        Log.e(TAG, "IO error in storing resized bitmap", e);
+                        revertPriorBGValue();
+                    }
+
+                    // TODO: implement the below
+                    //BitmapCropDialogFragment frag = BitmapCropDialogFragment.newInstance(filePath, orientation);
+                    //frag.show(getFragmentManager(), "Bitmap Crop Dialog Frag");
                 } else {
                     //Log.d(TAG, "onActivityResult pick image received result code " + resultCode);
                     revertPriorBGValue();
@@ -589,6 +610,7 @@ public class SettingsFragment extends PreferenceFragment
         }
     }
 
+
     public void onBitmapCropSelect(RectF rectF) {
         // TODO: fill in once bitmap file saving implemented
     }
@@ -768,6 +790,34 @@ public class SettingsFragment extends PreferenceFragment
             }
         }
         pref.setEntries(dateFormats);
+    }
+
+    private int getDisplayWidth() {
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+
+        // Get the right screen size in manner depending on version
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            Point size = new Point();
+            display.getSize(size);
+            return size.x;
+
+        } else {
+            return display.getWidth();
+        }
+    }
+
+    private int getDisplayHeight() {
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+
+        // Get the right screen size in manner depending on version
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            Point size = new Point();
+            display.getSize(size);
+            return size.y;
+
+        } else {
+            return display.getHeight();
+        }
     }
 
 

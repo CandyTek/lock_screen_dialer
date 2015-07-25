@@ -13,6 +13,10 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.ImageView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 /**
@@ -46,6 +50,36 @@ public final class BitmapToViewHelper {
                                              String filePath, int orientation, int width, int height) {
         DataToBitmapTask task = new DataToBitmapTask(activityInterface, filePath);
         task.execute(orientation, width, height);
+    }
+
+    public static void resizeBitmapToNewFile (Context context, String fromFilePath,
+                                              String toFileName, int orientation, int width,
+                                              int height) throws FileNotFoundException, IOException {
+        if (fromFilePath == null) {
+            throw new FileNotFoundException("File path is null");
+        }
+        File file = new File(fromFilePath);
+        if (!file.exists()) {
+            throw new FileNotFoundException("File " + fromFilePath + " does not exist");
+        }
+
+        Bitmap bmp = decodeSampledBitmapFromFile(fromFilePath, orientation, width, height);
+
+        if (bmp == null) {
+            throw new FileNotFoundException("Bitmap could not be obtained from file " + fromFilePath);
+        }
+
+        FileOutputStream out = null;
+        try {
+            out = context.openFileOutput(toFileName, Context.MODE_PRIVATE);
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+            out.close();
+        } catch (FileNotFoundException e) {
+            throw e;
+        } catch (IOException e) {
+            throw e;
+        }
+
     }
 
     private static Bitmap decodeSampledBitmapFromFile(String filePath, int orientation,
@@ -174,7 +208,7 @@ public final class BitmapToViewHelper {
      * Interface assists an activity in obtaining a bitmap from the async task
      */
     public interface GetBitmapFromTaskInterface {
-        public void getBitmapFromTask(Bitmap bitmap);
+        void getBitmapFromTask(Bitmap bitmap);
     }
 
     private static class BitmapToViewTask extends AsyncTask<Integer, Void, Bitmap> {

@@ -65,6 +65,7 @@ import com.vitbac.speeddiallocker.views.PullBackView;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -1328,7 +1329,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             crossFadeViewsOnStart(mBackgroundView, mBackgroundProgress);
             return;
         } else if (bgTypeValue.equals(getString(R.string.value_background_type_user_device))) {
-            final String filePath = bgPrefs
+            /*final String filePath = bgPrefs
                     .getString(getString(R.string.key_select_background_device_pic), null);
             final int orientation = bgPrefs.getInt(getString(R.string.key_background_orientation), -1);
             File file = null;
@@ -1341,8 +1342,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     final BitmapToViewHelper.GetBitmapFromTaskInterface activity = this;
                     mContainerView.post(new Runnable() {
                         public void run() {
-                            /*Display display = getWindowManager().getDefaultDisplay();
-                            Bitmap bitmap = null;*/
+                            *//*Display display = getWindowManager().getDefaultDisplay();
+                            Bitmap bitmap = null;*//*
                             int w = getDisplayWidth();
                             int h = getDisplayHeight();
 
@@ -1351,8 +1352,19 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     });
                 }
                 return;
+            }*/
+            try {
+                FileInputStream streamIn =
+                        openFileInput(getString(R.string.stored_background_file_name));
+                Bitmap bitmap = BitmapFactory.decodeStream(streamIn);
+                mBackgroundView.setImageBitmap(bitmap);
+                //mBackgroundSetFlag = true;
+                Log.d(TAG, "About to crossfade bitmap background");
+                crossFadeViewsOnStart(mBackgroundView, mBackgroundProgress);
+                return;
+            } catch (IOException e) {
+                Log.e(TAG, "Unable to obtain bitmap, defaulting to color", e);
             }
-            Log.e(TAG, "Lock screen assigned device pic background with invalid value, defaulting to color");
         }
         // Set color to background
         int color = bgPrefs.getInt(
