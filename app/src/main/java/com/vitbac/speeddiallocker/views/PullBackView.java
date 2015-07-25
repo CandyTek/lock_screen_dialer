@@ -15,6 +15,7 @@ import com.vitbac.speeddiallocker.R;
 
 /**
  * Created by nick on 7/16/15.
+ * TODO: not finished with respect to pulling back on right, left, or bottom
  */
 public class PullBackView extends View {
 

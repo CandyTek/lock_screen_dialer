@@ -206,7 +206,7 @@ public class ContactAssignedDialogFragment extends DialogFragment
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface ReassignSpeedDialInterface {
-        public void reassignSpeedDial(int viewId, String keyNumberSelected);
+        void reassignSpeedDial(int viewId, String keyNumberSelected);
     }
 
 }

@@ -1341,8 +1341,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     final BitmapToViewHelper.GetBitmapFromTaskInterface activity = this;
                     mContainerView.post(new Runnable() {
                         public void run() {
-                            Display display = getWindowManager().getDefaultDisplay();
-                            Bitmap bitmap = null;
+                            /*Display display = getWindowManager().getDefaultDisplay();
+                            Bitmap bitmap = null;*/
                             int w = getDisplayWidth();
                             int h = getDisplayHeight();
 

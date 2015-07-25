@@ -216,8 +216,8 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
 
                 // Check if user has left last button
                 int index = mLastBtnTouchedNum - 1;
-                int[] coord = new int[2];
                 Button last = mPatternBtns[index];
+                int[] coord = new int[2];
                 last.getLocationOnScreen(coord);
                 Rect r = new Rect(
                         coord[0],

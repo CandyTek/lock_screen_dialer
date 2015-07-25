@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -47,8 +48,7 @@ import java.util.Calendar;
 public class SettingsFragment extends PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener,
         Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener,
-        MyListPreference.ListItemClickListener, ColorPickerDialogFragment.OnNoColorSelectedListener,
-        BitmapToViewHelper.GetBitmapFromTaskInterface {
+        MyListPreference.ListItemClickListener, ColorPickerDialogFragment.OnNoColorSelectedListener {
 
     public static final String KEY_PREVIOUS_BG_TYPE = "KEY_PREVIOUS_BACKGROUND_TYPE";
     private static final String TAG = "SettingsFragment";
@@ -315,6 +315,9 @@ public class SettingsFragment extends PreferenceFragment
                     //Log.d(TAG, "Storing new value to previous value");
                     storePriorBGValue();
                     //Log.d(TAG, "Stored file path " + filePath + " and orientation " + orientation);
+
+                    BitmapCropDialogFragment frag = BitmapCropDialogFragment.newInstance(filePath, orientation);
+                    frag.show(getFragmentManager(), "Bitmap Crop Dialog Frag");
                 } else {
                     //Log.d(TAG, "onActivityResult pick image received result code " + resultCode);
                     revertPriorBGValue();
@@ -356,7 +359,7 @@ public class SettingsFragment extends PreferenceFragment
                     .getInt(preference.getKey(), getResources().getColor(R.color.blue_diamond));
             dialogFragment = ColorPickerDialogFragment
                     .newInstance(color, R.string.key_select_speed_dial_button_color);
-            dialogFragment.show(getFragmentManager(), "fragment_color_list_dialog");
+            dialogFragment.show(getFragmentManager(), "Speed Dial Button Color Dialog");
             return true;
         } else if (preference.getKey().equals(getString(R.string.key_select_pattern_draw_color))) {
             ColorPickerDialogFragment dialogFragment;
@@ -365,7 +368,7 @@ public class SettingsFragment extends PreferenceFragment
                     .getInt(preference.getKey(), getResources().getColor(R.color.green));
             dialogFragment = ColorPickerDialogFragment
                     .newInstance(color, R.string.key_select_pattern_draw_color);
-            dialogFragment.show(getFragmentManager(), "fragment_color_list_dialog");
+            dialogFragment.show(getFragmentManager(), "Pattern Color Dialog");
             return true;
         } else if (preference.getKey().equals(getString(R.string.key_select_pattern_button_pressed_color))) {
             ColorPickerDialogFragment dialogFragment;
@@ -374,7 +377,7 @@ public class SettingsFragment extends PreferenceFragment
                     .getInt(preference.getKey(), getResources().getColor(R.color.lava_red));
             dialogFragment = ColorPickerDialogFragment
                     .newInstance(color, R.string.key_select_pattern_button_pressed_color);
-            dialogFragment.show(getFragmentManager(), "fragment_color_list_dialog");
+            dialogFragment.show(getFragmentManager(), "Pattern Btn Color Dialog");
             return true;
         } else if (preference.getKey().equals(getString(R.string.key_select_accessory_fonts))) {
             FontPickerDialogFragment dialogFragment;
@@ -586,8 +589,12 @@ public class SettingsFragment extends PreferenceFragment
         }
     }
 
-    public void getBitmapFromTask(Bitmap bitmap) {
+    public void onBitmapCropSelect(RectF rectF) {
+        // TODO: fill in once bitmap file saving implemented
+    }
 
+    public void onBitmapCropCancel() {
+        // TODO: fill in once bitmap file saving implemented
     }
 
 

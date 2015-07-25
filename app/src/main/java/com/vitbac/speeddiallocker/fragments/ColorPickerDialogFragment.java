@@ -94,7 +94,8 @@ public class ColorPickerDialogFragment extends DialogFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mFragView = inflater.inflate(R.layout.fragment_color, container, false); // How can this be right?
+        //Log.d(TAG, "in oncreateview");
+        mFragView = inflater.inflate(R.layout.fragment_color_list_dialog, container, false); // Appears that calling correct layout on "show()" moots this
         getDialog().setCanceledOnTouchOutside(true);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
@@ -156,7 +157,7 @@ public class ColorPickerDialogFragment extends DialogFragment
 
     @Override
     public void onCancel(DialogInterface dialog) {
-        Log.d(TAG, "onCancel() called");
+        //Log.d(TAG, "onCancel() called");
         if (mOtherListener != null) {
             mOtherListener.onNoColorSelected(mKey);
         }

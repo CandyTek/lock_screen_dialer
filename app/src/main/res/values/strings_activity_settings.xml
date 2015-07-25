@@ -344,5 +344,7 @@
     <string name="alert_dialog_message_first_time">For this app to work properly, make sure that you have disabled any other lock screens, especially the Android system lock screen.  Go to Settings &#8658; click the \"My Device\" tab &#8658; click \"Lock screen\" &#8658; and change the screen lock to \"None\".  (Android doesn\'t let us do this for you, sorry.) </string>
     <string name="alert_dialog_button_text_first_time">Got it!</string>
 
+    <string name="bitmap_crop_instruction">Crop:</string>
+
 
 </resources>
