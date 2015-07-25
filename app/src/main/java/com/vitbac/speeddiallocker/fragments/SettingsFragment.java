@@ -55,7 +55,8 @@ import java.util.Calendar;
 public class SettingsFragment extends PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener,
         Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener,
-        MyListPreference.ListItemClickListener, ColorPickerDialogFragment.OnNoColorSelectedListener {
+        MyListPreference.ListItemClickListener, ColorPickerDialogFragment.OnNoColorSelectedListener,
+        BitmapCropDialogFragment.GetBitmapCrop {
 
     public static final String KEY_PREVIOUS_BG_TYPE = "KEY_PREVIOUS_BACKGROUND_TYPE";
     private static final String TAG = "SettingsFragment";
@@ -298,10 +299,7 @@ public class SettingsFragment extends PreferenceFragment
                 }
                 break;
             case PICK_DEVICE_IMAGE:
-                SharedPreferences prefs1 = getActivity().getSharedPreferences(
-                        getString(R.string.file_background_type),
-                        Context.MODE_PRIVATE);
-                final SharedPreferences.Editor editor1 = prefs1.edit();
+
                 if (resultCode == getActivity().RESULT_OK) {
                     Uri selectedImage = data.getData();
                     final String filePath = BitmapToViewHelper
@@ -320,38 +318,11 @@ public class SettingsFragment extends PreferenceFragment
                     //editor1.putInt(getString(R.string.key_background_orientation), orientation);
                     //editor1.commit();
 
-                    // TODO: progress screen of some kind here
-                    final ProgressDialog dialog = ProgressDialog.show(
-                            getActivity(),
-                            getString(R.string.progress_dialog_instruction),
-                            getString(R.string.progress_dialog_info),
-                            false);
-                    new Thread(new Runnable() {
-                       @Override
-                        public void run() {
-                           try {
-                               BitmapToViewHelper.resizeBitmapToNewFile(getActivity(), filePath,
-                                       getString(R.string.stored_background_file_name), orientation,
-                                       getDisplayWidth(), getDisplayHeight());
-                               // Utilize the below shared prefs for the pref summary
-                               editor1.putString(getString(R.string.key_select_background_device_pic), filePath);
-                               editor1.commit();
-                               storePriorBGValue();
-                           } catch (FileNotFoundException e) {
-                               Log.e(TAG, "Unable to store resized bitmap", e);
-                               revertPriorBGValue();
-                           } catch (IOException e) {
-                               Log.e(TAG, "IO error in storing resized bitmap", e);
-                               revertPriorBGValue();
-                           }
-                           dialog.dismiss();
-                       }
-                    }).start();
-
-
-                    // TODO: implement the below
-                    //BitmapCropDialogFragment frag = BitmapCropDialogFragment.newInstance(filePath, orientation);
-                    //frag.show(getFragmentManager(), "Bitmap Crop Dialog Frag");
+                    // Set up the dialog to crop the image as necessary
+                    BitmapCropDialogFragment frag = BitmapCropDialogFragment
+                            .newInstance(filePath, orientation);
+                    frag.setBitmapCropListener(this);
+                    frag.show(getFragmentManager(), "Bitmap Crop Dialog Frag");
                 } else {
                     //Log.d(TAG, "onActivityResult pick image received result code " + resultCode);
                     revertPriorBGValue();
@@ -624,12 +595,42 @@ public class SettingsFragment extends PreferenceFragment
     }
 
 
-    public void onBitmapCropSelect(RectF rectF) {
-        // TODO: fill in once bitmap file saving implemented
+    public void onBitmapCropSelect(final RectF rectF, final int scaleW, final int scaleH,
+                                   final String filePath, final int orientation){
+        SharedPreferences prefs1 = getActivity().getSharedPreferences(
+                getString(R.string.file_background_type),
+                Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor1 = prefs1.edit();
+        final ProgressDialog dialog = ProgressDialog.show(
+                getActivity(),
+                getString(R.string.progress_dialog_instruction),
+                getString(R.string.progress_dialog_info),
+                false);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    BitmapToViewHelper.resizeBitmapToNewFile(getActivity(), filePath,
+                            getString(R.string.stored_background_file_name), orientation,
+                            getDisplayWidth(), getDisplayHeight(), rectF, scaleW, scaleH);
+                    // Utilize the below shared prefs for the pref summary
+                    editor1.putString(getString(R.string.key_select_background_device_pic), filePath);
+                    editor1.commit();
+                    storePriorBGValue();
+                } catch (FileNotFoundException e) {
+                    Log.e(TAG, "Unable to store resized bitmap", e);
+                    revertPriorBGValue();
+                } catch (IOException e) {
+                    Log.e(TAG, "IO error in storing resized bitmap", e);
+                    revertPriorBGValue();
+                }
+                dialog.dismiss();
+            }
+        }).start();
     }
 
     public void onBitmapCropCancel() {
-        // TODO: fill in once bitmap file saving implemented
+        revertPriorBGValue();
     }
 
 

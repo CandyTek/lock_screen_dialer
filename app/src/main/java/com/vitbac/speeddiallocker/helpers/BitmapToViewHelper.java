@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
@@ -54,7 +55,8 @@ public final class BitmapToViewHelper {
 
     public static void resizeBitmapToNewFile (Context context, String fromFilePath,
                                               String toFileName, int orientation, int width,
-                                              int height) throws FileNotFoundException, IOException {
+                                              int height, RectF crop, int scaleW, int scaleH)
+            throws FileNotFoundException, IOException {
         if (fromFilePath == null) {
             throw new FileNotFoundException("File path is null");
         }
@@ -63,8 +65,26 @@ public final class BitmapToViewHelper {
             throw new FileNotFoundException("File " + fromFilePath + " does not exist");
         }
 
-        Bitmap bmp = decodeSampledBitmapFromFile(fromFilePath, orientation, width, height);
+        Bitmap bmp = decodeSampledBitmapFromFile(fromFilePath, orientation, width, height,
+                crop, scaleW, scaleH);
+        Log.d(TAG, "Bitmap size=(" + bmp.getWidth() + ", " + bmp.getHeight() + ")");
 
+        float scalerW = ((float) bmp.getWidth())/scaleW;
+        float scalerH = ((float) bmp.getHeight())/scaleH;
+        int startX = (int) (crop.left * scalerW);
+        int startY = (int) (crop.top * scalerH);
+        int cropWidth = (int) ((crop.right - crop.left) * scalerW);
+        int cropHeight = (int) ((crop.bottom - crop.top) * scalerH);
+        Log.d(TAG, "Crop coords: (" + startX + ", " + startY + ") w=" + cropWidth + " h=" + cropHeight);
+
+        // TODO: make this robust -- if x+w > bitmap size, just max it at bitmap size, etc.
+        bmp= Bitmap.createBitmap(
+                bmp,
+                startX, // start x coordinate
+                startY, // start y coordinate
+                cropWidth, // width
+                cropHeight // height
+        );
         if (bmp == null) {
             throw new FileNotFoundException("Bitmap could not be obtained from file " + fromFilePath);
         }
@@ -84,14 +104,24 @@ public final class BitmapToViewHelper {
 
     private static Bitmap decodeSampledBitmapFromFile(String filePath, int orientation,
                                                      int maxWidth, int maxHeight) {
+        return decodeSampledBitmapFromFile(filePath, orientation, maxWidth, maxHeight, null, 0, 0);
+    }
 
+    /**
+     * Decodes a bitmap from a file.  If crop is not null, crop will contain the coordinates of the
+     * desired cropped bitmap, scaled to screenWidth and screenHeight.  Crop needs to be rescaled
+     * to fit the bitmap's actual size
+     */
+    private static Bitmap decodeSampledBitmapFromFile(String filePath, int orientation,
+                                                      int screenWidth, int screenHeight, RectF crop,
+                                                      int scaleW, int scaleH) {
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(filePath, options);
 
         // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, maxWidth, maxHeight);
+        options.inSampleSize = calculateInSampleSize(options, screenWidth, screenHeight);
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
@@ -99,11 +129,34 @@ public final class BitmapToViewHelper {
         Matrix matrix = new Matrix();
         matrix.postRotate(orientation);
         if (bitmap != null) {
-            return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
+                    matrix, true);
+            /*if (crop == null) {
+                return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
+                        matrix, true);
+            } else {
+                Log.d(TAG, "Bitmap size=(" + bitmap.getWidth() + ", " + bitmap.getHeight() + ")");
+                Log.d(TAG, "Cropping bitmap: ("
+                        + (int) crop.left + ", "
+                        + (int) crop.top + ", "
+                        + (int) crop.right + ", "
+                        + (int) crop.bottom + ")");
+
+                float scalerW = ((float) bitmap.getWidth())/scaleW;
+                float scalerH = ((float) bitmap.getHeight())/scaleH;
+                return Bitmap.createBitmap(
+                        bitmap,
+                        (int) (crop.left * scalerW), // start x coordinate
+                        (int) (crop.top * scalerH), // start y coordinate
+                        (int) ((crop.right - (int) crop.left) * scalerW), // width
+                        (int) ((crop.bottom - (int) crop.top) * scalerH), // height
+                        matrix, true);
+            }*/
         } else {
             Log.e(TAG, "Unable to obtain bitmap from file path");
             return null;
         }
+
     }
 
     public static int calculateInSampleSize(

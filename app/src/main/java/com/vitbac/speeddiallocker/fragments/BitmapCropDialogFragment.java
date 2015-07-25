@@ -33,9 +33,10 @@ public class BitmapCropDialogFragment extends DialogFragment
     String mFilePath;
     int mOrientation;
     Paint mPaint;
+    GetBitmapCrop mListener;
 
     public interface GetBitmapCrop {
-        void onBitmapCropSelect(RectF rectF);
+        void onBitmapCropSelect(RectF rectF, int scaleW, int scaleH, String fileName, int orientation);
         void onBitmapCropCancel();
     }
     public BitmapCropDialogFragment() {
@@ -83,6 +84,7 @@ public class BitmapCropDialogFragment extends DialogFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_bitmap_crop_dialog, container, false);
+        mCropImageView = (CropImageView) view.findViewById(R.id.crop_image_view);
         view.findViewById(R.id.OK_crop).setOnClickListener(this);
         view.findViewById(R.id.cancel_crop).setOnClickListener(this);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -104,9 +106,20 @@ public class BitmapCropDialogFragment extends DialogFragment
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.OK_crop:
-
+                if(mListener != null) {
+                    mListener.onBitmapCropSelect(
+                            mCropImageView.getCrop(),
+                            mCropImageView.getWidth(),
+                            mCropImageView.getHeight(),
+                            mFilePath,
+                            mOrientation);
+                }
+                dismiss();
                 break;
             case R.id.cancel_crop:
+                if (mListener != null) {
+                    mListener.onBitmapCropCancel();
+                }
                 dismiss();
                 break;
         }
@@ -119,9 +132,12 @@ public class BitmapCropDialogFragment extends DialogFragment
         mBitmap = bitmap;
         CropImageView cropImageView = (CropImageView) getDialog().findViewById(R.id.crop_image_view);
         if (cropImageView != null) {
-
             cropImageView.setBitmapWithCrop(bitmap, getDisplayWidth(), getDisplayHeight(), mPaint);
         }
+    }
+
+    public void setBitmapCropListener(GetBitmapCrop listener) {
+        mListener = listener;
     }
 
     private int getDisplayWidth() {

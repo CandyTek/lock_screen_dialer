@@ -162,24 +162,25 @@ public class CropImageView extends ImageView {
      * @return
      */
     public RectF getCrop () {
-        if (mCrop == null) {
+        /*if (mCrop == null) {
             return null;
         }
         if (mIsPortraitCrop) {
-            float scaler = mIntendedDisplayWidth/getWidth();
+            float scaler = ((float)mIntendedDisplayWidth)/getWidth();
             return new RectF(
                     mCrop.left * scaler,
                     0,
                     mCrop.right * scaler,
                     mIntendedDisplayHeight);
         } else {
-            float scaler = mIntendedDisplayHeight/getHeight();
+            float scaler = ((float)mIntendedDisplayHeight)/getHeight();
             return new RectF(
                     0,
                     mCrop.top * scaler,
                     mIntendedDisplayWidth,
                     mCrop.bottom * scaler);
-        }
+        }*/
+        return mCrop;
     }
 
 }
