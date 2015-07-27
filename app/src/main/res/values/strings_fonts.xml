@@ -8,11 +8,11 @@
         <item>@string/serif</item>
     </array>
 
-    <string name="sans_serif">sans-serif</string>
-    <string name="sans_serif_light">sans-serif-light</string>
-    <string name="sans_serif_condensed">sans-serif-condensed</string>
+    <string name="sans_serif" translatable="false">sans-serif</string>
+    <string name="sans_serif_light" translatable="false">sans-serif-light</string>
+    <string name="sans_serif_condensed" translatable="false">sans-serif-condensed</string>
     <string name="monospace">monospace</string>
-    <string name="serif">serif</string>
+    <string name="serif" translatable="false">serif</string>
 
     <string name="font_default">@string/sans_serif</string>
 

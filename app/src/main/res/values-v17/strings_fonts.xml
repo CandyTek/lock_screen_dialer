@@ -9,7 +9,7 @@
         <item>@string/serif</item>
     </array>
 
-    <string name="sans_serif_thin">sans-serif-thin</string>
-    <string name="font_default">@string/sans_serif_thin</string>
+    <string name="sans_serif_thin" translatable="false">sans-serif-thin</string>
+    <string name="font_default" translatable="false">@string/sans_serif_thin</string>
 
 </resources>

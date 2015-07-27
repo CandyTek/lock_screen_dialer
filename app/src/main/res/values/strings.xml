@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="package_name">com.vitbac.speeddiallocker</string>
-    <string name="app_name">Speed Dial Locker</string>
+    <string name="package_name" translatable="false">com.vitbac.speeddiallocker</string>
+    <string name="app_name" translatable="false">Speed Dial Locker</string>
     <string name="title_activity_lock_screen">Lock Screen</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="hello_world" translatable="false">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_speed_dial_selection">Speed Dial Selection</string>
     <string name="title_activity_contact_selection">Contact Selection</string>
@@ -33,13 +33,13 @@
     <string name="phone_type_mms">MMS</string>
     <string name="phone_type_other">Other</string>
 
-    <string name="speed_dial_preference_file_key">com.vitaminbacon.lockscreendialer.ASSIGNED_SPEED_DIALS</string>
-    <string name="key_number_to_assign">com.vitaminbacon.lockscreendialer.KEY_NUMBER_TO_ASSIGN</string>
-    <string name="key_number_store_prefix_phone">com.vitaminbacon.lockscreendialer.KEY_ASSIGNMENT_NUMBER_</string>
-    <string name="key_number_store_prefix_name">com.vitaminbacon.lockscreendialer.KEY_ASSIGNMENT_NAME_</string>
-    <string name="key_number_store_prefix_thumb">com.vitaminbacon.lockscreendialer.KEY_ASSIGNMENT_THUMB_</string>
-    <string name="key_number_store_prefix_type">com.vitaminbacon.lockscreendialer.KEY_ASSIGNMENT_TYPE_</string>
-    <string name="is_key_number_already_assigned">com.vitaminbacon.lockscreendialer.IS_KEY_ASSIGNED</string>
+    <string name="speed_dial_preference_file_key" translatable="false">com.vitaminbacon.lockscreendialer.ASSIGNED_SPEED_DIALS</string>
+    <string name="key_number_to_assign" translatable="false">com.vitaminbacon.lockscreendialer.KEY_NUMBER_TO_ASSIGN</string>
+    <string name="key_number_store_prefix_phone" translatable="false">com.vitaminbacon.lockscreendialer.KEY_ASSIGNMENT_NUMBER_</string>
+    <string name="key_number_store_prefix_name" translatable="false">com.vitaminbacon.lockscreendialer.KEY_ASSIGNMENT_NAME_</string>
+    <string name="key_number_store_prefix_thumb" translatable="false">com.vitaminbacon.lockscreendialer.KEY_ASSIGNMENT_THUMB_</string>
+    <string name="key_number_store_prefix_type" translatable="false">com.vitaminbacon.lockscreendialer.KEY_ASSIGNMENT_TYPE_</string>
+    <string name="is_key_number_already_assigned" translatable="false">com.vitaminbacon.lockscreendialer.IS_KEY_ASSIGNED</string>
 
 
     <string name="contact_assigned_instruction">Current assignment:</string>
@@ -50,8 +50,8 @@
     <string name="toast_contact_assigned">assigned to speed dial no. </string>
     <string name="toast_contact_reassign_cancelled">Reassignment cancelled</string>
     <string name="toast_contact_reassign_cleared">Contact cleared from speed dial #</string>
-    <string name="toast_lock_screen_enabled">Lock Screen Dialer enabled</string>
-    <string name="toast_lock_screen_disabled">Lock Screen Dialer disabled</string>
+    <string name="toast_lock_screen_enabled">Speed Dial Locker enabled</string>
+    <string name="toast_lock_screen_disabled">Speed Dial Locker disabled</string>
     <string name="title_activity_lock_screen_selection">Lock Screen Type Selection</string>
     <string name="toast_background_selection_file_access_error">File access error; no change</string>
 
@@ -77,21 +77,21 @@
     <string name="lock_screen_wrong_pin_entered">Invalid PIN</string>
 
 <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_lock_screen_keypad_pin">Lock Screen Keypad Pin Activity</string>
-    <string name="title_activity_error_page">ErrorPageActivity</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="title_activity_lock_screen_keypad_pin">Lock Screen PIN</string>
+    <string name="title_activity_error_page" translatable="false">ErrorPageActivity</string>
 
     <string name="lock_screen_end_call_button_text">End Call</string>
     <string name="lock_screen_speaker_call_button_text">Speaker</string>
 
-    <string name="title_activity_lock_screen_launcher">LockScreenLauncherActivity</string>
+    <string name="title_activity_lock_screen_launcher" translatable="false">Lock Screen Launcher</string>
     <string name="title_activity_background_selection">Current background:</string>
     <string name="button_pics_activity_background_selection">Select picture</string>
     <string name="button_colors_activity_background_selection">Select color</string>
-    <string name="key_background_pic">com.vitaminbacon.lockscreendialer.KEY_BACKGROUND</string>
-    <string name="key_background_orientation">com.vitaminbacon.lockscreendialer.KEY_BACKGROUND_ORIENTATION</string>
-    <string name="key_background_color">com.vitaminbacon.lockscreendialer.KEY_COLOR</string>
-    <string name="background_file_key">com.vitaminbacon.lockscreendialder.BACKGROUND_FILE</string>
+    <string name="key_background_pic" translatable="false">com.vitaminbacon.lockscreendialer.KEY_BACKGROUND</string>
+    <string name="key_background_orientation" translatable="false">com.vitaminbacon.lockscreendialer.KEY_BACKGROUND_ORIENTATION</string>
+    <string name="key_background_color" translatable="false">com.vitaminbacon.lockscreendialer.KEY_COLOR</string>
+    <string name="background_file_key" translatable="false">com.vitaminbacon.lockscreendialder.BACKGROUND_FILE</string>
     <string name="title_activity_color_selection">Select Background Color</string>
 
     <string name="lock_screen_speed_dial_toggle_off">Speed Dial Off</string>

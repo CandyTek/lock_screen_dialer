@@ -4,23 +4,23 @@
 
     <!-- Headers -->
     <string name="pref_header_title_general">General</string>
-    <string name="pref_header_key_general">pref_header_key_general</string>
+    <string name="pref_header_key_general" translatable="false">pref_header_key_general</string>
     <string name="pref_header_title_display">Display</string>
-    <string name="pref_header_key_display">pref_header_key_display</string>
+    <string name="pref_header_key_display" translatable="false">pref_header_key_display</string>
     <string name="pref_header_title_speed_dial">Speed dial</string>
-    <string name="pref_header_key_speed_dial">pref_header_key_speed_dial</string>
+    <string name="pref_header_key_speed_dial" translatable="false">pref_header_key_speed_dial</string>
 
     <!-- Preference screens -->
     <string name="pref_screen_title_lock_screen_display">Lock screen display options</string>
-    <string name="pref_screen_key_lock_screen_display">pref_screen_lock_screen_display_options</string>
+    <string name="pref_screen_key_lock_screen_display" translatable="false">pref_screen_lock_screen_display_options</string>
 
     <string name="pref_screen_title_sheath_screen_display">Sheath screen display options</string>
-    <string name="pref_screen_key_sheath_screen_display">pref_screen_sheath_screen_display_options</string>
+    <string name="pref_screen_key_sheath_screen_display" translatable="false">pref_screen_sheath_screen_display_options</string>
 
     <string name="pref_screen_title_colors_animation">Colors &amp; animation</string>
-    <string name="pref_screen_key_colors_animation">pref_screen_key_colors_animation</string>
+    <string name="pref_screen_key_colors_animation" translatable="false">pref_screen_key_colors_animation</string>
 
-    <string name="pref_screen_key_select_lock_screen_background">pref_screen_key_select_lock_screen_background</string>
+    <string name="pref_screen_key_select_lock_screen_background" translatable="false">pref_screen_key_select_lock_screen_background</string>
 
     <!-- Title/summary pairs for preferences -->
     <string name="pref_title_toggle_lock_screen">Enable lock screen</string>
@@ -41,8 +41,8 @@
     <string name="pref_title_toggle_sheath_date">Display sheath date</string>
     <string name="pref_description_toggle_sheath_date">Shows the date on the sheath screen</string>
 
-    <string name="pref_title_toggle_speed_dial_button">Embed speed dial toggle button</string>
-    <string name="pref_description_toggle_speed_dial_button">Toggle speed dial on and off in the lockscreen</string>
+    <string name="pref_title_toggle_speed_dial_button">Speed dial toggle button</string>
+    <string name="pref_description_toggle_speed_dial_button">Toggle speed dial on and off in the lock screen</string>
 
     <string name="pref_title_select_speed_dial_button_color">Speed dial toggle color</string>
     <string name="pref_description_select_speed_dial_button_color">The speed dial toggle button\'s \"on\" indicator light</string>
@@ -78,13 +78,13 @@
     <string name="pref_description_select_lock_screen_fonts">Font for buttons and instruction</string>
 
     <string name="pref_title_toggle_sheath_instruction">Display swipe instruction</string>
-    <string name="pref_description_toggle_sheath_instruction">%s</string>
+    <string name="pref_description_toggle_sheath_instruction" translatable="false">%s</string>
 
     <string name="pref_title_toggle_status_bar_access">View status bar</string>
     <string name="pref_description_toggle_status_bar_access">Allows viewing, but not access, of the status bar while screen is locked</string>
 
     <string name="pref_title_select_passcode_correct_sound">Select screen unlock sound</string>
-    <string name="pref_description_select_passcode_correct_sound">%s</string>
+    <string name="pref_description_select_passcode_correct_sound" translatable="false">%s</string>
 
     <string name="pref_title_select_background_type">Select background</string>
 
@@ -101,49 +101,52 @@
     <string name="pref_summary_off_toggle_sheath_instruction">OFF</string>
 
     <!-- File strings for shared preferences other than default preferences -->
-    <string name="file_lock_screen_type">com.vitaminbacon.lockscreendialer.LOCK_SCREEN_TYPE_FILE</string>
-    <string name="file_background_type">com.vitaminbacon.lockscreendialer.BACKGROUND_TYPE_FILE</string>
+    <string name="file_lock_screen_type" translatable="false">com.vitaminbacon.lockscreendialer.LOCK_SCREEN_TYPE_FILE</string>
+    <string name="file_background_type" translatable="false">com.vitaminbacon.lockscreendialer.BACKGROUND_TYPE_FILE</string>
 
     <!-- Keys for shared preferences -->
-    <string name="key_toggle_lock_screen">key_toggle_lock_screen</string>
-    <string name="key_assign_speed_dial_contacts">key_assign_speed_dial_contacts</string>
-    <string name="key_select_lock_screen_type">key_select_lock_screen_type</string>
-    <string name="key_toggle_clock_display">key_toggle_clock_display</string>
-    <string name="key_toggle_date_display">key_toggle_date_display</string>
-    <string name="key_toggle_info_display">key_toggle_info_display</string>
-    <string name="key_toggle_speed_dial_button">key_toggle_speed_dial_button</string>
-    <string name="key_toggle_speed_dial_enabled">key_toggle_speed_dial_enabled</string>
-    <string name="key_toggle_sheath_screen">key_toggle_sheath_screen</string>
-    <string name="key_toggle_sheath_clock_display">key_toggle_sheath_clock_display</string>
-    <string name="key_toggle_sheath_date_display">key_toggle_sheath_date_display</string>
-    <string name="key_select_speed_dial_button_color">key_select_speed_dial_button_color</string>
-    <string name="key_enable_pattern_draw">key_enable_pattern_draw</string>
-    <string name="key_select_pattern_draw_color">key_select_pattern_draw_color</string>
-    <string name="key_select_pattern_button_pressed_color">key_select_pattern_button_pressed_color</string>
-    <string name="key_select_accessory_fonts">key_select_accessory_fonts</string>
-    <string name="key_select_lock_screen_fonts">key_select_lock_screen_fonts</string>
-    <string name="key_toggle_sheath_instruction">key_toggle_sheath_instruction</string>
-    <string name="key_toggle_status_bar_access">key_toggle_status_bar_access</string>
-    <string name="key_select_passcode_correct_sound">key_select_passcode_correct_sound</string>
-    <string name="key_lock_screen_type">LOCK_SCREEN_TYPE</string>
-    <string name="key_select_background_type">key_select_background_type</string>
-    <string name="key_select_background_color">key_select_background_color</string>
-    <string name="key_select_background_device_pic">key_select_background_device_pic</string>
-    <string name="key_select_background_app_content">key_select_background_app_content</string>
-    <string name="key_toggle_phone_call_animations">key_toggle_phone_call_animations</string>
-    <string name="key_is_first_time">key_is_first_time</string>
-    <string name="key_date_format">key_date_format</string>
-    <string name="key_toggle_24_hr_clock">key_toggle_24_hr_clock</string>
+    <string name="key_toggle_lock_screen" translatable="false">key_toggle_lock_screen</string>
+    <string name="key_assign_speed_dial_contacts" translatable="false">key_assign_speed_dial_contacts</string>
+    <string name="key_select_lock_screen_type" translatable="false">key_select_lock_screen_type</string>
+    <string name="key_toggle_clock_display" translatable="false">key_toggle_clock_display</string>
+    <string name="key_toggle_date_display" translatable="false">key_toggle_date_display</string>
+    <string name="key_toggle_info_display" translatable="false">key_toggle_info_display</string>
+    <string name="key_toggle_speed_dial_button" translatable="false">key_toggle_speed_dial_button</string>
+    <string name="key_toggle_speed_dial_enabled" translatable="false">key_toggle_speed_dial_enabled</string>
+    <string name="key_toggle_sheath_screen" translatable="false">key_toggle_sheath_screen</string>
+    <string name="key_toggle_sheath_clock_display" translatable="false">key_toggle_sheath_clock_display</string>
+    <string name="key_toggle_sheath_date_display" translatable="false">key_toggle_sheath_date_display</string>
+    <string name="key_select_speed_dial_button_color" translatable="false">key_select_speed_dial_button_color</string>
+    <string name="key_enable_pattern_draw" translatable="false">key_enable_pattern_draw</string>
+    <string name="key_select_pattern_draw_color" translatable="false">key_select_pattern_draw_color</string>
+    <string name="key_select_pattern_button_pressed_color" translatable="false">key_select_pattern_button_pressed_color</string>
+    <string name="key_select_accessory_fonts" translatable="false">key_select_accessory_fonts</string>
+    <string name="key_select_lock_screen_fonts" translatable="false">key_select_lock_screen_fonts</string>
+    <string name="key_toggle_sheath_instruction" translatable="false">key_toggle_sheath_instruction</string>
+    <string name="key_toggle_status_bar_access" translatable="false">key_toggle_status_bar_access</string>
+    <string name="key_select_passcode_correct_sound" translatable="false">key_select_passcode_correct_sound</string>
+    <string name="key_lock_screen_type" translatable="false">LOCK_SCREEN_TYPE</string>
+    <string name="key_select_background_type" translatable="false">key_select_background_type</string>
+    <string name="key_select_background_color" translatable="false">key_select_background_color</string>
+    <string name="key_select_background_device_pic" translatable="false">key_select_background_device_pic</string>
+    <string name="key_select_background_app_content" translatable="false">key_select_background_app_content</string>
+    <string name="key_toggle_phone_call_animations" translatable="false">key_toggle_phone_call_animations</string>
+    <string name="key_is_first_time" translatable="false">key_is_first_time</string>
+    <string name="key_date_format" translatable="false">key_date_format</string>
+    <string name="key_toggle_24_hr_clock" translatable="false">key_toggle_24_hr_clock</string>
 
 
     <!-- Values for shared preferences -->
-    <string name="value_lock_screen_type_keypad_pin">KEYPAD_PIN</string>
-    <string name="value_lock_screen_type_keypad_pattern">KEYPAD_PATTERN</string>
-    <string name="value_lock_screen_type_none">NONE</string>
-    <string name="value_lock_screen_passcode">PASSCODE</string>
-    <string name="value_select_passcode_correct_sound_default">content://settings/system/notification_sound</string>
+    <string name="value_lock_screen_type_keypad_pin" translatable="false">KEYPAD_PIN</string>
+    <string name="value_lock_screen_type_keypad_pattern" translatable="false">KEYPAD_PATTERN</string>
+    <string name="value_lock_screen_type_none" translatable="false">NONE</string>
+    <string name="value_lock_screen_passcode" translatable="false">PASSCODE</string>
+    <string name="entry_lock_screen_type_keypad_pin">PIN</string>
+    <string name="entry_lock_screen_type_keypad_pattern">Pattern</string>
+    <string name="entry_lock_screen_type_none">None</string>
+    <string name="value_select_passcode_correct_sound_default" translatable="false">content://settings/system/notification_sound</string>
 
-    <string name="date_format">E d MMM yyyy</string>
+    <string name="date_format" translatable="false">E d MMM yyyy</string>
 
     <!-- These three arrays work together; the location of each item in array must correspond to the appropriate item in the other array -->
     <array name="optional_display_view_file_keys">
@@ -180,28 +183,31 @@
     </string-array>
 
     <string-array name="extraRingtoneTitles">
-        <item>Camera flash</item>
-        <item>Door unlock</item>
+        <item>@string/sound_entry_camera_flash</item>
+        <item>@string/sound_entry_door_unlock</item>
     </string-array>
 
-    <string name="camera_flash_raw">camera_flash</string>
-    <string name="door_unlock_raw">door_unlock</string>
+    <string name="sound_entry_camera_flash">Camera flash</string>
+    <string name="sound_entry_door_unlock">Door unlock</string>
 
-    <string name="passcode_correct_default">camera_flash</string>
+    <string name="camera_flash_raw" translatable="false">camera_flash</string>
+    <string name="door_unlock_raw" translatable="false">door_unlock</string>
+
+    <string name="passcode_correct_default" translatable="false">camera_flash</string>
     <string name="silent">Silent</string>
 
     <string name="pref_description_off_toggle_lock_screen">The lock screen is currently OFF</string>
     <string name="pref_description_on_toggle_lock_screen">The lock screen is currently ON</string>
 
     <string name="pref_dialog_title_select_lock_screen_type">Select lock screen type:</string>
-    <string name="pref_default_value_lock_screen_type">@string/value_lock_screen_type_none</string>
+    <string name="pref_default_value_lock_screen_type" translatable="false">@string/value_lock_screen_type_none</string>
 
     <string name="pref_dialog_title_select_background_type">Select background source:</string>
 
     <array name="pref_entries_lock_screen_type">
-        <item>None</item>
-        <item>Keypad PIN</item>
-        <item>Keypad pattern</item>
+        <item>@string/entry_lock_screen_type_none</item>
+        <item>@string/entry_lock_screen_type_keypad_pin</item>
+        <item>@string/entry_lock_screen_type_keypad_pattern</item>
     </array>
 
     <array name="pref_values_lock_screen_type">
@@ -215,9 +221,9 @@
     <string name="menu_ok">OK</string>
     <string name="menu_cancel">Cancel</string>
 
-    <string name="value_background_type_app_content">value_background_type_app_content</string>
-    <string name="value_background_type_color">value_background_type_color</string>
-    <string name="value_background_type_user_device">value_background_type_user_device</string>
+    <string name="value_background_type_app_content" translatable="false">value_background_type_app_content</string>
+    <string name="value_background_type_color" translatable="false">value_background_type_color</string>
+    <string name="value_background_type_user_device" translatable="false">value_background_type_user_device</string>
 
     <string-array name="pref_entries_select_background_type">
         <item>App backgrounds</item>
@@ -263,7 +269,7 @@
     </string-array>
 
     <string-array name="pref_entries_date_format">
-        <item>@string/date_format_default_local</item>
+        <item>@string/date_format_display_default_local</item>
         <item>@string/date_format_yyyy_MMMM_dd</item>
         <item>@string/date_format_yyyy_MMM_dd</item>
         <item>@string/date_format_yyyy_slash_MM_slash_dd</item>
@@ -310,29 +316,30 @@
         <item>@string/date_format_MMM_dd</item>
     </string-array>
 
-    <string name="date_format_default_local">Default local</string>
-    <string name="date_format_yyyy_MMMM_dd">yyyy MMMM dd</string>
-    <string name="date_format_yyyy_MMM_dd">yyyy MMM dd</string>
-    <string name="date_format_yyyy_slash_MM_slash_dd">yyyy/MM/dd</string>
-    <string name="date_format_yy_slash_MM_slash_dd">yy/MM/dd</string>
-    <string name="date_format_yyyy_dash_MM_dash_dd">yyyy-MM-dd</string>
-    <string name="date_format_yy_dash_MM_dash_dd">yy-MM-dd</string>
-    <string name="date_format_dd_MMMM_yyyy">dd MMMM yyyy</string>
-    <string name="date_format_dd_MMM_yyyy">dd MMM yyyy</string>
-    <string name="date_format_dd_MMMM_yy">dd MMMM yy</string>
-    <string name="date_format_dd_MMM_yy">dd MMM yy</string>
-    <string name="date_format_dd_slash_MM_slash_yyyy">dd/MM/yyyy</string>
-    <string name="date_format_dd_slash_MM_slash_yy">dd/MM/yy</string>
-    <string name="date_format_dd_dash_MM_dash_yyyy">dd-MM-yyyy</string>
-    <string name="date_format_dd_dash_MM_dash_yy">dd-MM-yy</string>
-    <string name="date_format_MMMM_dd_comma_yyyy">MMMM dd, yyyy</string>
-    <string name="date_format_MMM_dd_comma_yyyy">MMM dd, yyyy</string>
-    <string name="date_format_dd_MMMM">dd MMMM</string>
-    <string name="date_format_dd_MMM">dd MMM</string>
-    <string name="date_format_MMMM_dd">MMMM dd</string>
-    <string name="date_format_MMM_dd">MMM dd</string>
+    <string name="date_format_default_local" translatable="false">Default local</string>
+    <string name="date_format_yyyy_MMMM_dd" translatable="false">yyyy MMMM dd</string>
+    <string name="date_format_yyyy_MMM_dd" translatable="false">yyyy MMM dd</string>
+    <string name="date_format_yyyy_slash_MM_slash_dd" translatable="false">yyyy/MM/dd</string>
+    <string name="date_format_yy_slash_MM_slash_dd" translatable="false">yy/MM/dd</string>
+    <string name="date_format_yyyy_dash_MM_dash_dd" translatable="false">yyyy-MM-dd</string>
+    <string name="date_format_yy_dash_MM_dash_dd" translatable="false">yy-MM-dd</string>
+    <string name="date_format_dd_MMMM_yyyy" translatable="false">dd MMMM yyyy</string>
+    <string name="date_format_dd_MMM_yyyy" translatable="false">dd MMM yyyy</string>
+    <string name="date_format_dd_MMMM_yy" translatable="false">dd MMMM yy</string>
+    <string name="date_format_dd_MMM_yy" translatable="false">dd MMM yy</string>
+    <string name="date_format_dd_slash_MM_slash_yyyy" translatable="false">dd/MM/yyyy</string>
+    <string name="date_format_dd_slash_MM_slash_yy" translatable="false">dd/MM/yy</string>
+    <string name="date_format_dd_dash_MM_dash_yyyy" translatable="false">dd-MM-yyyy</string>
+    <string name="date_format_dd_dash_MM_dash_yy" translatable="false">dd-MM-yy</string>
+    <string name="date_format_MMMM_dd_comma_yyyy" translatable="false">MMMM dd, yyyy</string>
+    <string name="date_format_MMM_dd_comma_yyyy" translatable="false">MMM dd, yyyy</string>
+    <string name="date_format_dd_MMMM" translatable="false">dd MMMM</string>
+    <string name="date_format_dd_MMM" translatable="false">dd MMM</string>
+    <string name="date_format_MMMM_dd" translatable="false">MMMM dd</string>
+    <string name="date_format_MMM_dd" translatable="false">MMM dd</string>
+    <string name="date_format_display_default_local">Default local</string>
 
-    <string name="pref_default_value_date_format">@string/date_format_default_local</string>
+    <string name="pref_default_value_date_format" translatable="false">@string/date_format_default_local</string>
     <string name="pref_dialog_title_date_format">Select date format:</string>
 
 
@@ -346,7 +353,7 @@
 
     <string name="bitmap_crop_instruction">Crop image:</string>
 
-    <string name="stored_background_file_name">com.vitbac.speeddiallocker.background</string>
+    <string name="stored_background_file_name" translatable="false">com.vitbac.speeddiallocker.background</string>
     <string name="progress_dialog_instruction">Please wait ...</string>
     <string name="progress_dialog_info">Resizing and storing bitmap</string>
 

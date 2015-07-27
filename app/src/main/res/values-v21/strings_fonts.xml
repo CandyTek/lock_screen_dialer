@@ -10,5 +10,5 @@
         <item>@string/serif</item>
     </array>
 
-    <string name="sans_serif_medium">sans-serif-medium</string>
+    <string name="sans_serif_medium" translatable="false">sans-serif-medium</string>
 </resources>
