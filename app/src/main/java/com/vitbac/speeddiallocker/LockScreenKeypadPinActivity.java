@@ -434,6 +434,13 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
 
         int delay;
         final String message;
+        Handler sheathHandler = new Handler();
+        Runnable sheathRunnable = new Runnable() {
+            @Override
+            public void run() {
+                resetSheathScreen();
+            }
+        };
         switch (mNumTries / 3) {
             case 0:  // meaning there have been less than 3 tries
                 message = getString(R.string.lock_screen_wrong_pin_entered);
@@ -446,10 +453,19 @@ public class LockScreenKeypadPinActivity extends LockScreenActivity
             case 2: // meaning there have been at least 6 attempts
                 delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_plus);
                 message = getString(R.string.lock_screen_wrong_entry_6_times);
+                sheathHandler.postDelayed(
+                        sheathRunnable,
+                        getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_reset_sheath)
+                );
                 break;
             default: // many many tries
                 delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_max);
                 message = getString(R.string.lock_screen_wrong_entry_max_times);
+                sheathHandler.postDelayed(
+                        sheathRunnable,
+                        getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_reset_sheath)
+                );
+                break;
         }
         resetPinEntry(message);
         mPinInvalidDisplayFlag = true;

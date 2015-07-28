@@ -35,7 +35,6 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
     private Button[] mPatternBtns;
     private int mLastBtnTouchedNum;
     private DrawView mPatternDrawView, mTouchDrawView;
-    private boolean mPhoneCallInterruptFlag;
     private boolean mDisplayPatternFlag;
     private boolean mTouchInactiveFlag;
     private int mDrawColor;
@@ -401,6 +400,13 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
             message = displayMessage;
             delay = 0;
         } else {
+            Handler sheathHandler = new Handler();
+            Runnable sheathRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    resetSheathScreen();
+                }
+            };
             switch (mNumTries / 3) {
                 case 0:  // meaning there have been less than 3 tries
                     message = displayMessage;
@@ -413,10 +419,19 @@ public class LockScreenKeypadPatternActivity extends LockScreenActivity
                 case 2: // meaning there have been at least 6 attempts
                     delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_plus);
                     message = getString(R.string.lock_screen_wrong_entry_6_times);
+                    // Create runnable to reset the sheath screen if applicable
+                    sheathHandler.postDelayed(
+                            sheathRunnable,
+                            getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_reset_sheath)
+                    );
                     break;
                 default: // many many tries
                     delay = getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_max);
                     message = getString(R.string.lock_screen_wrong_entry_max_times);
+                    sheathHandler.postDelayed(
+                            sheathRunnable,
+                            getResources().getInteger(R.integer.lock_screen_pin_wrong_entry_delay_reset_sheath)
+                    );
             }
             mNumTries++;
         }

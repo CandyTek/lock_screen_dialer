@@ -104,7 +104,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     // Unfortunately, for whatever reason retrieving these variables dynamically while the phone is
     // tilted results in an error, so it is important to get them and hold them from the beginning
     private ImageView mBackgroundView;
-    private ProgressBar mBackgroundProgress;
+    //private ProgressBar mBackgroundProgress;
+    private View mBackgroundProgress;
     private TextView mSheathTextView;
 
     // Variables to utilize phone state service and handle phone calls
@@ -288,7 +289,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         super.onResume();
 
         int phoneState = getIntent().getIntExtra(PhoneCallReceiver.EXTRA_PHONE_STATE, -1);
-        Log.d(TAG, "onResume() called with phone state = " + phoneState);
+        //Log.d(TAG, "onResume() called with phone state = " + phoneState);
         switch (phoneState) {
             case PhoneStateReceiver.STATE_ENDED_INCOMING_CALL:
                 // Error --
@@ -305,18 +306,18 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 try {
                     enableOptionalViewsInView();
                 } catch (IllegalLayoutException e) {
-                    Log.e(TAG, "Layout renders activity unable to handle calls", e);
+                    //Log.e(TAG, "Layout renders activity unable to handle calls", e);
                     onFatalError();
                 }
                 startService(new Intent(this, LockScreenService.class));
                 mPhoneCallActiveFlag = false;
-                Log.d(TAG, "PHONE CALL FLAG IS NOW FALSE");
+                //Log.d(TAG, "PHONE CALL FLAG IS NOW FALSE");
                 break;
             case PhoneStateReceiver.STATE_STARTED_OUTGOING_CALL:
                 // Initiate the call drawer and call buttons --
                 // User has initiated a speed dial.  Doing the animations here allows them to be
                 // much more fluid
-                Log.d(TAG, "Outgoing call initiated");
+                //Log.d(TAG, "Outgoing call initiated");
                 if (!mPhoneCallActiveFlag) {
                     // We don't want to reinstantiate the call views on a call to onResume() if the
                     // phone call active flag is already set
@@ -347,7 +348,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     }
 
                     mPhoneCallActiveFlag = true;
-                    Log.d(TAG, "PHONE CALL FLAG IS NOW TRUE");
+                    //Log.d(TAG, "PHONE CALL FLAG IS NOW TRUE");
 
                     // Remove any runnables for error messages
                     if (mErrorHandler != null) {
@@ -359,14 +360,14 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             case PhoneStateReceiver.STATE_STARTED_INCOMING_CALL:
                 // Shut down the screen service and end the activity --
                 // Incoming phone call ends the service under current implementation
-                Log.d(TAG, "Received incoming call in onResume()");
+                //Log.d(TAG, "Received incoming call in onResume()");
                 stopService(new Intent(this, LockScreenService.class));
                 finish();
                 break;
             case PhoneStateReceiver.STATE_MISSED_CALL:
                 // Error --
                 // The lock screen should have been ended when a call was received in the first place
-                Log.e(TAG, "Received improper state STATE_MISSED_CALL in onResume()");
+                //Log.e(TAG, "Received improper state STATE_MISSED_CALL in onResume()");
                 break;
             default:
                 if (!mSheathScreenOn && !mBackgroundSetFlag) {
@@ -1649,7 +1650,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             ViewGroup vg = (ViewGroup) b.getParent(); // ensures the correct encapsulating layout is there
             // TextView v = (TextView)mWindowView.findViewById(R.id.lock_screen_call_display);
             mBackgroundView = (ImageView) getView(R.id.lock_screen_background_view);
-            mBackgroundProgress = (ProgressBar) getView(R.id.lock_screen_background_progress);
+            //mBackgroundProgress = (ProgressBar) getView(R.id.lock_screen_background_progress);
+            mBackgroundProgress = getView(R.id.lock_screen_background_progress);
             mSheathTextView = (TextView) getView(R.id.lock_screen_sheath_instruction);
         } catch (ClassCastException e) {
             throw new IllegalLayoutException("Layout does not have the requisite view classes");
@@ -1896,6 +1898,14 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
             mHandler.removeCallbacks(mRunnable);
             mHandler = null;
             mRunnable = null;
+        }
+    }
+
+    public void resetSheathScreen() {
+        if (mSheathScreenOn && !mPhoneCallActiveFlag  && mBackgroundSetFlag) {
+            mFlinged = false;
+            prepareSheathScreenAnimation(true);
+            doSheathTextAnimation(-1);
         }
     }
 

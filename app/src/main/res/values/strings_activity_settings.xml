@@ -262,7 +262,7 @@
         <item>@drawable/night_clouds_trees_stars</item>
     </array>
 
-    <string-array name="app_pics_names">
+    <string-array name="app_pics_names" translatable="false">
         <item>Blue spheres</item>
         <item>Pearl bubbles</item>
         <item>Abstract lights</item>

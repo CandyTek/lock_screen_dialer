@@ -23,5 +23,6 @@
     <integer name="pattern_diagonal_drawing_padding">30</integer>
     <integer name="lock_screen_pattern_confirm_delay">2000</integer>
     <integer name="default_pullback_alpha">100</integer>
+    <integer name="lock_screen_pin_wrong_entry_delay_reset_sheath">3600</integer>
 
 </resources>

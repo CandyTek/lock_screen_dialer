@@ -22,7 +22,7 @@
     </item>
     <item>
         <shape>
-            <solid android:color="@color/blue_diamond" />
+            <solid android:color="@color/lock_screen_call_color" />
         </shape>
     </item>
 </layer-list>

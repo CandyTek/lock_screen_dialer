@@ -42,6 +42,7 @@
     <color name="powder_blue">#C6DEFF</color>
 
     <color name="tuan_green">#b2eb7e</color>
+    <color name="tuan_phone_green">#70b72a</color>
 
 
     <array name="color_value_list">
@@ -102,5 +103,7 @@
     </string-array>
 
     <color name="default_pullback_color">@color/gunmetal</color>
+
+    <color name="lock_screen_call_color">@color/blue_diamond</color>
 
 </resources>
