@@ -27,7 +27,8 @@
             android:name="com.vitbac.speeddiallocker.SettingsActivity"
             android:configChanges="keyboardHidden|screenSize|orientation"
             android:label="@string/app_name"
-            android:launchMode="singleTask"
+            android:autoRemoveFromRecents="true"
+            android:launchMode="standard"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -101,7 +102,7 @@
         <activity
             android:name="com.vitbac.speeddiallocker.LockScreenLauncherActivity"
             android:label="@string/title_activity_lock_screen_launcher"
-            android:autoRemoveFromRecents="true"
+            android:excludeFromRecents="true"
             android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/lock_screen_window_theme" />
@@ -110,7 +111,9 @@
             android:name="com.vitbac.speeddiallocker.LockScreenKeypadPinActivity"
             android:configChanges="keyboardHidden|screenSize|orientation"
             android:label="@string/title_activity_lock_screen_keypad_pin"
-            android:noHistory="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
             android:screenOrientation="portrait"
             android:theme="@style/lock_screen_window_theme">
         </activity>
@@ -119,7 +122,9 @@
             android:name="com.vitbac.speeddiallocker.LockScreenKeypadPatternActivity"
             android:configChanges="keyboardHidden|screenSize|orientation"
             android:label="@string/title_activity_lock_screen_keypad_pattern"
-            android:noHistory="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
             android:screenOrientation="portrait"
             android:theme="@style/lock_screen_window_theme" />
 

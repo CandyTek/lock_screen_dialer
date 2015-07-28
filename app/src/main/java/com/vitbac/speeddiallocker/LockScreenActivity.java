@@ -129,6 +129,8 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate() called.");
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_lock_screen_launcher); // To clear rotation error on Samsung Galaxy devices pre Lollipop
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         // Check phone call status first -- any phone call status existing in onCreate()
@@ -197,7 +199,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         };
         mErrorHandler = new Handler();
         mPhoneCallActiveFlag = false;
-        Log.d(TAG, "PHONE CALL FLAG IS NOW FALSE");
+        //Log.d(TAG, "PHONE CALL FLAG IS NOW FALSE");
 
         WindowManager.LayoutParams localLayoutParams;
         if (prefs.getBoolean(getString(R.string.key_toggle_status_bar_access), false)) {
@@ -522,7 +524,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      */
 
     private void prepareSheathScreenAnimation(boolean animate) {
-        Log.d(TAG, "prepareSheathScreenAnimation() called");
+        //Log.d(TAG, "prepareSheathScreenAnimation() called");
         View sheathScreen = getView(R.id.lock_screen_sheath_container);
         View lockScreen = getView(R.id.lock_screen_interaction_container);
 
@@ -655,7 +657,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
      * @param b
      */
     private void crossFadeViewsOnStart(final View a, final View b) {
-        Log.d(TAG, "Crossfading views");
+        //Log.d(TAG, "Crossfading views");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
             a.setAlpha(0f);
             a.setVisibility(View.VISIBLE);
@@ -1321,7 +1323,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 TypedArray appPics = getResources().obtainTypedArray(R.array.app_pics);
                 Random rand = new Random();
                 int randomNum = rand.nextInt(appPics.length());
-                Log.d(TAG, "Random number generated is " + randomNum);
+                //Log.d(TAG, "Random number generated is " + randomNum);
                 picResourceId = appPics.getResourceId(randomNum, 0);
             }
             Bitmap bitmap = BitmapFactory.decodeResource(
@@ -1361,7 +1363,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                 Bitmap bitmap = BitmapFactory.decodeStream(streamIn);
                 mBackgroundView.setImageBitmap(bitmap);
                 //mBackgroundSetFlag = true;
-                Log.d(TAG, "About to crossfade bitmap background");
+                //Log.d(TAG, "About to crossfade bitmap background");
                 crossFadeViewsOnStart(mBackgroundView, mBackgroundProgress);
                 return;
             } catch (IOException e) {
@@ -1550,7 +1552,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     public void getBitmapFromTask(Bitmap bitmap) {
         mBackgroundView.setImageBitmap(bitmap);
         //mBackgroundSetFlag = true;
-        Log.d(TAG, "About to crossfade bitmap background");
+        //Log.d(TAG, "About to crossfade bitmap background");
         crossFadeViewsOnStart(mBackgroundView, mBackgroundProgress);
     }
     /**
@@ -1714,7 +1716,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
     }
 
     protected void enablePhoneCallActiveFlag() {
-        Log.d(TAG, "PHONE CALL FLAG IS NOW TRUE");
+        //Log.d(TAG, "PHONE CALL FLAG IS NOW TRUE");
         mPhoneCallActiveFlag = true;
     }
 

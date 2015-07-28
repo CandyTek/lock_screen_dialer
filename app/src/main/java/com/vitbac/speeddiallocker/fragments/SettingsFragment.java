@@ -459,6 +459,10 @@ public class SettingsFragment extends PreferenceFragment
             if (checkPref.isChecked()) {
                 Log.d(TAG, "Lock screen flagged enabled with valid unlocking mech, starting service");
                 getActivity().startService(new Intent(getActivity(), LockScreenService.class));
+                // TODO: better to implement like the below?
+                //Intent intent = new Intent(getActivity(), LockScreenService.class);
+                //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                //getActivity().startService(intent);
             } else {
                 Log.d(TAG, "Lock screen flagged disabled, stopping service");
                 getActivity().stopService(new Intent(getActivity(), LockScreenService.class));

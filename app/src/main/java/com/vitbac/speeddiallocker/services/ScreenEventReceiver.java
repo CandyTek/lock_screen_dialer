@@ -7,6 +7,9 @@ import android.content.SharedPreferences;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.vitbac.speeddiallocker.ErrorPageActivity;
+import com.vitbac.speeddiallocker.LockScreenKeypadPatternActivity;
+import com.vitbac.speeddiallocker.LockScreenKeypadPinActivity;
 import com.vitbac.speeddiallocker.LockScreenLauncherActivity;
 import com.vitbac.speeddiallocker.R;
 
@@ -87,18 +90,18 @@ public class ScreenEventReceiver extends BroadcastReceiver {
             }
 
             if (lockScreenType != null) {
-                newIntent = new Intent(context, LockScreenLauncherActivity.class);
-                /*if (lockScreenType.equals(
-                        context.getString(R.string.lock_screen_type_value_keypad_pin))) {
+                //newIntent = new Intent(context, LockScreenLauncherActivity.class);
+                if (lockScreenType.equals(
+                        context.getString(R.string.value_lock_screen_type_keypad_pin))) {
                     newIntent = new Intent(context, LockScreenKeypadPinActivity.class);
                 } else if (lockScreenType.equals(
-                        context.getString(R.string.lock_screen_type_value_keypad_pattern))) {
+                        context.getString(R.string.value_lock_screen_type_keypad_pattern))) {
                     newIntent = new Intent(context, LockScreenKeypadPatternActivity.class);
                 } else { //An error of some kind
                     Log.d(TAG, "No value for key " + context
-                            .getString(R.string.lock_screen_type_value_key));
+                            .getString(R.string.key_lock_screen_type));
                     newIntent = new Intent(context, ErrorPageActivity.class);
-                }*/
+                }
             } else {
                 Log.e(TAG, "Unable to get the lock screen type from shared preferences.");
                 return;

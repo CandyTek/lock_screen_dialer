@@ -180,7 +180,7 @@ public class PhoneCallReceiver extends PhoneStateReceiver {
             } else if (lockScreenType.equals(
                     context.getString(R.string.value_lock_screen_type_keypad_pattern))) {
                 newIntent = new Intent(context, LockScreenKeypadPatternActivity.class);
-                Log.d(TAG, "Phone receiver starting intent to pattern activity");
+                //Log.d(TAG, "Phone receiver starting intent to pattern activity");
             } else { //An error of some kind
                 Log.d(TAG, "No value for key " + context
                         .getString(R.string.key_lock_screen_type));
