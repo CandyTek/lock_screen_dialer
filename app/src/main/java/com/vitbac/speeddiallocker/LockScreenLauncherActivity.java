@@ -17,7 +17,7 @@ import android.util.Log;
 public class LockScreenLauncherActivity extends Activity {
 
     private static final String TAG = "LauncherActivity";
-    private static final int SPLASH_TIME_OUT = 100;
+    private static final int SPLASH_TIME_OUT = 50;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,8 @@ public class LockScreenLauncherActivity extends Activity {
                 Log.d(TAG, "No value for key " + getString(R.string.key_lock_screen_type));
                 intent = new Intent(getApplicationContext(), ErrorPageActivity.class);
             }
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            //intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             if (getIntent().getExtras() != null) {
                 intent.putExtras(getIntent().getExtras()); //places the extras, if any, passed to the activity
             } else {

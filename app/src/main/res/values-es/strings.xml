@@ -26,7 +26,7 @@
     <string name="contact_search_hint">Escriba un nombre de contacto</string>
     <string name="contact_selected_instruction">Seleccione un número de teléfono:</string>
     <string name="coral">coral</string>
-    <string name="cotton_candy">Algodón de azúcar</string>
+    <string name="cotton_candy">algodón de azúcar</string>
     <string name="crimson">carmesí</string>
     <string name="err_keypad_pin_config_not_matching">Las contraseñas no coinciden.</string>
     <string name="err_keypad_pin_config_too_short">El PIN debe ser de al menos 4 números.</string>
@@ -204,4 +204,7 @@
     <string name="entry_lock_screen_type_keypad_pattern">Patrón</string>
     <string name="entry_lock_screen_type_keypad_pin">PIN</string>
     <string name="entry_lock_screen_type_none">Ninguno</string>
+    <string name="entry_background_type_app_content">Fondos de app</string>
+    <string name="entry_background_type_color">color sólido</string>
+    <string name="entry_background_type_user_device">Seleccione pic del dispositivo</string>
 </resources>

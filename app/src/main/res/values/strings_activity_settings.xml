@@ -224,11 +224,14 @@
     <string name="value_background_type_app_content" translatable="false">value_background_type_app_content</string>
     <string name="value_background_type_color" translatable="false">value_background_type_color</string>
     <string name="value_background_type_user_device" translatable="false">value_background_type_user_device</string>
+    <string name="entry_background_type_app_content">App backgrounds</string>
+    <string name="entry_background_type_color">Solid color</string>
+    <string name="entry_background_type_user_device">Select pic from device</string>
 
     <string-array name="pref_entries_select_background_type">
-        <item>App backgrounds</item>
-        <item>Solid color</item>
-        <item>Select pic from device</item>
+        <item>@string/entry_background_type_app_content</item>
+        <item>@string/entry_background_type_color</item>
+        <item>@string/entry_background_type_user_device</item>
     </string-array>
     <string-array name="pref_values_select_background_type">
         <item>@string/value_background_type_app_content</item>

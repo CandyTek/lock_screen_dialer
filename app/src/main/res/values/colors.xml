@@ -41,6 +41,8 @@
     <color name="watermelon">#FC6C85</color>
     <color name="powder_blue">#C6DEFF</color>
 
+    <color name="tuan_green">#b2eb7e</color>
+
 
     <array name="color_value_list">
         <item>@color/white</item>
