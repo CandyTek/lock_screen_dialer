@@ -207,4 +207,12 @@
     <string name="entry_background_type_app_content">Fondos de app</string>
     <string name="entry_background_type_color">color sólido</string>
     <string name="entry_background_type_user_device">Seleccione pic del dispositivo</string>
+    <string name="pref_header_title_lock_screen_display">Contenido de pantalla de bloqueo</string>
+    <string name="pref_header_title_sheath_screen_display">Contenido de pantalla de vaina/diapositiva</string>
+    <string name="pref_header_title_sounds">Sonidos</string>
+    <string name="pref_screen_key_sheath_screen_display" translatable="false"></string>
+    <string name="pref_screen_summary_display_contents">Elija lo que desea mostrar en la pantalla de bloqueo</string>
+    <string name="pref_screen_title_display_contents">Contenido de la pantalla</string>
+    <string name="pref_screen_title_fonts">Fuentes</string>
+    <string name="pref_title_sound_attributions">Atribuciones</string>
 </resources>

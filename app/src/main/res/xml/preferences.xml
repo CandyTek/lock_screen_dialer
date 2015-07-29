@@ -18,37 +18,9 @@
         android:summary="%s"
         android:title="@string/pref_title_select_lock_screen_type" />
 
-    <com.vitbac.speeddiallocker.views.ExtraRingtonePreference
-        android:defaultValue="passcode_correct"
-        android:key="@string/key_select_passcode_correct_sound"
-        android:ringtoneType="notification"
-        android:title="@string/pref_title_select_passcode_correct_sound"
-        auto:extraRingtoneTitles="@array/extraRingtoneTitles"
-        auto:extraRingtones="@array/extraRingtones"
-        auto:showDefault="true"
-        auto:showSilent="true" />
-
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="@string/key_toggle_status_bar_access"
-        android:summary="@string/pref_description_toggle_status_bar_access"
-        android:title="@string/pref_title_toggle_status_bar_access" />
-
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="@string/key_toggle_sheath_screen"
-        android:summary="@string/pref_description_sheath_screen"
-        android:title="@string/pref_title_sheath_screen" />
-
     <PreferenceCategory
         android:key="@string/pref_header_key_speed_dial"
         android:title="@string/pref_header_title_speed_dial">
-
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="@string/key_toggle_speed_dial_enabled"
-            android:summary="@string/pref_description_toggle_speed_dial_enabled"
-            android:title="@string/pref_title_toggle_speed_dial_enabled" />
 
         <!-- A preference that directs you to a new activity to select speed dial contacts -->
         <Preference
@@ -62,10 +34,10 @@
         </Preference>
 
         <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/key_toggle_speed_dial_button"
-            android:summary="@string/pref_description_toggle_speed_dial_button"
-            android:title="@string/pref_title_toggle_speed_dial_button" />
+            android:defaultValue="true"
+            android:key="@string/key_toggle_speed_dial_enabled"
+            android:summary="@string/pref_description_toggle_speed_dial_enabled"
+            android:title="@string/pref_title_toggle_speed_dial_enabled" />
 
     </PreferenceCategory>
 
@@ -81,63 +53,88 @@
             android:key="@string/key_select_background_type"
             android:title="@string/pref_title_select_background_type" />
 
-        <PreferenceScreen
-            android:key="@string/pref_screen_key_lock_screen_display"
-            android:title="@string/pref_screen_title_lock_screen_display">
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="@string/key_toggle_clock_display"
-                android:summary="@string/pref_description_toggle_lock_clock"
-                android:title="@string/pref_title_toggle_lock_clock" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/key_toggle_sheath_screen"
+            android:summary="@string/pref_description_sheath_screen"
+            android:title="@string/pref_title_sheath_screen" />
 
-            <CheckBoxPreference
-                android:defaultValue="false"
-                android:key="@string/key_toggle_date_display"
-                android:summary="@string/pref_description_toggle_lock_date"
-                android:title="@string/pref_title_toggle_lock_date" />
-
-            <EditTextPreference
-                android:capitalize="words"
-                android:inputType="textCapWords"
-                android:key="@string/key_toggle_info_display"
-                android:maxLines="2"
-                android:selectAllOnFocus="true"
-                android:singleLine="false"
-                android:summary="@string/pref_description_display_contact_info"
-                android:title="@string/pref_title_display_contact_info" />
-
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/key_enable_pattern_draw"
-                android:summary="@string/pref_description_enable_pattern_draw"
-                android:title="@string/pref_title_enable_pattern_draw" />
-
-        </PreferenceScreen>
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="@string/key_toggle_status_bar_access"
+            android:summary="@string/pref_description_toggle_status_bar_access"
+            android:title="@string/pref_title_toggle_status_bar_access" />
 
         <PreferenceScreen
-            android:key="@string/pref_screen_key_sheath_screen_display"
-            android:title="@string/pref_screen_title_sheath_screen_display">
+            android:key="@string/pref_screen_key_display_contents"
+            android:title="@string/pref_screen_title_display_contents"
+            android:summary="@string/pref_screen_summary_display_contents">
 
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/key_toggle_sheath_clock_display"
-                android:summary="@string/pref_description_toggle_sheath_clock"
-                android:title="@string/pref_title_toggle_sheath_clock" />
+            <PreferenceCategory
+                android:key="@string/pref_header_key_lock_screen_display"
+                android:title="@string/pref_header_title_lock_screen_display">
 
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/key_toggle_sheath_date_display"
-                android:summary="@string/pref_description_toggle_sheath_date"
-                android:title="@string/pref_title_toggle_sheath_date" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="@string/key_toggle_clock_display"
+                    android:summary="@string/pref_description_toggle_lock_clock"
+                    android:title="@string/pref_title_toggle_lock_clock" />
 
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:key="@string/key_toggle_sheath_instruction"
-                android:summary="@string/pref_description_toggle_sheath_instruction"
-                android:summaryOff="@string/pref_summary_off_toggle_sheath_instruction"
-                android:summaryOn="@string/pref_summary_on_toggle_sheath_instruction"
-                android:title="@string/pref_title_toggle_sheath_instruction" />
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="@string/key_toggle_date_display"
+                    android:summary="@string/pref_description_toggle_lock_date"
+                    android:title="@string/pref_title_toggle_lock_date" />
 
+                <EditTextPreference
+                    android:capitalize="words"
+                    android:inputType="textCapWords"
+                    android:key="@string/key_toggle_info_display"
+                    android:maxLines="2"
+                    android:selectAllOnFocus="true"
+                    android:singleLine="false"
+                    android:summary="@string/pref_description_display_contact_info"
+                    android:title="@string/pref_title_display_contact_info" />
+
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/key_enable_pattern_draw"
+                    android:summary="@string/pref_description_enable_pattern_draw"
+                    android:title="@string/pref_title_enable_pattern_draw" />
+
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:key="@string/key_toggle_speed_dial_button"
+                    android:summary="@string/pref_description_toggle_speed_dial_button"
+                    android:title="@string/pref_title_toggle_speed_dial_button" />
+
+            </PreferenceCategory>
+
+            <PreferenceCategory
+                android:key="@string/pref_header_key_sheath_screen_display"
+                android:title="@string/pref_header_title_sheath_screen_display">
+
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/key_toggle_sheath_clock_display"
+                    android:summary="@string/pref_description_toggle_sheath_clock"
+                    android:title="@string/pref_title_toggle_sheath_clock" />
+
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/key_toggle_sheath_date_display"
+                    android:summary="@string/pref_description_toggle_sheath_date"
+                    android:title="@string/pref_title_toggle_sheath_date" />
+
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="@string/key_toggle_sheath_instruction"
+                    android:summary="@string/pref_description_toggle_sheath_instruction"
+                    android:summaryOff="@string/pref_summary_off_toggle_sheath_instruction"
+                    android:summaryOn="@string/pref_summary_on_toggle_sheath_instruction"
+                    android:title="@string/pref_title_toggle_sheath_instruction" />
+
+            </PreferenceCategory>
         </PreferenceScreen>
 
         <PreferenceScreen
@@ -191,20 +188,44 @@
             android:summary="@string/pref_description_toggle_24_hr_clock"/>
             -->
 
-        <Preference
-            android:defaultValue="@string/font_default"
-            android:key="@string/key_select_accessory_fonts"
-            android:persistent="true"
-            android:summary="@string/pref_description_select_accessory_fonts"
-            android:title="@string/pref_title_select_accessory_fonts" />
+        <PreferenceScreen
+            android:key="@string/pref_screen_key_fonts"
+            android:title="@string/pref_screen_title_fonts">
+
+            <Preference
+                android:defaultValue="@string/font_default"
+                android:key="@string/key_select_accessory_fonts"
+                android:persistent="true"
+                android:summary="@string/pref_description_select_accessory_fonts"
+                android:title="@string/pref_title_select_accessory_fonts" />
+
+            <Preference
+                android:defaultValue="@string/font_default"
+                android:key="@string/key_select_lock_screen_fonts"
+                android:persistent="true"
+                android:summary="@string/pref_description_select_lock_screen_fonts"
+                android:title="@string/pref_title_select_lock_screen_fonts" />
+        </PreferenceScreen>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/pref_header_key_sounds"
+        android:title="@string/pref_header_title_sounds">
+
+        <com.vitbac.speeddiallocker.views.ExtraRingtonePreference
+            android:defaultValue="passcode_correct"
+            android:key="@string/key_select_passcode_correct_sound"
+            android:ringtoneType="notification"
+            android:title="@string/pref_title_select_passcode_correct_sound"
+            auto:extraRingtoneTitles="@array/extraRingtoneTitles"
+            auto:extraRingtones="@array/extraRingtones"
+            auto:showDefault="true"
+            auto:showSilent="true" />
 
         <Preference
-            android:defaultValue="@string/sans_serif_light"
-            android:key="@string/key_select_lock_screen_fonts"
-            android:persistent="true"
-            android:summary="@string/pref_description_select_lock_screen_fonts"
-            android:title="@string/pref_title_select_lock_screen_fonts" />
-
+            android:key="@string/key_sound_attributions"
+            android:title="@string/pref_title_sound_attributions"/>
 
     </PreferenceCategory>
 

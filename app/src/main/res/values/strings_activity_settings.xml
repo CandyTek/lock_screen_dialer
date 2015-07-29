@@ -5,10 +5,22 @@
     <!-- Headers -->
     <string name="pref_header_title_general">General</string>
     <string name="pref_header_key_general" translatable="false">pref_header_key_general</string>
+
     <string name="pref_header_title_display">Display</string>
     <string name="pref_header_key_display" translatable="false">pref_header_key_display</string>
+
     <string name="pref_header_title_speed_dial">Speed dial</string>
     <string name="pref_header_key_speed_dial" translatable="false">pref_header_key_speed_dial</string>
+
+    <string name="pref_header_title_lock_screen_display">Lock screen contents</string>
+    <string name="pref_header_key_lock_screen_display" translatable="false">pref_header_key_lock_screen_display</string>
+
+    <string name="pref_header_title_sheath_screen_display">Sheath/swipe screen contents</string>
+    <string name="pref_header_key_sheath_screen_display" translatable="false">pref_header_key_sheath_screen_display</string>
+
+    <string name="pref_header_title_sounds">Sounds</string>
+    <string name="pref_header_key_sounds" translatable="false">pref_header_key_sounds</string>
+
 
     <!-- Preference screens -->
     <string name="pref_screen_title_lock_screen_display">Lock screen display options</string>
@@ -21,6 +33,14 @@
     <string name="pref_screen_key_colors_animation" translatable="false">pref_screen_key_colors_animation</string>
 
     <string name="pref_screen_key_select_lock_screen_background" translatable="false">pref_screen_key_select_lock_screen_background</string>
+
+    <string name="pref_screen_key_display_contents" translatable="false">pref_screen_key_display_contents</string>
+    <string name="pref_screen_title_display_contents">Display contents</string>
+    <string name="pref_screen_summary_display_contents">Choose what to display on the lock screen</string>
+
+    <string name="pref_screen_key_fonts" translatable="false">pref_screen_key_fonts</string>
+    <string name="pref_screen_title_fonts">Fonts</string>
+
 
     <!-- Title/summary pairs for preferences -->
     <string name="pref_title_toggle_lock_screen">Enable lock screen</string>
@@ -96,6 +116,8 @@
     <string name="pref_title_toggle_24_hr_clock">Enable 24-hr clock</string>
     <string name="pref_description_toggle_24_hr_clock">Use 24-hour time keeping</string>
 
+    <string name="pref_title_sound_attributions">Attributions</string>
+
 
     <string name="pref_summary_on_toggle_sheath_instruction">ON</string>
     <string name="pref_summary_off_toggle_sheath_instruction">OFF</string>
@@ -134,6 +156,7 @@
     <string name="key_is_first_time" translatable="false">key_is_first_time</string>
     <string name="key_date_format" translatable="false">key_date_format</string>
     <string name="key_toggle_24_hr_clock" translatable="false">key_toggle_24_hr_clock</string>
+    <string name="key_sound_attributions" translatable="false">key_sound_attributions</string>
 
 
     <!-- Values for shared preferences -->
