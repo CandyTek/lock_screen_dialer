@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -14,6 +15,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 
 public class AppBackgroundActivity extends Activity
         implements View.OnClickListener, View.OnTouchListener {
@@ -21,6 +24,7 @@ public class AppBackgroundActivity extends Activity
     public static final String APP_PIC = "com.vitaminbacon.lockscreendialer.app_pic";
     public static final int RANDOM_PIC = -1;
     private static final String TAG = "AppBGActivity";
+
     private int mNumPics;
     private float lastX;
 
@@ -44,10 +48,11 @@ public class AppBackgroundActivity extends Activity
             View child = getLayoutInflater().inflate(R.layout.child_app_content_flipper, null);
             Drawable d = appPics.getDrawable(i);
             if (d != null) {
-                //Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.background_default);
-                ImageView iView = (ImageView) child.findViewById(R.id.flipper_image);
-                iView.setImageDrawable(d);
-                //iView.setImageBitmap(bm);
+                child.setId(i+1);  // Should be OK so long as we do a findView through the parent; need to set POSITIVE number
+                if (i == 0) { // just set the initial view
+                    ImageView iView = (ImageView) child.findViewById(R.id.flipper_image);
+                    iView.setImageDrawable(d);
+                }
                 mFlipper.addView(child);
             }
         }
@@ -122,6 +127,8 @@ public class AppBackgroundActivity extends Activity
                     mFlipper.setInAnimation(this, R.anim.in_from_left);
                     mFlipper.setOutAnimation(this, R.anim.out_to_right);
                     // Display the next screen
+                    loadFlipperDrawable(mFlipper.getDisplayedChild() - 1);
+                    unloadFlipperDrawable(mFlipper.getDisplayedChild());
                     mFlipper.showPrevious();
                 } else if (lastX > x) {
                     // right to left swipe
@@ -133,6 +140,8 @@ public class AppBackgroundActivity extends Activity
                     mFlipper.setInAnimation(this, R.anim.in_from_right);
                     mFlipper.setOutAnimation(this, R.anim.out_to_left);
                     // Display the previous screen
+                    loadFlipperDrawable(mFlipper.getDisplayedChild() + 1);
+                    unloadFlipperDrawable(mFlipper.getDisplayedChild());
                     mFlipper.showNext();
                 }
                 mCounterView.setText(setCounterViewText(mFlipper.getDisplayedChild() + 1, mNumPics));
@@ -158,6 +167,7 @@ public class AppBackgroundActivity extends Activity
                 }
                 finish();
                 break;
+
             case R.id.random_background_button:
                 Intent randomPicIntent = new Intent();
                 randomPicIntent.putExtra(APP_PIC, RANDOM_PIC);
@@ -174,4 +184,22 @@ public class AppBackgroundActivity extends Activity
     private String setCounterViewText(int num, int total) {
         return num + " of " + total;
     }
+
+    private void loadFlipperDrawable (int num) {
+        int id = num + 1;
+        TypedArray appPics = getResources().obtainTypedArray(R.array.app_pics);
+        Drawable d = appPics.getDrawable(num);
+        View child = mFlipper.findViewById(id);
+        ImageView iView = (ImageView) child.findViewById(R.id.flipper_image);
+        iView.setImageDrawable(d);
+        //iView.invalidate();
+    }
+
+    private void unloadFlipperDrawable (int num) {
+        int id = num + 1;
+        View child = mFlipper.findViewById(id);
+        ImageView iView = (ImageView) child.findViewById(R.id.flipper_image);
+        iView.setImageDrawable(null);
+    }
+
 }
