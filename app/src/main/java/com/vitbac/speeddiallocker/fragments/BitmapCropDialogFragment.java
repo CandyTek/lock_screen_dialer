@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -103,6 +105,15 @@ public class BitmapCropDialogFragment extends DialogFragment
         return view;
     }
 
+    @Override
+    public void onDestroy() {
+        /*if (mBitmap != null) {
+            mBitmap.recycle();
+        }*/
+
+        super.onDestroy();
+    }
+
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.OK_crop:
@@ -112,24 +123,35 @@ public class BitmapCropDialogFragment extends DialogFragment
                             mCropImageView.getWidth(),
                             mCropImageView.getHeight(),
                             mFilePath,
-                            mOrientation);
+                            mOrientation
+                    );
                 }
-                dismiss();
                 break;
             case R.id.cancel_crop:
                 if (mListener != null) {
                     mListener.onBitmapCropCancel();
                 }
-                dismiss();
                 break;
+            default:
+                return;
         }
+        CropImageView cropImageView = (CropImageView) getDialog().findViewById(R.id.crop_image_view);
+        if (cropImageView != null) {
+            Drawable drawable = cropImageView.getDrawable();
+            if(drawable instanceof BitmapDrawable) {
+                BitmapDrawable bmd = (BitmapDrawable) drawable;
+                bmd.getBitmap().recycle();
+                cropImageView.setImageBitmap(null);
+            }
+        }
+        dismiss();
     }
 
 
 
     public void getBitmapFromTask(Bitmap bitmap) {
         Log.d(TAG, "Retrieved bitmap");
-        mBitmap = bitmap;
+        //mBitmap = bitmap;
         CropImageView cropImageView = (CropImageView) getDialog().findViewById(R.id.crop_image_view);
         if (cropImageView != null) {
             cropImageView.setBitmapWithCrop(bitmap, getDisplayWidth(), getDisplayHeight(), mPaint);

@@ -55,7 +55,7 @@ public final class BitmapToViewHelper {
 
     public static void resizeBitmapToNewFile (Context context, String fromFilePath,
                                               String toFileName, int orientation, int width,
-                                              int height, RectF crop, int scaleW, int scaleH)
+                                              int height, RectF crop, int cropScaleW, int cropScaleH)
             throws FileNotFoundException, IOException {
         if (fromFilePath == null) {
             throw new FileNotFoundException("File path is null");
@@ -66,8 +66,12 @@ public final class BitmapToViewHelper {
         }
 
         Bitmap bmp = decodeSampledBitmapFromFile(fromFilePath, orientation, width, height,
-                crop, scaleW, scaleH);
-        Log.d(TAG, "Bitmap size=(" + bmp.getWidth() + ", " + bmp.getHeight() + ")");
+                crop, cropScaleW, cropScaleH);
+        if (bmp == null) {
+            throw new FileNotFoundException("decodeSampledBitmapFromFile() returned null.");
+        }
+
+        /*Log.d(TAG, "Bitmap size=(" + bmp.getWidth() + ", " + bmp.getHeight() + ")");
 
         float scalerW = ((float) bmp.getWidth())/scaleW;
         float scalerH = ((float) bmp.getHeight())/scaleH;
@@ -78,16 +82,19 @@ public final class BitmapToViewHelper {
         Log.d(TAG, "Crop coords: (" + startX + ", " + startY + ") w=" + cropWidth + " h=" + cropHeight);
 
         // TODO: make this robust -- if x+w > bitmap size, just max it at bitmap size, etc.
-        bmp= Bitmap.createBitmap(
+        bmp = Bitmap.createBitmap(
                 bmp,
                 startX, // start x coordinate
                 startY, // start y coordinate
                 cropWidth, // width
                 cropHeight // height
         );
+        Log.d(TAG, "croppedBmp Width = " + bmp.getWidth() + " croppedBmp Height = " + bmp.getHeight());
+        bmp = Bitmap.createScaledBitmap(bmp, width, height, false);
+        Log.d(TAG, "scaledBmp Width = " + bmp.getWidth() + " scaledBmp Height = " + bmp.getHeight());
         if (bmp == null) {
             throw new FileNotFoundException("Bitmap could not be obtained from file " + fromFilePath);
-        }
+        }*/
 
         FileOutputStream out = null;
         try {
@@ -99,59 +106,136 @@ public final class BitmapToViewHelper {
         } catch (IOException e) {
             throw e;
         }
+        bmp.recycle();
+        bmp = null;
 
     }
+
 
     private static Bitmap decodeSampledBitmapFromFile(String filePath, int orientation,
-                                                     int maxWidth, int maxHeight) {
-        return decodeSampledBitmapFromFile(filePath, orientation, maxWidth, maxHeight, null, 0, 0);
+                                                      int reqWidth, int reqHeight) {
+        return decodeSampledBitmapFromFile(filePath, orientation, reqWidth, reqHeight, null, 0, 0);
     }
-
     /**
      * Decodes a bitmap from a file.  If crop is not null, crop will contain the coordinates of the
-     * desired cropped bitmap, scaled to screenWidth and screenHeight.  Crop needs to be rescaled
-     * to fit the bitmap's actual size
+     * desired cropped bitmap.  The variables cropScaleW and cropScaleH contain the scale information
+     * for the crop RectF
      */
     private static Bitmap decodeSampledBitmapFromFile(String filePath, int orientation,
-                                                      int screenWidth, int screenHeight, RectF crop,
-                                                      int scaleW, int scaleH) {
+                                                      int reqWidth, int reqHeight,
+                                                      RectF crop, int cropScaleW, int cropScaleH) {
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(filePath, options);
 
-        // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, screenWidth, screenHeight);
-
-        // Decode bitmap with inSampleSize set
+        // Calculate inSampleSize so that the bitmap we work with is as small as we need
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
         options.inJustDecodeBounds = false;
-        Bitmap bitmap = BitmapFactory.decodeFile(filePath, options);
-        Matrix matrix = new Matrix();
-        matrix.postRotate(orientation);
-        if (bitmap != null) {
-            return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
-                    matrix, true);
-            /*if (crop == null) {
-                return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
-                        matrix, true);
-            } else {
-                Log.d(TAG, "Bitmap size=(" + bitmap.getWidth() + ", " + bitmap.getHeight() + ")");
-                Log.d(TAG, "Cropping bitmap: ("
-                        + (int) crop.left + ", "
-                        + (int) crop.top + ", "
-                        + (int) crop.right + ", "
-                        + (int) crop.bottom + ")");
 
-                float scalerW = ((float) bitmap.getWidth())/scaleW;
-                float scalerH = ((float) bitmap.getHeight())/scaleH;
-                return Bitmap.createBitmap(
-                        bitmap,
-                        (int) (crop.left * scalerW), // start x coordinate
-                        (int) (crop.top * scalerH), // start y coordinate
-                        (int) ((crop.right - (int) crop.left) * scalerW), // width
-                        (int) ((crop.bottom - (int) crop.top) * scalerH), // height
+        // Get the sampled bitmap
+        Bitmap origBitmap = BitmapFactory.decodeFile(filePath, options);
+
+        if (origBitmap != null) {
+
+            Matrix matrix = new Matrix();
+            matrix.postRotate(orientation);
+
+            if (crop != null) { // This method call will involve a crop
+                // We need to:
+                // (1) create a new RectF that corresponds to the orientation; and
+                // (2) scale the crop coordinates so that they correspond to the new bitmap we
+                // just obtained above.
+                int unrotatedWidth, unrotatedHeight;
+                RectF unrotatedCrop;
+                switch (orientation) {
+                    case 0:
+                    case 360:
+                        unrotatedWidth = origBitmap.getWidth();
+                        unrotatedHeight = origBitmap.getHeight();
+                        unrotatedCrop = new RectF(
+                                crop.left * unrotatedWidth/cropScaleW,
+                                crop.top * unrotatedHeight/cropScaleH,
+                                crop.right * unrotatedWidth/cropScaleW,
+                                crop.bottom * unrotatedHeight/cropScaleH
+                        );
+                        break;
+                    case 180:
+                    case -180:
+                        unrotatedWidth = origBitmap.getWidth();
+                        unrotatedHeight = origBitmap.getHeight();
+                        unrotatedCrop = new RectF(
+                                (cropScaleW - crop.right) * unrotatedWidth/cropScaleW,
+                                (cropScaleH - crop.bottom) * unrotatedHeight/cropScaleH,
+                                (cropScaleW - crop.left) * unrotatedWidth/cropScaleW,
+                                (cropScaleH - crop.top) * unrotatedHeight/cropScaleH
+                        );
+                        break;
+                    case 90:
+                    case -270:
+                        unrotatedWidth = origBitmap.getHeight();
+                        unrotatedHeight = origBitmap.getWidth();
+                        unrotatedCrop = new RectF(
+                                crop.top * unrotatedWidth/cropScaleW,
+                                (cropScaleW - crop.right) * unrotatedHeight/cropScaleH,
+                                crop.bottom * unrotatedWidth/cropScaleW,
+                                (cropScaleW - crop.left) * unrotatedHeight/cropScaleH
+                        );
+                        break;
+                    case 270:
+                    case -90:
+                        unrotatedWidth = origBitmap.getHeight();
+                        unrotatedHeight = origBitmap.getWidth();
+                        unrotatedCrop = new RectF(
+                                (cropScaleH - crop.bottom) * unrotatedWidth/cropScaleW,
+                                crop.left * unrotatedHeight/cropScaleH,
+                                (cropScaleH - crop.top) * unrotatedWidth/cropScaleW,
+                                crop.right * unrotatedHeight/cropScaleH
+                        );
+                        break;
+                    default:
+                        throw new IllegalArgumentException ("Received improper orientation of "
+                                + orientation + " in generating bitmap");
+                }
+
+                // Now that we have the crop coordinates corresponding to the unrotated bitmap,
+                // we want to get the scale required to change the slightly oversized bitmap
+                // we obtained to fit our required width.
+                float scale;
+                if (((float) unrotatedWidth) / reqWidth < ((float) unrotatedWidth) / reqHeight) {
+                    scale = ((float) reqWidth) / unrotatedWidth;
+                } else {
+                    scale = ((float) reqHeight) / unrotatedHeight;
+                }
+                // Set scale matrix
+                matrix.postScale(scale, scale);
+
+                // Sadly, we have to take care of some rounding errors
+                int x = unrotatedCrop.left < 0 ? 0 : (int) unrotatedCrop.left;
+                int y = unrotatedCrop.top < 0 ? 0 : (int) unrotatedCrop.top;
+                int width = unrotatedCrop.right > origBitmap.getWidth() ?
+                        origBitmap.getWidth() - (int) unrotatedCrop.left :
+                        (int)(unrotatedCrop.right - unrotatedCrop.left);
+                int height = unrotatedCrop.bottom > origBitmap.getHeight() ?
+                        origBitmap.getHeight() - (int) unrotatedCrop.top :
+                        (int)(unrotatedCrop.bottom - unrotatedCrop.top);
+
+                //  OK, now create the bitmap
+                Bitmap bitmap = Bitmap.createBitmap(
+                        origBitmap,
+                        x,
+                        y,
+                        width,
+                        height,
+                        matrix,
+                        true
+                );
+                //Log.d(TAG, "Bitmap has w/h " + bitmap.getWidth() + "/" + bitmap.getHeight());
+                return bitmap;
+            } else {
+                return Bitmap.createBitmap(origBitmap, 0, 0, origBitmap.getWidth(), origBitmap.getHeight(),  // Couldn't crop before applying the matrix without weird results
                         matrix, true);
-            }*/
+            }
         } else {
             Log.e(TAG, "Unable to obtain bitmap from file path");
             return null;
@@ -304,7 +388,7 @@ public final class BitmapToViewHelper {
             }
             else {
                 Log.e(TAG, "Async received null bitmap onPostExecute");
-                // TODO: create a default error background
+
             }
 
         }

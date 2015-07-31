@@ -45,14 +45,14 @@ public class CropImageView extends ImageView {
         super.onDraw(canvas);
 
         if (mCrop != null && mPaint != null) {
-            Log.d(TAG, "DRAWING");
+            //Log.d(TAG, "DRAWING");
             canvas.drawRect(mCrop, mPaint);
         }
     }
 
     @Override
     public boolean onTouchEvent (MotionEvent event) {
-        Log.d(TAG, "onTouchEvent");
+        //Log.d(TAG, "onTouchEvent");
         if (super.onTouchEvent(event)) {
             return true;
         }
@@ -79,7 +79,7 @@ public class CropImageView extends ImageView {
                             mCrop.top,
                             right,
                             mCrop.bottom);
-                    Log.d(TAG, "Coord=(" +mCrop.left+", "+mCrop.top+", "+mCrop.right+", "+mCrop.bottom+")");
+                    //Log.d(TAG, "Coord=(" +mCrop.left+", "+mCrop.top+", "+mCrop.right+", "+mCrop.bottom+")");
                 } else {
                     float top = event.getY() - mCropH/2;
                     float bottom = event.getY() + mCropH/2;
@@ -104,14 +104,7 @@ public class CropImageView extends ImageView {
 
     public void setBitmapWithCrop (Bitmap bitmap, final int displayWidth, final int displayHeight,
                                    final Paint paint){
-        // Check that the Bitmap sent to us has the right dimensions to display in this view
-        /*if (bitmap.getWidth() != getWidth() || bitmap.getHeight() != getHeight()) {
-            throw new IllegalArgumentException("Bitmap width=" + bitmap.getWidth() + " height="
-                    + bitmap.getHeight() +" not compatible with CropImageView width="
-                    + getWidth() + " height=" + getHeight());
-        }*/
-
-        Log.d(TAG, "Setting image bitmap");
+        //Log.d(TAG, "Setting image bitmap");
         setImageBitmap(bitmap);
 
         // Need to put in post so that numbers are retrieved when view is resized.
@@ -162,25 +155,41 @@ public class CropImageView extends ImageView {
      * @return
      */
     public RectF getCrop () {
-        /*if (mCrop == null) {
-            return null;
-        }
-        if (mIsPortraitCrop) {
-            float scaler = ((float)mIntendedDisplayWidth)/getWidth();
-            return new RectF(
-                    mCrop.left * scaler,
-                    0,
-                    mCrop.right * scaler,
-                    mIntendedDisplayHeight);
-        } else {
-            float scaler = ((float)mIntendedDisplayHeight)/getHeight();
-            return new RectF(
-                    0,
-                    mCrop.top * scaler,
-                    mIntendedDisplayWidth,
-                    mCrop.bottom * scaler);
-        }*/
         return mCrop;
     }
+
+    /**
+     * Returns a RectF scaled to a view with the passed dimension parameters.
+     * DEPRECATED
+     * @param scaledW
+     * @param scaledH
+     * @return
+     * @throws IllegalArgumentException
+     */
+    public RectF getScaledCrop (int scaledW, int scaledH) throws IllegalArgumentException{
+        // Check if the input scales correctly
+        if (((float)scaledW)/scaledH != mCrop.width()/mCrop.height()) {
+            throw new IllegalArgumentException("Scaled width/height of " + scaledW + "/" + scaledH
+            + " not properly scaled to CropImageView with width/height of "
+            + getWidth() + "/" + getHeight());
+        }
+        return new RectF(
+                mCrop.left * ((float) scaledW)/ mCrop.width(),
+                mCrop.top * ((float) scaledH)/mCrop.height(),
+                mCrop.right * ((float) scaledW)/mCrop.width(),
+                mCrop.bottom * ((float) scaledH)/mCrop.height()
+        );
+    }
+
+    /**
+     * Returns a scaled crop based on the initial display values passed to the View
+     * @return
+     * @throws IllegalArgumentException
+     */
+    public RectF getScaledCrop () throws IllegalArgumentException{
+        Log.d(TAG, "getScaledCrop with intended w/h=" + mIntendedDisplayWidth + "/" + mIntendedDisplayHeight);
+        return getScaledCrop(mIntendedDisplayWidth, mIntendedDisplayHeight);
+    }
+
 
 }

@@ -614,6 +614,7 @@ public class SettingsFragment extends PreferenceFragment
             @Override
             public void run() {
                 try {
+                    // TODO: get rid of scaleW and scaleH, since we want to use our static display size anyway
                     BitmapToViewHelper.resizeBitmapToNewFile(getActivity(), filePath,
                             getString(R.string.stored_background_file_name), orientation,
                             getDisplayWidth(), getDisplayHeight(), rectF, scaleW, scaleH);
