@@ -3,9 +3,11 @@ package com.vitbac.speeddiallocker;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -143,6 +145,7 @@ public class AppBackgroundActivity extends Activity
                     loadFlipperDrawable(mFlipper.getDisplayedChild() + 1);
                     unloadFlipperDrawable(mFlipper.getDisplayedChild());
                     mFlipper.showNext();
+
                 }
                 mCounterView.setText(setCounterViewText(mFlipper.getDisplayedChild() + 1, mNumPics));
                 break;
@@ -192,14 +195,18 @@ public class AppBackgroundActivity extends Activity
         View child = mFlipper.findViewById(id);
         ImageView iView = (ImageView) child.findViewById(R.id.flipper_image);
         iView.setImageDrawable(d);
-        //iView.invalidate();
     }
 
     private void unloadFlipperDrawable (int num) {
         int id = num + 1;
         View child = mFlipper.findViewById(id);
-        ImageView iView = (ImageView) child.findViewById(R.id.flipper_image);
-        iView.setImageDrawable(null);
+        final ImageView iView = (ImageView) child.findViewById(R.id.flipper_image);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                    iView.setImageDrawable(null);
+            }
+        }, getResources().getInteger(R.integer.flipper_delay));
     }
 
 }
