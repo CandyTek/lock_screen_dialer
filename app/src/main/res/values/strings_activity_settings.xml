@@ -118,9 +118,24 @@
 
     <string name="pref_title_sound_attributions">Attributions</string>
 
+    <string name="pref_title_screen_off_timer">Screen lock delay</string>
+    <string name="pref_description_screen_off_timer">Delay until lock screen activates after the screen turns off</string>
+
 
     <string name="pref_summary_on_toggle_sheath_instruction">ON</string>
     <string name="pref_summary_off_toggle_sheath_instruction">OFF</string>
+
+    <!-- Dialog titles -->
+
+    <string name="pref_dialog_title_select_lock_screen_type">Select lock screen type:</string>
+
+    <string name="pref_dialog_title_select_background_type">Select background source:</string>
+
+    <string name="pref_dialog_title_date_format">Select date format:</string>
+
+    <string name="pref_dialog_title_screen_off_timer">Set delay:</string>
+
+    <string name="pref_dialog_title_button_press_timer">Configure time:</string>
 
     <!-- File strings for shared preferences other than default preferences -->
     <string name="file_lock_screen_type" translatable="false">com.vitaminbacon.lockscreendialer.LOCK_SCREEN_TYPE_FILE</string>
@@ -157,6 +172,8 @@
     <string name="key_date_format" translatable="false">key_date_format</string>
     <string name="key_toggle_24_hr_clock" translatable="false">key_toggle_24_hr_clock</string>
     <string name="key_sound_attributions" translatable="false">key_sound_attributions</string>
+    <string name="key_screen_off_timer" translatable="false">key_screen_off_timer</string>
+    <string name="key_button_press_timer" translatable="false">key_button_press_timer</string>
 
 
     <!-- Values for shared preferences -->
@@ -222,10 +239,10 @@
     <string name="pref_description_off_toggle_lock_screen">The lock screen is currently OFF</string>
     <string name="pref_description_on_toggle_lock_screen">The lock screen is currently ON</string>
 
-    <string name="pref_dialog_title_select_lock_screen_type">Select lock screen type:</string>
+
     <string name="pref_default_value_lock_screen_type" translatable="false">@string/value_lock_screen_type_none</string>
 
-    <string name="pref_dialog_title_select_background_type">Select background source:</string>
+
 
     <array name="pref_entries_lock_screen_type">
         <item>@string/entry_lock_screen_type_none</item>
@@ -366,7 +383,7 @@
     <string name="date_format_display_default_local">Default local</string>
 
     <string name="pref_default_value_date_format" translatable="false">@string/date_format_default_local</string>
-    <string name="pref_dialog_title_date_format">Select date format:</string>
+
 
 
     <string name="pref_summary_prefix_color_background">Color:</string>
@@ -383,5 +400,8 @@
     <string name="progress_dialog_instruction">Please wait ...</string>
     <string name="progress_dialog_info">Resizing and storing bitmap</string>
 
+    <!-- Lock Screen Timer pref values -->
+    <string name="pref_timer_minutes">Minutes</string>
+    <string name="pref_timer_seconds">Seconds</string>
 
 </resources>

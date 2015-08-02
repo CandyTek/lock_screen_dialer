@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -19,9 +21,12 @@ public class ScreenEventReceiver extends BroadcastReceiver {
 
     private static boolean mIssueIntentOnScreenOn = false;
 
+    private static Handler mDelayHandler;
+    private static Runnable mDelayRunnable;
+
 
     public ScreenEventReceiver() {
-
+        mDelayHandler = new Handler();
     }
 
     /**
@@ -52,8 +57,8 @@ public class ScreenEventReceiver extends BroadcastReceiver {
                 startLockScreenIntent = true;
                 mIssueIntentOnScreenOn = false;
             } else {
-                Log.d(TAG, "Screen service could not be implemented because phone call active = "
-                        + tm.getCallState());
+                /*Log.d(TAG, "Screen service could not be implemented because phone call active = "
+                        + tm.getCallState());*/
                 startLockScreenIntent = false;
                 mIssueIntentOnScreenOn = true;
             }
@@ -65,11 +70,15 @@ public class ScreenEventReceiver extends BroadcastReceiver {
                     && tm.getCallState() != TelephonyManager.CALL_STATE_OFFHOOK
                     && tm.getCallState() != TelephonyManager.CALL_STATE_RINGING) {
                 startLockScreenIntent = true;
-                mIssueIntentOnScreenOn = false;
+                //mIssueIntentOnScreenOn = false;  // Moving below to prevent delay timer in this event
+            }
+            // Regardless, we should be clearing any runnables seeking to turn the screen off
+            if (mDelayHandler != null && mDelayRunnable != null) {
+                mDelayHandler.removeCallbacks(mDelayRunnable);
             }
         }
         else {
-            Log.d(TAG, "onReceive() received unanticipated event.");
+            Log.e(TAG, "onReceive() received unanticipated event.");
             startLockScreenIntent = false;
         }
 
@@ -106,9 +115,32 @@ public class ScreenEventReceiver extends BroadcastReceiver {
                 Log.e(TAG, "Unable to get the lock screen type from shared preferences.");
                 return;
             }
-
             newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(newIntent);
+
+            // Now handle any screen off delay
+            int delay = getScreenOffDelay(context);
+            final Context ctx = context;
+            final Intent delayIntent = newIntent;
+
+            if (delay == 0 || mIssueIntentOnScreenOn) { // If it wanted to lock on screen on, then we better do it immediately.
+                context.startActivity(newIntent);
+                mIssueIntentOnScreenOn = false;
+            } else {
+                mDelayRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        ctx.startActivity(delayIntent);
+                    }
+                };
+                mDelayHandler.postDelayed(mDelayRunnable, delay);
+            }
         }
+    }
+
+    private int getScreenOffDelay(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        int seconds = prefs.getInt(context.getString(R.string.key_screen_off_timer), 0);
+        Log.d(TAG, "Screen off delay is " + seconds + "s");
+        return seconds * 1000;
     }
 }

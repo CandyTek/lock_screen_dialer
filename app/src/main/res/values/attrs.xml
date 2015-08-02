@@ -21,4 +21,19 @@
         <attr name="pullbackPercentOfViewMax" format="integer" />
     </declare-styleable>
 
+    <declare-styleable name="TimerPreference">
+        <attr name="maxMinutes" format="integer" />
+        <attr name="minMinutes" format="integer" />
+        <attr name="maxSeconds" format="integer" />
+        <attr name="minSeconds" format="integer" />
+        <attr name="maxExternalMinutes" format="string" />
+        <attr name="minExternalMinutes" format="string" />
+        <attr name="maxExternalSeconds" format="string" />
+        <attr name="minExternalSeconds" format="string" />
+        <attr name="secondsTitle" format="string" />
+        <attr name="minutesTitle" format="string" />
+        <attr name="defaultValueSeconds" format="integer" />
+        <attr name="defaultValueMinutes" format="integer" />
+    </declare-styleable>
+
 </resources>

@@ -25,5 +25,9 @@
     <integer name="default_pullback_alpha">100</integer>
     <integer name="lock_screen_pin_wrong_entry_delay_reset_sheath">3600</integer>
     <integer name="flipper_delay">1000</integer>
+    <integer name="default_screen_off_timer_minutes">0</integer>
+    <integer name="default_screen_off_timer_seconds">15</integer>
+    <integer name="default_button_press_timer_minutes">0</integer>
+    <integer name="default_button_press_timer_seconds">0</integer>
 
 </resources>

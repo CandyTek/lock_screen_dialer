@@ -1,4 +1,4 @@
-package com.vitbac.speeddiallocker.views;
+package com.vitbac.speeddiallocker.preferences;
 
 /**
  * Created by nick on 7/8/15.

@@ -67,7 +67,7 @@
         android:title="@string/pref_screen_title_colors_animation">
 
 
-        <com.vitbac.speeddiallocker.views.ColorPreference
+        <com.vitbac.speeddiallocker.preferences.ColorPreference
             android:defaultValue="@color/blue_diamond"
             android:key="@string/key_select_speed_dial_button_color"
             android:persistent="true"
@@ -75,7 +75,7 @@
             android:title="@string/pref_title_select_speed_dial_button_color" />
 
 
-        <com.vitbac.speeddiallocker.views.ColorPreference
+        <com.vitbac.speeddiallocker.preferences.ColorPreference
             android:defaultValue="@color/green"
             android:key="@string/key_select_pattern_draw_color"
             android:persistent="true"

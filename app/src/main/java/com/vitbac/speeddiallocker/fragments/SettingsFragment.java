@@ -11,7 +11,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.RectF;
 import android.net.Uri;
@@ -41,11 +40,10 @@ import com.vitbac.speeddiallocker.KeypadPinConfigActivity;
 import com.vitbac.speeddiallocker.R;
 import com.vitbac.speeddiallocker.helpers.BitmapToViewHelper;
 import com.vitbac.speeddiallocker.services.LockScreenService;
-import com.vitbac.speeddiallocker.views.ColorPreference;
-import com.vitbac.speeddiallocker.views.MyListPreference;
+import com.vitbac.speeddiallocker.preferences.ColorPreference;
+import com.vitbac.speeddiallocker.preferences.MyListPreference;
 
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 

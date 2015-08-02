@@ -1,4 +1,4 @@
-package com.vitbac.speeddiallocker.views;
+package com.vitbac.speeddiallocker.preferences;
 
 import android.content.Context;
 import android.content.res.TypedArray;

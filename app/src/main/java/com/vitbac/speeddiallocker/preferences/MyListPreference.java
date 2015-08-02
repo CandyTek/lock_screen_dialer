@@ -1,4 +1,4 @@
-package com.vitbac.speeddiallocker.views;
+package com.vitbac.speeddiallocker.preferences;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
