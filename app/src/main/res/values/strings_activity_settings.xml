@@ -313,73 +313,73 @@
 
     <string-array name="pref_entries_date_format">
         <item>@string/date_format_display_default_local</item>
-        <item>@string/date_format_yyyy_MMMM_dd</item>
-        <item>@string/date_format_yyyy_MMM_dd</item>
+        <item>@string/date_format_yyyy_MMMM_d</item>
+        <item>@string/date_format_yyyy_MMM_d</item>
         <item>@string/date_format_yyyy_slash_MM_slash_dd</item>
         <item>@string/date_format_yy_slash_MM_slash_dd</item>
         <item>@string/date_format_yyyy_dash_MM_dash_dd</item>
         <item>@string/date_format_yy_dash_MM_dash_dd</item>
-        <item>@string/date_format_dd_MMMM_yyyy</item>
-        <item>@string/date_format_dd_MMM_yyyy</item>
-        <item>@string/date_format_dd_MMMM_yy</item>
-        <item>@string/date_format_dd_MMM_yy</item>
+        <item>@string/date_format_d_MMMM_yyyy</item>
+        <item>@string/date_format_d_MMM_yyyy</item>
+        <item>@string/date_format_d_MMMM_yy</item>
+        <item>@string/date_format_d_MMM_yy</item>
         <item>@string/date_format_dd_slash_MM_slash_yyyy</item>
         <item>@string/date_format_dd_slash_MM_slash_yy</item>
         <item>@string/date_format_dd_dash_MM_dash_yyyy</item>
         <item>@string/date_format_dd_dash_MM_dash_yy</item>
-        <item>@string/date_format_MMMM_dd_comma_yyyy</item>
-        <item>@string/date_format_MMM_dd_comma_yyyy</item>
-        <item>@string/date_format_dd_MMMM</item>
-        <item>@string/date_format_dd_MMM</item>
-        <item>@string/date_format_MMMM_dd</item>
-        <item>@string/date_format_MMM_dd</item>
+        <item>@string/date_format_MMMM_d_comma_yyyy</item>
+        <item>@string/date_format_MMM_d_comma_yyyy</item>
+        <item>@string/date_format_d_MMMM</item>
+        <item>@string/date_format_d_MMM</item>
+        <item>@string/date_format_MMMM_d</item>
+        <item>@string/date_format_MMM_d</item>
     </string-array>
 
     <string-array name="pref_values_date_format">
         <item>@string/date_format_default_local</item>
-        <item>@string/date_format_yyyy_MMMM_dd</item>
-        <item>@string/date_format_yyyy_MMM_dd</item>
+        <item>@string/date_format_yyyy_MMMM_d</item>
+        <item>@string/date_format_yyyy_MMM_d</item>
         <item>@string/date_format_yyyy_slash_MM_slash_dd</item>
         <item>@string/date_format_yy_slash_MM_slash_dd</item>
         <item>@string/date_format_yyyy_dash_MM_dash_dd</item>
         <item>@string/date_format_yy_dash_MM_dash_dd</item>
-        <item>@string/date_format_dd_MMMM_yyyy</item>
-        <item>@string/date_format_dd_MMM_yyyy</item>
-        <item>@string/date_format_dd_MMMM_yy</item>
-        <item>@string/date_format_dd_MMM_yy</item>
+        <item>@string/date_format_d_MMMM_yyyy</item>
+        <item>@string/date_format_d_MMM_yyyy</item>
+        <item>@string/date_format_d_MMMM_yy</item>
+        <item>@string/date_format_d_MMM_yy</item>
         <item>@string/date_format_dd_slash_MM_slash_yyyy</item>
         <item>@string/date_format_dd_slash_MM_slash_yy</item>
         <item>@string/date_format_dd_dash_MM_dash_yyyy</item>
         <item>@string/date_format_dd_dash_MM_dash_yy</item>
-        <item>@string/date_format_MMMM_dd_comma_yyyy</item>
-        <item>@string/date_format_MMM_dd_comma_yyyy</item>
-        <item>@string/date_format_dd_MMMM</item>
-        <item>@string/date_format_dd_MMM</item>
-        <item>@string/date_format_MMMM_dd</item>
-        <item>@string/date_format_MMM_dd</item>
+        <item>@string/date_format_MMMM_d_comma_yyyy</item>
+        <item>@string/date_format_MMM_d_comma_yyyy</item>
+        <item>@string/date_format_d_MMMM</item>
+        <item>@string/date_format_d_MMM</item>
+        <item>@string/date_format_MMMM_d</item>
+        <item>@string/date_format_MMM_d</item>
     </string-array>
 
     <string name="date_format_default_local" translatable="false">Default local</string>
-    <string name="date_format_yyyy_MMMM_dd" translatable="false">yyyy MMMM dd</string>
-    <string name="date_format_yyyy_MMM_dd" translatable="false">yyyy MMM dd</string>
+    <string name="date_format_yyyy_MMMM_d" translatable="false">yyyy MMMM d</string>
+    <string name="date_format_yyyy_MMM_d" translatable="false">yyyy MMM d</string>
     <string name="date_format_yyyy_slash_MM_slash_dd" translatable="false">yyyy/MM/dd</string>
     <string name="date_format_yy_slash_MM_slash_dd" translatable="false">yy/MM/dd</string>
     <string name="date_format_yyyy_dash_MM_dash_dd" translatable="false">yyyy-MM-dd</string>
     <string name="date_format_yy_dash_MM_dash_dd" translatable="false">yy-MM-dd</string>
-    <string name="date_format_dd_MMMM_yyyy" translatable="false">dd MMMM yyyy</string>
-    <string name="date_format_dd_MMM_yyyy" translatable="false">dd MMM yyyy</string>
-    <string name="date_format_dd_MMMM_yy" translatable="false">dd MMMM yy</string>
-    <string name="date_format_dd_MMM_yy" translatable="false">dd MMM yy</string>
+    <string name="date_format_d_MMMM_yyyy" translatable="false">d MMMM yyyy</string>
+    <string name="date_format_d_MMM_yyyy" translatable="false">d MMM yyyy</string>
+    <string name="date_format_d_MMMM_yy" translatable="false">d MMMM yy</string>
+    <string name="date_format_d_MMM_yy" translatable="false">d MMM yy</string>
     <string name="date_format_dd_slash_MM_slash_yyyy" translatable="false">dd/MM/yyyy</string>
     <string name="date_format_dd_slash_MM_slash_yy" translatable="false">dd/MM/yy</string>
     <string name="date_format_dd_dash_MM_dash_yyyy" translatable="false">dd-MM-yyyy</string>
     <string name="date_format_dd_dash_MM_dash_yy" translatable="false">dd-MM-yy</string>
-    <string name="date_format_MMMM_dd_comma_yyyy" translatable="false">MMMM dd, yyyy</string>
-    <string name="date_format_MMM_dd_comma_yyyy" translatable="false">MMM dd, yyyy</string>
-    <string name="date_format_dd_MMMM" translatable="false">dd MMMM</string>
-    <string name="date_format_dd_MMM" translatable="false">dd MMM</string>
-    <string name="date_format_MMMM_dd" translatable="false">MMMM dd</string>
-    <string name="date_format_MMM_dd" translatable="false">MMM dd</string>
+    <string name="date_format_MMMM_d_comma_yyyy" translatable="false">MMMM d, yyyy</string>
+    <string name="date_format_MMM_d_comma_yyyy" translatable="false">MMM d, yyyy</string>
+    <string name="date_format_d_MMMM" translatable="false">d MMMM</string>
+    <string name="date_format_d_MMM" translatable="false">d MMM</string>
+    <string name="date_format_MMMM_d" translatable="false">MMMM d</string>
+    <string name="date_format_MMM_d" translatable="false">MMM d</string>
     <string name="date_format_display_default_local">Default local</string>
 
     <string name="pref_default_value_date_format" translatable="false">@string/date_format_default_local</string>
