@@ -72,10 +72,14 @@ public class ScreenEventReceiver extends BroadcastReceiver {
                 startLockScreenIntent = true;
                 //mIssueIntentOnScreenOn = false;  // Moving below to prevent delay timer in this event
             }
+
+            // Stop the delay lock service
+            context.stopService(new Intent(context, LockDelayService.class));
+            /*
             // Regardless, we should be clearing any runnables seeking to turn the screen off
             if (mDelayHandler != null && mDelayRunnable != null) {
                 mDelayHandler.removeCallbacks(mDelayRunnable);
-            }
+            }*/
         }
         else {
             Log.e(TAG, "onReceive() received unanticipated event.");
@@ -107,7 +111,7 @@ public class ScreenEventReceiver extends BroadcastReceiver {
                         context.getString(R.string.value_lock_screen_type_keypad_pattern))) {
                     newIntent = new Intent(context, LockScreenKeypadPatternActivity.class);
                 } else { //An error of some kind
-                    Log.d(TAG, "No value for key " + context
+                    Log.e(TAG, "No value for key " + context
                             .getString(R.string.key_lock_screen_type));
                     newIntent = new Intent(context, ErrorPageActivity.class);
                 }
@@ -119,20 +123,16 @@ public class ScreenEventReceiver extends BroadcastReceiver {
 
             // Now handle any screen off delay
             int delay = getScreenOffDelay(context);
-            final Context ctx = context;
-            final Intent delayIntent = newIntent;
 
             if (delay == 0 || mIssueIntentOnScreenOn) { // If it wanted to lock on screen on, then we better do it immediately.
                 context.startActivity(newIntent);
                 mIssueIntentOnScreenOn = false;
             } else {
-                mDelayRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        ctx.startActivity(delayIntent);
-                    }
-                };
-                mDelayHandler.postDelayed(mDelayRunnable, delay);
+                Intent serviceIntent = new Intent(context, LockDelayService.class);
+                serviceIntent.putExtra("delay", delay);
+                serviceIntent.putExtra("lockScreenType", lockScreenType);
+                Log.d(TAG, "starting delay service");
+                context.startService(serviceIntent);
             }
         }
     }
@@ -140,7 +140,7 @@ public class ScreenEventReceiver extends BroadcastReceiver {
     private int getScreenOffDelay(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         int seconds = prefs.getInt(context.getString(R.string.key_screen_off_timer), 0);
-        Log.d(TAG, "Screen off delay is " + seconds + "s");
+        //Log.d(TAG, "Screen off delay is " + seconds + "s");
         return seconds * 1000;
     }
 }

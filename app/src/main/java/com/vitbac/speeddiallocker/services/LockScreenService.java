@@ -21,6 +21,7 @@ public class LockScreenService extends Service {
         return null;  // Not a binding service; should run indefinitely, not tied to the activity
     }
 
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -41,7 +42,7 @@ public class LockScreenService extends Service {
     public void onDestroy() {
         try {
             unregisterReceiver(mReceiver);
-            Log.d(TAG, "Screen receiver unregistered");
+            //Log.d(TAG, "Screen receiver unregistered");
         } catch (IllegalStateException e) {
             Log.w(TAG, "Lock screen receiver already unregistered", e);
         }

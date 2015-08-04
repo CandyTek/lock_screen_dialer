@@ -135,8 +135,6 @@
 
     <string name="pref_dialog_title_screen_off_timer">Set delay:</string>
 
-    <string name="pref_dialog_title_button_press_timer">Configure time:</string>
-
     <!-- File strings for shared preferences other than default preferences -->
     <string name="file_lock_screen_type" translatable="false">com.vitaminbacon.lockscreendialer.LOCK_SCREEN_TYPE_FILE</string>
     <string name="file_background_type" translatable="false">com.vitaminbacon.lockscreendialer.BACKGROUND_TYPE_FILE</string>

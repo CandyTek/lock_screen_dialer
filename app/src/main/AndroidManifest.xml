@@ -71,6 +71,11 @@ you us
             android:exported="false" >
         </service>
 
+        <service
+            android:name="com.vitbac.speeddiallocker.services.LockDelayService"
+            android:enabled="true"
+            android:exported="false" />
+
         <activity
             android:name="com.vitbac.speeddiallocker.LockScreenSelectionActivity"
             android:label="@string/title_activity_lock_screen_selection"

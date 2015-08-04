@@ -214,4 +214,9 @@
     <string name="pref_screen_title_display_contents">Contenido de la pantalla</string>
     <string name="pref_screen_title_fonts">Fuentes</string>
     <string name="pref_title_sound_attributions">Atribuciones</string>
+    <string name="pref_description_screen_off_timer">Retardo hasta el bloqueo se activa después de que se apague la pantalla</string>
+    <string name="pref_dialog_title_screen_off_timer">Retardo ajustado</string>
+    <string name="pref_timer_minutes">Minutos</string>
+    <string name="pref_timer_seconds">Segundos</string>
+    <string name="pref_title_screen_off_timer">Retardo del bloqueo</string>
 </resources>
