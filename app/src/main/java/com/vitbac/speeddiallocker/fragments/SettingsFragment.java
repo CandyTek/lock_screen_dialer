@@ -233,6 +233,13 @@ public class SettingsFragment extends PreferenceFragment
             throw e;
         }
 
+        try {
+            Preference attributionPref = findPreference(getString(R.string.key_sound_attributions));
+            attributionPref.setOnPreferenceClickListener(this);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Attribution preference missing from layout");
+            throw e;
+        }
         // Update the summary
         updateBackgroundPrefSummary();
     }
@@ -398,6 +405,22 @@ public class SettingsFragment extends PreferenceFragment
             dialogFragment = FontPickerDialogFragment
                     .newInstance(font, R.string.key_select_lock_screen_fonts);
             dialogFragment.show(getFragmentManager(), "fragment_font_dialog");
+        } else if (preference.getKey().equals(getString(R.string.key_sound_attributions))) {
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+            dialogBuilder.setTitle(getString(R.string.alert_dialog_title_sound_attributions));
+            dialogBuilder
+                    .setMessage(getString(R.string.alert_dialog_message_sound_attributions))
+                    .setCancelable(false)
+                    .setNegativeButton(getString(R.string.alert_dialog_button_text_sound_attributions),
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+            AlertDialog alertDialog = dialogBuilder.create();
+            alertDialog.show();
         }
         return false;
     }

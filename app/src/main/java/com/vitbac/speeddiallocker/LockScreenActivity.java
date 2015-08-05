@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.database.Cursor;
@@ -202,6 +203,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         mPhoneCallActiveFlag = false;
         //Log.d(TAG, "PHONE CALL FLAG IS NOW FALSE");
 
+
         WindowManager.LayoutParams localLayoutParams;
         if (prefs.getBoolean(getString(R.string.key_toggle_status_bar_access), false)) {
             localLayoutParams = new WindowManager.LayoutParams(
@@ -209,6 +211,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                     WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | // To avoid notification bar
                             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, //Same
                     PixelFormat.TRANSLUCENT);
+
         } else {
             localLayoutParams = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.TYPE_SYSTEM_ERROR,
@@ -217,6 +220,9 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, //Same
                     PixelFormat.TRANSLUCENT);
         }
+        // Set hack to control orientation for underlying apps that get activated!
+        localLayoutParams.screenOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+
         mWindowManager = (WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE);
         getWindow().setAttributes(localLayoutParams);
         //View.inflate(this, R.layout.activity_lock_screen_keypad_pin, mWindowView);
@@ -227,6 +233,9 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
                         false);
         //mWindowView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
         mWindowManager.addView(mWindowView, localLayoutParams);
+
+
+
 
         mContainerView = mWindowView.findViewById(R.id.activity_container);
 
@@ -516,6 +525,7 @@ public abstract class LockScreenActivity extends Activity implements View.OnClic
         }
         mHandler = null;
         mRunnable = null;
+
     }
 
     /**
