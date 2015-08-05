@@ -21,6 +21,9 @@
     <string name="pref_header_title_sounds">Sounds</string>
     <string name="pref_header_key_sounds" translatable="false">pref_header_key_sounds</string>
 
+    <string name="pref_header_title_misc">Misc.</string>
+    <string name="pref_header_key_misc">pref_header_key_misc</string>
+
 
     <!-- Preference screens -->
     <string name="pref_screen_title_lock_screen_display">Lock screen display options</string>
@@ -121,6 +124,8 @@
     <string name="pref_title_screen_off_timer">Screen lock delay</string>
     <string name="pref_description_screen_off_timer">Delay until lock screen activates after the screen turns off</string>
 
+    <string name="pref_title_about">About</string>
+
 
     <string name="pref_summary_on_toggle_sheath_instruction">ON</string>
     <string name="pref_summary_off_toggle_sheath_instruction">OFF</string>
@@ -172,6 +177,7 @@
     <string name="key_sound_attributions" translatable="false">key_sound_attributions</string>
     <string name="key_screen_off_timer" translatable="false">key_screen_off_timer</string>
     <string name="key_button_press_timer" translatable="false">key_button_press_timer</string>
+    <string name="key_about" translatable="false">key_about</string>
 
 
     <!-- Values for shared preferences -->
@@ -392,9 +398,13 @@
     <string name="alert_dialog_message_first_time">For this app to work properly, make sure that you have disabled any other lock screens, especially the Android system lock screen.  Go to Settings &#8658; click the \"My Device\" tab &#8658; click \"Lock screen\" &#8658; and change the screen lock to \"None\".  (Android doesn\'t let us do this for you, sorry.) </string>
     <string name="alert_dialog_button_text_first_time">Got it!</string>
 
-    <string name="alert_dialog_title_sound_attributions">Attributions:</string>
-    <string name="alert_dialog_message_sound_attributions">The following are licensed under Creative Commons license Attribution 3.0 Unported:\n\nDymewiz, \"locking a door_01.wav\"\n\nemmanuel, \"one use camera clic with flash.wav\" </string>
+    <string name="alert_dialog_title_sound_attributions" translatable="false">Attributions:</string>
+    <string name="alert_dialog_message_sound_attributions" translatable="false">The following are licensed under Creative Commons license Attribution 3.0 Unported:\n\nDymewiz, \"locking a door_01.wav\"\n\nemmanuel, \"one use camera clic with flash.wav\" </string>
     <string name="alert_dialog_button_text_sound_attributions">OK</string>
+
+    <string name="alert_dialog_title_about">About this app</string>
+    <string name="alert_dialog_message_about">Name:  Speed Dial Locker\nver:  </string>
+    <string name="alert_dialog_button_text_about">OK</string>
 
     <string name="bitmap_crop_instruction">Crop image:</string>
 

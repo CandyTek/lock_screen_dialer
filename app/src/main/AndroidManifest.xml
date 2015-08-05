@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.vitbac.speeddiallocker"
     android:installLocation="auto">
-you us
+
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -68,7 +68,7 @@ you us
         <service
             android:name="com.vitbac.speeddiallocker.services.LockScreenService"
             android:enabled="true"
-            android:exported="false" >
+            android:exported="false">
         </service>
 
         <service

@@ -239,4 +239,14 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:key="@string/pref_header_key_misc"
+        android:title="@string/pref_header_title_misc">
+
+        <Preference
+            android:key="@string/key_about"
+            android:title="@string/pref_title_about"/>
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

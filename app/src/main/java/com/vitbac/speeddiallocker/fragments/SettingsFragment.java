@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Point;
 import android.graphics.RectF;
@@ -240,6 +241,14 @@ public class SettingsFragment extends PreferenceFragment
             Log.e(TAG, "Attribution preference missing from layout");
             throw e;
         }
+
+        try {
+            Preference aboutPref = findPreference(getString(R.string.key_about));
+            aboutPref.setOnPreferenceClickListener(this);
+        } catch (NullPointerException e) {
+            Log.e(TAG, "Attribution preference missing from layout");
+            throw e;
+        }
         // Update the summary
         updateBackgroundPrefSummary();
     }
@@ -406,7 +415,14 @@ public class SettingsFragment extends PreferenceFragment
                     .newInstance(font, R.string.key_select_lock_screen_fonts);
             dialogFragment.show(getFragmentManager(), "fragment_font_dialog");
         } else if (preference.getKey().equals(getString(R.string.key_sound_attributions))) {
-            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+            buildAndShowSimpleAlertDialog(
+                    getString(R.string.alert_dialog_title_sound_attributions),
+                    getString(R.string.alert_dialog_message_sound_attributions),
+                    false,
+                    getString(R.string.alert_dialog_button_text_sound_attributions)
+            );
+
+            /*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
             dialogBuilder.setTitle(getString(R.string.alert_dialog_title_sound_attributions));
             dialogBuilder
@@ -420,7 +436,23 @@ public class SettingsFragment extends PreferenceFragment
                                 }
                             });
             AlertDialog alertDialog = dialogBuilder.create();
-            alertDialog.show();
+            alertDialog.show();*/
+        } else if (preference.getKey().equals(getString(R.string.key_about))) {
+            String version;
+            try {
+                version = getActivity().getPackageManager()
+                        .getPackageInfo(getActivity().getPackageName(), 0).versionName;
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.e(TAG, "Package name not found");
+                version = "unknown";
+            }
+
+            buildAndShowSimpleAlertDialog(
+                    getString(R.string.alert_dialog_title_about),
+                    getString(R.string.alert_dialog_message_about) + version,
+                    false,
+                    getString(R.string.alert_dialog_button_text_about)
+            );
         }
         return false;
     }
@@ -860,6 +892,23 @@ public class SettingsFragment extends PreferenceFragment
         }
     }
 
+    private void buildAndShowSimpleAlertDialog(String title, String message, boolean cancelable,
+                                               String buttonText) {
 
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+        dialogBuilder.setTitle(title);
+        dialogBuilder
+                .setMessage(message)
+                .setCancelable(cancelable)
+                .setNegativeButton(buttonText, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alertDialog = dialogBuilder.create();
+        alertDialog.show();
+    }
 
 }

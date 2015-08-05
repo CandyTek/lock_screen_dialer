@@ -130,6 +130,7 @@ public class ScreenEventReceiver extends BroadcastReceiver {
             } else {
                 Intent serviceIntent = new Intent(context, LockDelayService.class);
                 serviceIntent.putExtra("delay", delay);
+                serviceIntent.putExtra("startTime", System.currentTimeMillis());
                 serviceIntent.putExtra("lockScreenType", lockScreenType);
                 Log.d(TAG, "starting delay service");
                 context.startService(serviceIntent);

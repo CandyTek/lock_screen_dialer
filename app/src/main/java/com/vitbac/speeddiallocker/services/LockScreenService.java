@@ -24,6 +24,7 @@ public class LockScreenService extends Service {
 
     @Override
     public void onCreate() {
+        Log.d(TAG, "onCreate()");
         super.onCreate();
 
         KeyguardManager km = (KeyguardManager)getSystemService(KEYGUARD_SERVICE);
@@ -39,7 +40,15 @@ public class LockScreenService extends Service {
     }
 
     @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        // Want service to continue running until it is explicitly stopped
+        // This may be default behavior already, but won't hurt
+        return START_STICKY;
+    }
+
+    @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy()");
         try {
             unregisterReceiver(mReceiver);
             //Log.d(TAG, "Screen receiver unregistered");
@@ -47,6 +56,7 @@ public class LockScreenService extends Service {
             Log.w(TAG, "Lock screen receiver already unregistered", e);
         }
         super.onDestroy();
+
     }
 
 }

@@ -27,6 +27,7 @@ public class LockDelayService extends Service {
     public int onStartCommand (Intent intent, int flags, int startId) {
         //Log.d(TAG, "onStartCommand called");
         int delay = intent.getIntExtra("delay", 0);
+        long startTime = intent.getLongExtra("startTime", System.currentTimeMillis());
         String lockScreenType = intent.getStringExtra("lockScreenType");
         Intent newIntent;
 
@@ -46,15 +47,18 @@ public class LockDelayService extends Service {
             //return super.onStartCommand(intent, flags, startId);
         }
 
-        // Start the new intent
+        // Reconfigure the delay to account for service restarting or other delay
+        long timeToLock = delay - (System.currentTimeMillis() - startTime);
 
+        // Start the new intent
         newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        if (delay <= 0) { //Robust
+        if (timeToLock <= 0) {
+            // Start the lock screen immediately and kill the service
             startActivity(newIntent);
-            stopSelf(); // Kill the service because it is not needed
+            stopSelf();
         } else {
-            Log.d(TAG, "delaying lock screen");
+            Log.d(TAG, "delaying lock screen to start in " + timeToLock + "ms");
             final Intent delayIntent = newIntent;
 
             // For robustness -- we don't want to set a bunch of sleepers to lock the screen in the future
@@ -66,13 +70,15 @@ public class LockDelayService extends Service {
             mRunnable = new Runnable() {
                 @Override
                 public void run() {
+                    Log.d(TAG, "lock screen starting after delay");
                     startActivity(delayIntent);
                     stopSelf();
                 }
             };
-            mHandler.postDelayed(mRunnable, delay);
+            mHandler.postDelayed(mRunnable, timeToLock);
         }
-        return super.onStartCommand(intent, flags, startId);
+        //return super.onStartCommand(intent, flags, startId);
+        return START_REDELIVER_INTENT;
     }
 
     @Override
