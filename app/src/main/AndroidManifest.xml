@@ -136,6 +136,16 @@
             android:theme="@style/lock_screen_window_theme" />
 
         <activity
+            android:name="com.vitbac.speeddiallocker.LockScreenActivity2"
+            android:configChanges="keyboardHidden|screenSize|orientation"
+            android:label="@string/title_activity_lock_screen_keypad_pattern"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:screenOrientation="portrait"
+            android:theme="@style/lock_screen_window_theme" />
+
+        <activity
             android:name="com.vitbac.speeddiallocker.ErrorPageActivity"
             android:label="@string/title_activity_error_page"
             android:noHistory="true"

@@ -166,7 +166,7 @@
                 android:title="@string/pref_title_select_pattern_draw_color" />
 
             <com.vitbac.speeddiallocker.preferences.ColorPreference
-                android:defaultValue="@color/lava_red"
+                android:defaultValue="@color/green"
                 android:key="@string/key_select_pattern_button_pressed_color"
                 android:persistent="true"
                 android:summary="@string/pref_description_select_pattern_button_pressed_color"

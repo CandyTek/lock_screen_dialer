@@ -20,9 +20,9 @@ public class ErrorPageActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_error_page);
+        setContentView(R.layout.activity_error_page);
 
-        WindowManager.LayoutParams localLayoutParams =
+        /*WindowManager.LayoutParams localLayoutParams =
                 new WindowManager.LayoutParams(
                         WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
                         WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | // To avoid notification bar
@@ -37,14 +37,14 @@ public class ErrorPageActivity extends Activity {
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mLayout = (RelativeLayout) inflater.inflate(R.layout.activity_error_page, null);
 
-        /*mLayout = LayoutInflater
+        *//*mLayout = LayoutInflater
                 .from(this)
                 .inflate(R.layout.activity_error_page,
                         new RelativeLayout(getBaseContext()),
-                        false);*/
+                        false);*//*
         //mWrapperView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
         mWindowManager.addView(mWrapperView, localLayoutParams);
-        mWrapperView.addView(mLayout);
+        mWrapperView.addView(mLayout);*/
     }
 
 

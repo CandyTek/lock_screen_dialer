@@ -36,4 +36,11 @@
         <attr name="defaultValueMinutes" format="integer" />
     </declare-styleable>
 
+    <declare-styleable name="PatternEntryView">
+        <attr name="markedColor" format="color" />
+        <attr name="drawColor" format="color" />
+        <attr name="animTime" format="integer" />
+        <attr name="drawWidth" format="float"/>
+    </declare-styleable>
+
 </resources>

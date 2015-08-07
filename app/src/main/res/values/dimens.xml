@@ -9,6 +9,7 @@
     <dimen name="settings_toggle_height">22dp</dimen>
 
     <dimen name="lock_screen_pattern_button_diameter">80dp</dimen>
+    <dimen name="lock_screen_pattern_marker_diameter">30dp</dimen>
 
     <dimen name="contact_image_size">100dp</dimen>
     <dimen name="contact_image_margin">10dp</dimen>

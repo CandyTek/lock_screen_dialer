@@ -106,4 +106,7 @@
 
     <color name="lock_screen_call_color">@color/blue_diamond</color>
 
+    <color name="default_pattern_marked_color">@color/green</color>
+    <color name="default_pattern_draw_color">@color/green</color>
+
 </resources>

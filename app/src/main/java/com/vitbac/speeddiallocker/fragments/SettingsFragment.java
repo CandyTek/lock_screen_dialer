@@ -36,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vitbac.speeddiallocker.AppBackgroundActivity;
+import com.vitbac.speeddiallocker.ErrorPageActivity;
 import com.vitbac.speeddiallocker.KeypadPatternConfigActivity;
 import com.vitbac.speeddiallocker.KeypadPinConfigActivity;
 import com.vitbac.speeddiallocker.R;
@@ -447,12 +448,14 @@ public class SettingsFragment extends PreferenceFragment
                 version = "unknown";
             }
 
-            buildAndShowSimpleAlertDialog(
+            /*buildAndShowSimpleAlertDialog(
                     getString(R.string.alert_dialog_title_about),
                     getString(R.string.alert_dialog_message_about) + version,
                     false,
                     getString(R.string.alert_dialog_button_text_about)
-            );
+            );*/
+            Intent intent = new Intent(getActivity(), ErrorPageActivity.class);
+            getActivity().startActivity(intent);
         }
         return false;
     }
