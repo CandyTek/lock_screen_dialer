@@ -43,4 +43,16 @@
         <attr name="drawWidth" format="float"/>
     </declare-styleable>
 
+    <declare-styleable name="PasscodeEntryDisplay">
+        <attr name="instruction" format="string" />
+        <attr name="wrongPasscode" format="string" />
+        <attr name="lockout1Text" format="string" />
+        <attr name="lockout2Text" format="string"/>
+        <attr name="lockout3Text" format="string" />
+        <attr name="displayTime" format="integer" />
+        <attr name="lockout1Delay" format="integer" />
+        <attr name="lockout2Delay" format="integer" />
+        <attr name="lockout3Delay" format="integer" />
+        <attr name="lockoutLevelThreshold" format="integer" />
+    </declare-styleable>
 </resources>

@@ -10,6 +10,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.vitbac.speeddiallocker.ErrorPageActivity;
+import com.vitbac.speeddiallocker.LockScreenActivity2;
 import com.vitbac.speeddiallocker.LockScreenKeypadPatternActivity;
 import com.vitbac.speeddiallocker.LockScreenKeypadPinActivity;
 import com.vitbac.speeddiallocker.LockScreenLauncherActivity;
@@ -109,7 +110,8 @@ public class ScreenEventReceiver extends BroadcastReceiver {
                     newIntent = new Intent(context, LockScreenKeypadPinActivity.class);
                 } else if (lockScreenType.equals(
                         context.getString(R.string.value_lock_screen_type_keypad_pattern))) {
-                    newIntent = new Intent(context, LockScreenKeypadPatternActivity.class);
+                    //newIntent = new Intent(context, LockScreenKeypadPatternActivity.class);
+                    newIntent = new Intent(context, LockScreenActivity2.class);
                 } else { //An error of some kind
                     Log.e(TAG, "No value for key " + context
                             .getString(R.string.key_lock_screen_type));

@@ -23,16 +23,19 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
 
     private Handler mLongPressHandler;
     private Runnable mLongPressRunnable;
+    private boolean mLongPressFlag;
     private int mLongPressDelay;
     private View mLastViewPressed;
+
+    private boolean mBlockInputFlag;
 
     protected View[] mKeys;
 
     protected String mFont;
 
-    protected onPasscodeEntryListener mPasscodeListener;
-    protected onInputReceivedListener mInputListener;
-    protected onLongPressListener mLongPressListener;
+    protected OnPasscodeEntryListener mPasscodeListener;
+    protected OnInputReceivedListener mInputListener;
+    protected OnLongPressListener mLongPressListener;
 
     public PasscodeEntryView (Context context) {
         super(context);
@@ -53,39 +56,51 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
         mFont = prefs.getString(
                 getContext().getString(R.string.key_select_lock_screen_fonts),
                 getContext().getString(R.string.font_default));
+        mLongPressFlag = false;
+        mBlockInputFlag = false;
     }
 
-    public interface onPasscodeEntryListener {
+    public interface OnPasscodeEntryListener {
         void onPasscodeEntered(boolean isCorrect);
     }
 
-    public interface onInputReceivedListener {
+    public interface OnInputReceivedListener {
         void onInputReceived(String input);
     }
 
-    public interface onLongPressListener {
+    public interface OnLongPressListener {
         void onLongPress(int digit);
     }
 
-    public void setOnPassCodeEntryListener(onPasscodeEntryListener listener) {
+    public void setOnPassCodeEntryListener(OnPasscodeEntryListener listener) {
         mPasscodeListener = listener;
     }
 
-    public void setOnInputReceivedListener(onInputReceivedListener listener) {
+    public void setOnInputReceivedListener(OnInputReceivedListener listener) {
         mInputListener = listener;
     }
 
-    public void setOnLongPressListener(onLongPressListener listener) {
+    public void setOnLongPressListener(OnLongPressListener listener) {
         mLongPressListener = listener;
     }
 
     public void setPasscode (String passcode) throws IllegalArgumentException {
-        if (passcode.matches("[0-9]+")) {
+        if (passcode != null && passcode.matches("[0-9]+")) {
             mPasscode = passcode;
         } else {
             throw new IllegalArgumentException("Passcode can only contain digits; " + passcode
             + " provided is improper.");
         }
+    }
+
+    public void blockInput() {
+        Log.d(TAG, "blockInput()");
+        mBlockInputFlag = true;
+    }
+
+    public void unblockInput() {
+        Log.d(TAG, "unblockInput()");
+        mBlockInputFlag = false;
     }
 
     public void clearPasscode() {
@@ -96,7 +111,6 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
         if (mPasscode == null || !mPasscode.equals(input)) {
             return false;
         }
-
         return true;
     }
 
@@ -115,6 +129,7 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
     // Method that assigns the View[] mKeys field
     abstract View[] initKeys();
     abstract int getLayout();
+    public abstract void resetView();
 
 
     /**
@@ -125,21 +140,16 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
      * @return
      */
     public boolean onTouch(View view, MotionEvent event) {
+        if (mBlockInputFlag) {
+            return true;
+        }
+
         if (mLongPressListener == null) {
             return false;
         }
 
-        int index = getKeyPressed(view.getId(), -1);
-        if (index == -1){
-            return false;
-        }
-
-        // Get the key pressed and make sure that it is valid
-        final int key;
-        try {
-            key = ((KeyNumber) (mKeys[index].getTag())).keyNumber;
-        } catch (ClassCastException e) {
-            Log.e(TAG, "Invalid tag applied to key bearing index " + index);
+        final int key = getKeyPressed(view.getId(), -1);
+        if (key == -1){
             return false;
         }
 
@@ -156,20 +166,11 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
                     @Override
                     public void run() {
                         mLongPressListener.onLongPress(key);
+                        mLongPressFlag = true;
                     }
                 };
                 mLongPressHandler.postDelayed(mLongPressRunnable, mLongPressDelay);
                 mLastViewPressed = view;
-                break;
-
-            case MotionEvent.ACTION_UP:
-                if (mLongPressRunnable != null) {
-                    try {
-                        mLongPressHandler.removeCallbacks(mLongPressRunnable);
-                    } catch (NullPointerException e) {
-                        Log.e(TAG, "Long press handler was null on Action Up");
-                    }
-                }
                 break;
 
             case MotionEvent.ACTION_MOVE:
@@ -181,8 +182,30 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
                     } catch (NullPointerException e) {
                         Log.e(TAG, "Long press handler was null on Action Move");
                     }
-                    break;
                 }
+                if (mLongPressFlag) {
+                    // Consume the event until an action up.
+                    return true;
+                }
+                break;
+
+            case MotionEvent.ACTION_UP:
+                if (mLongPressRunnable != null) {
+                    try {
+                        mLongPressHandler.removeCallbacks(mLongPressRunnable);
+                    } catch (NullPointerException e) {
+                        Log.e(TAG, "Long press handler was null on Action Up");
+                    }
+                }
+                if (mLongPressFlag) {
+                    // Consume the event, but future touches will not be consumed automatically
+                    mLongPressFlag = false;
+                    Log.d(TAG, "Blocking input from ACTION_UP event after there has been a long press");
+                    blockInput();
+                    resetView();
+                    return true;
+                }
+                break;
             }
         return false;
     }
@@ -192,7 +215,7 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
         for (int i=0; i < mKeys.length; i++) {
             if (mKeys[i].getId() == id) {
                 try {
-                    return ((KeyNumber) mKeys[i].getTag()).keyNumber;
+                    return ((KeyMarker) mKeys[i].getTag()).keyNumber;
                 } catch (ClassCastException e) {
                     Log.e(TAG, "View has invalid tag to identify a key");
                     break;
@@ -204,7 +227,7 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
 
     protected int getKeyNumber(View view, int def) {
         try {
-            return ((KeyNumber) view.getTag()).keyNumber;
+            return ((KeyMarker) view.getTag()).keyNumber;
         } catch (ClassCastException e) {
             Log.e(TAG, "View has invalid tag to identify a key");
         }
@@ -213,7 +236,7 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
 
     protected String getKeyNumber(View view) {
         try {
-            return Integer.toString(((KeyNumber) view.getTag()).keyNumber);
+            return Integer.toString(((KeyMarker) view.getTag()).keyNumber);
         } catch (ClassCastException e) {
             Log.e(TAG, "View has invalid tag to identify a key");
         }
@@ -244,12 +267,23 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
         return false;
     }
 
+    public KeyMarker getKeyMarker(View view) {
+        return (KeyMarker) view.getTag();
+    }
 
-    protected class KeyNumber {
+
+    protected class KeyMarker {
         public int keyNumber;
+        public boolean isMarked;
 
-        public KeyNumber (int num) {
+        public KeyMarker(int num) {
             keyNumber = num;
+            isMarked = false;
+        }
+
+        public KeyMarker (int num, boolean marked) {
+            keyNumber = num;
+            isMarked = marked;
         }
     }
 

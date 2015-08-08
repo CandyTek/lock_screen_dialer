@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.vitbac.speeddiallocker.ErrorPageActivity;
+import com.vitbac.speeddiallocker.LockScreenActivity2;
 import com.vitbac.speeddiallocker.LockScreenKeypadPatternActivity;
 import com.vitbac.speeddiallocker.LockScreenKeypadPinActivity;
 import com.vitbac.speeddiallocker.R;
@@ -179,7 +180,8 @@ public class PhoneCallReceiver extends PhoneStateReceiver {
                 newIntent = new Intent(context, LockScreenKeypadPinActivity.class);
             } else if (lockScreenType.equals(
                     context.getString(R.string.value_lock_screen_type_keypad_pattern))) {
-                newIntent = new Intent(context, LockScreenKeypadPatternActivity.class);
+                //newIntent = new Intent(context, LockScreenKeypadPatternActivity.class);
+                newIntent = new Intent(context, LockScreenActivity2.class);
                 //Log.d(TAG, "Phone receiver starting intent to pattern activity");
             } else { //An error of some kind
                 Log.d(TAG, "No value for key " + context

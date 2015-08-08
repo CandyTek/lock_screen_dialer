@@ -61,6 +61,8 @@ import com.vitbac.speeddiallocker.services.LockScreenService;
 import com.vitbac.speeddiallocker.services.PhoneCallReceiver;
 import com.vitbac.speeddiallocker.services.PhoneStateReceiver;
 import com.vitbac.speeddiallocker.services.PhoneStateService;
+import com.vitbac.speeddiallocker.views.PasscodeEntryDisplay;
+import com.vitbac.speeddiallocker.views.PasscodeEntryView;
 import com.vitbac.speeddiallocker.views.PullBackView;
 
 import java.io.ByteArrayInputStream;
@@ -78,9 +80,10 @@ import java.util.Random;
 import java.util.TimeZone;
 
 
-public abstract class LockScreenActivity2 extends Activity implements View.OnClickListener,
+public class LockScreenActivity2 extends Activity implements View.OnClickListener,
         View.OnTouchListener, CompoundButton.OnCheckedChangeListener,
-        BitmapToViewHelper.GetBitmapFromTaskInterface {
+        BitmapToViewHelper.GetBitmapFromTaskInterface, PasscodeEntryView.OnPasscodeEntryListener,
+        PasscodeEntryView.OnLongPressListener, PasscodeEntryDisplay.OnLockoutListener{
 
     private final static String TAG = "LSActivity2";
 
@@ -92,6 +95,9 @@ public abstract class LockScreenActivity2 extends Activity implements View.OnCli
     private Handler mErrorHandler;
     private Runnable mErrorRunnable;
     private Runnable mErrorRemoveRunnable;
+    // A runnable/handler issued to reset the passcode view
+    private Handler mPasscodeResetHandler;
+    private Runnable mPasscodeResetRunnable;
 
     // Variables to implement TYPE_SYSTEM_ERROR stuff
     private WindowManager mWindowManager;
@@ -123,6 +129,10 @@ public abstract class LockScreenActivity2 extends Activity implements View.OnCli
     private boolean mSheathInstructionFlag;
 
     private Date mDate; // To check whether date needs updating
+
+    // Views that concern the passcode
+    private PasscodeEntryDisplay mDisplayView;
+    private PasscodeEntryView mPasscodeView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -224,7 +234,7 @@ public abstract class LockScreenActivity2 extends Activity implements View.OnCli
         //View.inflate(this, R.layout.activity_lock_screen_keypad_pin, mWindowView);
         mWindowView = (RelativeLayout) LayoutInflater
                 .from(this)
-                .inflate(R.layout.activity_lock_screen,  // obtained from subclass onCreate()
+                .inflate(R.layout.activity_lock_screen2,
                         new RelativeLayout(getBaseContext()),
                         false);
         //mWindowView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
@@ -250,21 +260,25 @@ public abstract class LockScreenActivity2 extends Activity implements View.OnCli
         }
 
         //Inflate the locking mechanism fragment XML
-        try {
-            View lockMechFragment = getLayoutInflater()
-                    .inflate(getFragmentLayout(), null);
-            FrameLayout container = (FrameLayout) getView(R.id.lock_screen_fragment_container);
-            if (lockMechFragment == null) {
-                Log.e(TAG, "Null fragment provided by subclass.");
-                onFatalError();
-                return;
-            }
-            container.addView(lockMechFragment);
-        } catch (NullPointerException e) {
-            Log.e(TAG, "Layout does not have container into which to enter this lock screen's layout", e);
+
+        View lockMechFragment = getLayoutInflater()
+                .inflate(R.layout.fragment_lock_screen_pattern2, null);
+        FrameLayout container = (FrameLayout) getView(R.id.lock_screen_fragment_container);
+        if (lockMechFragment == null) {
+            Log.e(TAG, "Null fragment provided by subclass.");
             onFatalError();
             return;
         }
+        mPasscodeView =
+                (PasscodeEntryView)lockMechFragment.findViewById(R.id.lock_screen_passcode_entry_view);
+        mPasscodeView.setPasscode(getStoredPasscode());
+        mPasscodeView.setOnPassCodeEntryListener(this);
+        mPasscodeView.setOnLongPressListener(this);
+        mDisplayView =
+                (PasscodeEntryDisplay)lockMechFragment.findViewById(R.id.lock_screen_passcode_display);
+        mDisplayView.setOnLockoutListener(this);
+
+        container.addView(lockMechFragment);
 
         // Determine if the sheath screen is enabled and prepare the display
 
@@ -275,11 +289,6 @@ public abstract class LockScreenActivity2 extends Activity implements View.OnCli
         // set up the lock screen animation before the background loading begins and never in onResume
         mBackgroundSetFlag = false;
         mBackgroundView.setVisibility(View.GONE);
-        /*mContainerView.post( new Runnable () {
-                                 public void run() {
-                                     setActivityBackground(mBackgroundView);
-                                 }
-                             });*/
         setActivityBackground(mBackgroundView);
         mDetector = new GestureDetectorCompat(this, new MyGestureListener());
     }
@@ -713,9 +722,6 @@ public abstract class LockScreenActivity2 extends Activity implements View.OnCli
      * @param type - a string to display the phone number type
      */
     private void enableCallViewsInView(String telNum, String name, String type, String thumbUri){
-        //Log.d(TAG, "enableCallViewsInView() called");
-        //TextView dialInfoView;
-
         try {
             final Button endCallBtn, spkrBtn;
             final ViewGroup phoneButtons, widgets;
@@ -1534,6 +1540,136 @@ public abstract class LockScreenActivity2 extends Activity implements View.OnCli
         //Log.d(TAG, "About to crossfade bitmap background");
         crossFadeViewsOnStart(mBackgroundView, mBackgroundProgress);
     }
+
+    public void onPasscodeEntered(boolean isCorrect) {
+        if (isCorrect) {
+            onCorrectPasscode();
+            return;
+        }
+        onIncorrectPasscode();
+    }
+
+    public void onLockout(int delay) {
+        //  PasscodeView should already have it's input blocked
+        Log.d(TAG, "onLockout()");
+        if (mPasscodeResetHandler == null) {
+            mPasscodeResetHandler = new Handler();
+        }
+        mPasscodeResetRunnable = new Runnable() {
+            @Override
+            public void run() {
+                mPasscodeView.resetView();
+            }
+        };
+        mPasscodeResetHandler.postDelayed(mPasscodeResetRunnable, delay);
+        Log.d(TAG, "onLockout delaying " + delay + "ms");
+    }
+
+    public void onLongPress (int key) {
+
+        // First check if speed dial is enabled
+        if (!isSpeedDialEnabled()) {
+            enableErrorViewsinView(
+                    getString(R.string.error_title_speed_dial_inactive),
+                    getString(R.string.error_description_speed_dial_inactive),
+                    R.drawable.ic_error_white_48dp);
+            Handler h = new Handler();
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    disableErrorViewsInView();
+                }
+            }, getResources().getInteger(R.integer.lock_screen_phone_error_display_length));
+            return;
+        }
+
+        // Get the phone data for this key
+        SharedPreferences sharedPref = getSharedPreferences(
+                getString(R.string.speed_dial_preference_file_key),
+                Context.MODE_PRIVATE);
+        String telNum = sharedPref.getString(
+                getString(R.string.key_number_store_prefix_phone) + key, null);
+
+        // Check if there is a valid assigned to the key
+        if (telNum == null) {
+            enableErrorViewsinView(
+                    getString(R.string.error_title_invalid_number),
+                    getString(R.string.error_description_invalid_number),
+                    R.drawable.ic_error_white_48dp);
+            Handler h = new Handler();
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    disableErrorViewsInView();
+                }
+            }, getResources().getInteger(R.integer.lock_screen_phone_error_display_length));
+            return;
+        }
+
+        // Check for roaming
+        TelephonyManager telephony = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (telephony.isNetworkRoaming()) {
+            enableErrorViewsinView(
+                    getString(R.string.error_title_roaming),
+                    getString(R.string.error_description_roaming),
+                    R.drawable.ic_signal_cellular_connected_no_internet_2_bar_white_48dp);
+            Handler h = new Handler();
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    disableErrorViewsInView();
+                }
+            }, getResources().getInteger(R.integer.lock_screen_phone_error_display_length));
+            return;
+        }
+
+        // Check if airplane mode is on
+        if (isAirplaneModeOn()) {
+            enableErrorViewsinView(
+                    getString(R.string.error_title_airplane),
+                    getString(R.string.error_description_airplane),
+                    R.drawable.ic_airplanemode_on_white_48dp);
+            Handler h = new Handler();
+            h.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    disableErrorViewsInView();
+                }
+            }, getResources().getInteger(R.integer.lock_screen_phone_error_display_length));
+            return;
+        }
+
+        // Finally check if there is an ongoing phone call (no need to display error message if so)
+        if (!getPhoneCallActiveFlag()) {
+            mDisplayView.displayMessage(getString(R.string.lock_screen_initiate_call));
+            mSpeedDialNumPressed = key;
+            Intent intent = new Intent(Intent.ACTION_CALL);
+            intent.setData(Uri.parse("tel:" + (telNum.trim())));
+            startActivity(intent);
+            //stopService(new Intent(context, LockScreenService.class));   //This caused errors when unlocking the screen during the call
+
+            // Vibrate the phone to indicate call being attempted
+            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            v.vibrate(350);
+            enableLongPressFlag();
+
+            // Now set a runnable for the case where a OFF_HOOK intent is not timely received
+            if (mErrorHandler != null && mErrorRunnable != null
+                    && mErrorRemoveRunnable != null) {
+                int errorDisplayDelay = getResources()
+                        .getInteger(R.integer.lock_screen_phone_error_call_failed_delay);
+                int errorDisplayLength = getResources()
+                        .getInteger(R.integer.lock_screen_phone_error_display_length);
+                mErrorHandler.postDelayed(mErrorRunnable, errorDisplayDelay);
+                mErrorHandler.postDelayed(
+                        mErrorRemoveRunnable,
+                        errorDisplayDelay + errorDisplayLength
+                );
+            }
+        }
+
+    }
+
     /**
      * ---------------------------------------------------------------------------------------------
      * RESULT METHODS
@@ -1574,6 +1710,16 @@ public abstract class LockScreenActivity2 extends Activity implements View.OnCli
             playSound(ctx, uri);
             finish();
         }
+    }
+
+    private void onIncorrectPasscode() {
+        if (!mDisplayView.wrongEntry()) {
+            // means no delay has been imposed so we can reset the view
+            Log.d(TAG, "Resetting view immediately");
+            mPasscodeView.resetView();
+        }
+        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        v.vibrate(200);
     }
 
     private void playSound(Context context, Uri alert) {
@@ -1818,6 +1964,13 @@ public abstract class LockScreenActivity2 extends Activity implements View.OnCli
         }
     }
 
+    private String getStoredPasscode() {
+        SharedPreferences sharedPref = getSharedPreferences(
+                getString(R.string.file_lock_screen_type),
+                Context.MODE_PRIVATE);
+        return sharedPref.getString(getString(R.string.value_lock_screen_passcode), null);
+    }
+
     private void updateDateViews() {
         try {
             Date currentDate = new Date();
@@ -1889,20 +2042,6 @@ public abstract class LockScreenActivity2 extends Activity implements View.OnCli
 
     /**
      * ---------------------------------------------------------------------------------------------
-     * ABSTRACT METHODS
-     * ---------------------------------------------------------------------------------------------
-     */
-    /**
-     * Abstract function that just returns the resource Id of the subclass's fragment layout view
-     */
-    abstract int getFragmentLayout();
-
-    /**
-     * Runnable class that initiates the phone call on a long press
-     */
-
-    /**
-     * ---------------------------------------------------------------------------------------------
      * INTERNAL CLASSES
      * ---------------------------------------------------------------------------------------------
      */
@@ -1914,7 +2053,7 @@ public abstract class LockScreenActivity2 extends Activity implements View.OnCli
         }
 
         public void run() {
-            Log.d(TAG, "dialerrunnable running");
+            //Log.d(TAG, "dialerrunnable running");
             SharedPreferences sharedPref = getSharedPreferences(
                     getString(R.string.speed_dial_preference_file_key),
                     Context.MODE_PRIVATE);

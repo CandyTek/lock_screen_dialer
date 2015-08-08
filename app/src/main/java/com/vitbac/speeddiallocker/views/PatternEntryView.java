@@ -10,8 +10,6 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.StateListDrawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
@@ -22,7 +20,6 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 
 import com.vitbac.speeddiallocker.R;
 
@@ -36,6 +33,7 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
     protected int mDrawColor;
     protected float mDrawWidth;
     protected int mAnimTime;
+    private int mMarkedCounter;
 
     private DrawView mPatternDrawView;
     private DrawView mTouchDrawView;
@@ -79,6 +77,8 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
 
         mPatternDrawView = (DrawView) findViewById(R.id.pattern_canvas);
         mTouchDrawView = (DrawView) findViewById(R.id.touch_canvas);
+        mPatternEntered = "";
+        mMarkedCounter = 0;
     }
 
     protected int getLayout() {
@@ -105,7 +105,7 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
         views[8] = findViewById(R.id.pattern_button_9);
 
         for (int i = 0; i < 9; i++) {
-            views[i].setTag(new KeyNumber(i + 1));
+            views[i].setTag(new KeyMarker(i + 1));
             views[i].setOnTouchListener(this);
 
             View markerView = getCorrespondingMarkerView(views[i]);
@@ -180,11 +180,12 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
     @Override
     public boolean onTouch(View view, MotionEvent event) {
         if (super.onTouch(view, event)){
+            // This means that there was an activated long press in the super class
+            //resetView();
             return true;
         }
 
         int keyNum = getKeyPressed(view.getId(), -1);
-        //
         if (keyNum == -1) {
             return false;
         }
@@ -196,15 +197,22 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
                 mPatternEntered += keyNum;
                 // Draw the pattern
                 markView(view);
+
                 break;
 
             case MotionEvent.ACTION_MOVE:
+                // Check that pattern is not empty; if it is, it means that input was unblocked
+                // during a subsequent touch
+                if (mPatternEntered == "") {
+                    break;
+                }
+
                 int x = (int)event.getRawX(), y =(int)event.getRawY();
                 if (isTouchOutsideView(mLastKey, x, y)) {
 
                     boolean drawToTouch = true;  // Indicates we should draw to the user's touch
                     View touchedKey = getTouchedKey(x, y);
-                    if (touchedKey != null && !mPatternEntered.contains(getKeyNumber(touchedKey))) {
+                    if (touchedKey != null && !getKeyMarker(touchedKey).isMarked) {
                         vibrate(1);
                         markView(touchedKey);
                         drawLineToView(mLastKey, touchedKey);
@@ -239,15 +247,25 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
                 break;
 
             case MotionEvent.ACTION_UP:
+                // Again, check the pattern to avoid touch event and blocking with no pattern entered
+                if (mPatternEntered == "") {
+                    break;
+                }
+
                 mTouchDrawView.clearLines();
                 mTouchDrawView.invalidate();
 
+                // Input received, now block input until reset
+                Log.d(TAG, "Blocking input after ACTION_UP event b/c input received");
+                blockInput();
+                // TODO: sync animation completions with onPasscodeCorrect -- can just set a flag here, and check in the end animation listener
                 if (matchesPasscode(mPatternEntered)) {
                     //Log.d(TAG, "Correct passcode called");
                    onPasscodeCorrect();
                 } else {
                    onPasscodeFail();
                 }
+                //mPatternEntered = "";
                 break;
 
         }
@@ -255,7 +273,13 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
         return true;
     }
 
-    private void markView(View view) {
+    private void markView(final View view) {
+
+        // Mark the view
+        getKeyMarker(view).isMarked = true;
+        //view.setTag(new KeyMarker(getKeyNumber(view, -1), true));
+        mMarkedCounter++;
+        Log.d(TAG, "marking view " + getKeyNumber(view) + "; " + mMarkedCounter + " now marked");
 
         View markerView = getCorrespondingMarkerView(view);
 
@@ -270,44 +294,73 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
             // create the animator for this view
             Animator anim = ViewAnimationUtils.createCircularReveal(markerView, cx, cy, 0, finalRadius);
             anim.setDuration(mAnimTime);
-
             // make the view visible and start the animation
             markerView.setVisibility(View.VISIBLE);
-            //view.setVisibility(View.INVISIBLE);
             anim.start();
-
-
-            //Log.d(TAG, "markerView is x=" + markerView.getX() + " y=" +markerView.getY() + " width=" + markerView.getWidth());
         } else {
             markerView.setVisibility(View.VISIBLE);
             markerView.setAlpha(0f);
-            markerView.animate().alpha(1f).setDuration(mAnimTime);
+            markerView.animate().alpha(1f).setDuration(mAnimTime).setListener(null);
         }
         // Make the button disappear regardless of version
-        view.animate().alpha(0f).setDuration(mAnimTime);
+        view.animate().alpha(0f).setDuration(mAnimTime).setListener(null);
     }
 
-    private void unmarkView(View view) {
+    private void unmarkView(final View view) {
+
+        if (!getKeyMarker(view).isMarked) {
+            // Don't need to un-mark views that are not marked!
+            return;
+        }
+
+        //Log.d(TAG, "unmarking view " + getKeyNumber(view));
+
         final View markerView = getCorrespondingMarkerView(view);
         markerView.setAlpha(1f);
         markerView.animate()
                 .alpha(0f)
-                .setDuration(mAnimTime).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                markerView.setVisibility(View.INVISIBLE);
-            }
-
-        });
+                .setDuration(mAnimTime)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        markerView.setVisibility(View.INVISIBLE);
+                        markerView.setAlpha(1f);
+                    }
+                });
         view.setVisibility(View.VISIBLE);
         view.setAlpha(0f);
-        view.animate().alpha(1f).setDuration(mAnimTime);
+        view.animate()
+                .alpha(1f)
+                .setDuration(mAnimTime)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        getKeyMarker(view).isMarked = false;
+                        mMarkedCounter--;
+                        Log.d(TAG, "Ended animation for view " + getKeyNumber(view, -1) + "; " + mMarkedCounter + " left to unlock");
+                        // This lock prevents touches during un-marking animations
+                        if (mMarkedCounter == 0) {
+                            unblockInput();
+                        }
+                    }
+                });
     }
 
-    public void clearPattern() {
+    public void resetView() {
+        // Input should be blocked by the time this method is called
+        Log.d(TAG, "resetView(), pattern is " + mPatternEntered);
+
+        mPatternDrawView.clearLines();
+        mPatternDrawView.invalidate();
+
         for (int i=0; i < mKeys.length; i++) {
-            unmarkView(mKeys[i]);
+            if (mPatternEntered.contains(getKeyNumber(mKeys[i]))) {
+                Log.d(TAG, "unmarking view with key " + getKeyNumber(mKeys[i]));
+                unmarkView(mKeys[i]);
+            }
         }
+
+        mPatternEntered="";
     }
 
     private void drawLineToView(View start, View end) throws IllegalArgumentException{

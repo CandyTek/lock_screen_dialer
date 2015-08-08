@@ -112,12 +112,14 @@
     <string name="error_title_roaming">Roaming Error</string>
     <string name="error_description_roaming">Lock screen can\'t initiate call while roaming.</string>
     <string name="error_title_airplane">Airplane Mode</string>
-    <string name="error_description_airplane">Can\'t initiate call while in airplane mode</string>
+    <string name="error_description_airplane">Can\'t initiate call while in airplane mode.</string>
     <string name="error_title_offhook">Call Error</string>
-    <string name="error_description_offhook">Device failed to initiate call</string>
+    <string name="error_description_offhook">Device failed to initiate call.</string>
     <string name="title_activity_app_background">Select App Background</string>
-    <string name="error_title_invalid_number">Number invalid</string>
-    <string name="error_description_invalid_number">Stored speed dial number invalid</string>
+    <string name="error_title_invalid_number">Unassigned Key</string>
+    <string name="error_description_invalid_number">Assign phone numbers in settings!</string>
+    <string name="error_title_speed_dial_inactive">Dialer disabled</string>
+    <string name="error_description_speed_dial_inactive">Speed dial disabled; change in settings.</string>
 
     <string name="instruction_app_content_flipper">Select a background:</string>
     <string name="button_app_background_random_text">Randomize</string>
