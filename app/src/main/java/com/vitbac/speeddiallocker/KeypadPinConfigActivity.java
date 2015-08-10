@@ -71,7 +71,12 @@ public class KeypadPinConfigActivity extends Activity {
                     return true;
                 }
                 return false;*/
-                return (actionId == EditorInfo.IME_ACTION_DONE);
+                //return (actionId == EditorInfo.IME_ACTION_DONE);
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    pinSubmitted();
+                    return true;
+                }
+                return false;
             }
         });
         mSubmitButton = (Button) this.findViewById(R.id.btn_keypad_pin_config_submit);
@@ -119,16 +124,34 @@ public class KeypadPinConfigActivity extends Activity {
     }
 
     public void submitButtonClicked(View view) {
+        pinSubmitted();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        setResult(RESULT_CANCELED, returnIntent);
+        finish();
+        super.onBackPressed();
+    }
+
+    public void cancelButtonClicked(View view) {
+        Intent returnIntent = new Intent();
+        setResult(RESULT_CANCELED, returnIntent);
+        finish();
+    }
+
+    private void pinSubmitted() {
         String pin = mEditText.getText().toString();
         if (mPinEntered.equals("")) { //Activity is in first state
             if (pin.length() < 4) {
                 mKeyPadEntryInstructions.setText(getString(R.string.err_keypad_pin_config_too_short));
-                Handler h = new Handler();
+                /*Handler h = new Handler();
                 Runnable r = new Runnable() {
                     public void run() {
                         setActivityToFirstState();
                     }
-                };
+                };*/
                 /*makeToast(getString(R.string.err_keypad_pin_config_too_short));
                 setActivityToFirstState();*/
                 return;
@@ -178,23 +201,7 @@ public class KeypadPinConfigActivity extends Activity {
                 finish();
             }
         }
-
     }
-
-    @Override
-    public void onBackPressed() {
-        Intent returnIntent = new Intent();
-        setResult(RESULT_CANCELED, returnIntent);
-        finish();
-        super.onBackPressed();
-    }
-
-    public void cancelButtonClicked(View view) {
-        Intent returnIntent = new Intent();
-        setResult(RESULT_CANCELED, returnIntent);
-        finish();
-    }
-
     private void makeToast(String text) {
         LayoutInflater inflater = getLayoutInflater();
         View layout = inflater.inflate(
