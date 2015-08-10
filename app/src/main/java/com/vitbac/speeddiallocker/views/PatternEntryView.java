@@ -35,6 +35,7 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
     protected int mAnimTime;
     private int mMarkedCounter;
 
+
     private DrawView mPatternDrawView;
     private DrawView mTouchDrawView;
 
@@ -61,6 +62,7 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
         );
         mAnimTime = attributeArray.getInt(R.styleable.PatternEntryView_animTime, 500);
         mDrawWidth = attributeArray.getFloat(R.styleable.PatternEntryView_drawWidth, 5f);
+
         init();
         attributeArray.recycle();
     }
@@ -79,57 +81,44 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
         mTouchDrawView = (DrawView) findViewById(R.id.touch_canvas);
         mPatternEntered = "";
         mMarkedCounter = 0;
+
+        for (int i=0; i < mKeys.length; i++) {
+            mKeys[i].setOnTouchListener(this); // Overrides the super's listener, but that's OK because we call the super in onTouch
+        }
     }
 
     protected int getLayout() {
         return R.layout.view_pattern_entry;
     }
 
-    protected View[] initKeys() {
+    protected Button[] initKeys() {
 
+        // TODO: put this in the controlling activity
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         mButtonMarkedColor = prefs.getInt(
                 getContext().getString(R.string.key_select_pattern_button_pressed_color),
                 getResources().getColor(R.color.default_pattern_marked_color));
 
-        View[] views = new View[9];
+        Button[] buttons = new Button[9];
 
-        views[0] = findViewById(R.id.pattern_button_1);
-        views[1] = findViewById(R.id.pattern_button_2);
-        views[2] = findViewById(R.id.pattern_button_3);
-        views[3] = findViewById(R.id.pattern_button_4);
-        views[4] = findViewById(R.id.pattern_button_5);
-        views[5] = findViewById(R.id.pattern_button_6);
-        views[6] = findViewById(R.id.pattern_button_7);
-        views[7] = findViewById(R.id.pattern_button_8);
-        views[8] = findViewById(R.id.pattern_button_9);
+        buttons[0] = (Button) findViewById(R.id.pattern_button_1);
+        buttons[1] = (Button) findViewById(R.id.pattern_button_2);
+        buttons[2] = (Button) findViewById(R.id.pattern_button_3);
+        buttons[3] = (Button) findViewById(R.id.pattern_button_4);
+        buttons[4] = (Button) findViewById(R.id.pattern_button_5);
+        buttons[5] = (Button) findViewById(R.id.pattern_button_6);
+        buttons[6] = (Button) findViewById(R.id.pattern_button_7);
+        buttons[7] = (Button) findViewById(R.id.pattern_button_8);
+        buttons[8] = (Button) findViewById(R.id.pattern_button_9);
 
         for (int i = 0; i < 9; i++) {
-            views[i].setTag(new KeyMarker(i + 1));
-            views[i].setOnTouchListener(this);
+            buttons[i].setTag(new KeyMarker(i + 1));
 
-            View markerView = getCorrespondingMarkerView(views[i]);
+            View markerView = getCorrespondingMarkerView(buttons[i]);
             LayerDrawable layerList = (LayerDrawable) getResources()
                     .getDrawable(R.drawable.pattern_button_marked);
             GradientDrawable shape = (GradientDrawable) layerList
                     .findDrawableByLayerId(R.id.pattern_button_marked);
-            /*StateListDrawable sld = new StateListDrawable();
-            sld.addState(new int[]{android.R.attr.state_pressed}, layerList);
-            sld.addState(new int[]{},
-                    getResources().getDrawable(R.drawable.pattern_button_unmarked));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                views[i].setBackground(sld);
-            } else {
-                views[i].setBackgroundDrawable(sld);
-            }*/
-
-            // We thought mutate was critical here, but it caused a strange error where
-            // one of the buttons' color would not be changed.  By commenting out mutate(), the
-            // problem goes away...
-            //sld.mutate();
-
-            //int strokeWidth = (int) BitmapToViewHelper.convertDpToPixel(1, this);
-           // shape.setStroke(strokeWidth, mButtonColor);
 
             if (mButtonMarkedColor != -1) {
                 //shape.setColor(mButtonMarkedColor);
@@ -145,12 +134,11 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
             markerView.setVisibility(View.INVISIBLE);
 
             if (mFont != null) {
-                // TODO: do I need to try/catch this?
-                ((Button) views[i]).setTypeface(Typeface.create(mFont, Typeface.NORMAL));
+                buttons[i].setTypeface(Typeface.create(mFont, Typeface.NORMAL));
             }
         }
 
-        return views;
+        return buttons;
     }
 
     protected View getCorrespondingMarkerView(View patternButton) throws IllegalArgumentException{
@@ -363,6 +351,9 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
         mPatternEntered="";
     }
 
+    public void backspace() {
+        // Don't implement -- we won't be using this function in this class
+    }
     private void drawLineToView(View start, View end) throws IllegalArgumentException{
         int startNum = getKeyNumber(start, -1), endNum = getKeyNumber(end, -1);
         if (startNum == -1 || endNum == -1) {

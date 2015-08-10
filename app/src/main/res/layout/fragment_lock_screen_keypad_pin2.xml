@@ -18,14 +18,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
-            auto:instruction="@string/lock_screen_keypad_pattern_instruction_1"
-            auto:wrongPasscode="@string/lock_screen_wrong_pattern_entered"
+            auto:instruction="@string/lock_screen_pin_default_display"
+            auto:wrongPasscode="@string/lock_screen_wrong_pin_entered"
             auto:lockout1Text="@string/lock_screen_wrong_entry_3_times"
             auto:lockout2Text="@string/lock_screen_wrong_entry_6_times"
-            auto:lockout3Text="@string/lock_screen_wrong_entry_max_times"/>
+            auto:lockout3Text="@string/lock_screen_wrong_entry_max_times"
+            auto:displayDeleteButton="true"/>
     </RelativeLayout>
 
-    <com.vitbac.speeddiallocker.views.PatternEntryView
+    <com.vitbac.speeddiallocker.views.PinEntryView
         android:id="@+id/lock_screen_passcode_entry_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

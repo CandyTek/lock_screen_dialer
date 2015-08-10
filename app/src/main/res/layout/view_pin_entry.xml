@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pin_root_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="5dp"
+    android:layout_weight="1"
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin">
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/pin_button_1"
+                style="@style/key_pad_buttons_lock_screen"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+                <TextView
+                    android:id="@+id/pin_text_num_1"
+                    style="@style/key_pad_buttons_lock_screen_digits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1" />
+            </LinearLayout>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/pin_button_2"
+
+                style="@style/key_pad_buttons_lock_screen" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+                <TextView
+                    android:id="@+id/pin_text_num_2"
+                    style="@style/key_pad_buttons_lock_screen_digits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2" />
+                <TextView
+                    android:id="@+id/pin_alphabetics_2"
+                    style="@style/key_pad_buttons_lock_screen_alphabetics"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ABC" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/pin_button_3"
+                style="@style/key_pad_buttons_lock_screen"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+                <TextView
+                    android:id="@+id/pin_text_num_3"
+                    style="@style/key_pad_buttons_lock_screen_digits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3" />
+                <TextView
+                    android:id="@+id/pin_alphabetics_3"
+                    style="@style/key_pad_buttons_lock_screen_alphabetics"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DEF" />
+            </LinearLayout>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/pin_button_4"
+                style="@style/key_pad_buttons_lock_screen"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+                <TextView
+                    android:id="@+id/pin_text_num_4"
+                    style="@style/key_pad_buttons_lock_screen_digits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4" />
+                <TextView
+                    android:id="@+id/pin_alphabetics_4"
+                    style="@style/key_pad_buttons_lock_screen_alphabetics"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="GHI" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/pin_button_5"
+
+                style="@style/key_pad_buttons_lock_screen" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+                <TextView
+                    android:id="@+id/pin_text_num_5"
+                    style="@style/key_pad_buttons_lock_screen_digits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5" />
+                <TextView
+                    android:id="@+id/pin_alphabetics_5"
+                    style="@style/key_pad_buttons_lock_screen_alphabetics"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="JKL" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/pin_button_6"
+                style="@style/key_pad_buttons_lock_screen"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+                <TextView
+                    android:id="@+id/pin_text_num_6"
+                    style="@style/key_pad_buttons_lock_screen_digits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="6" />
+                <TextView
+                    android:id="@+id/pin_alphabetics_6"
+                    style="@style/key_pad_buttons_lock_screen_alphabetics"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MNO" />
+            </LinearLayout>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/pin_button_7"
+                style="@style/key_pad_buttons_lock_screen"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+                <TextView
+                    android:id="@+id/pin_text_num_7"
+                    style="@style/key_pad_buttons_lock_screen_digits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="7" />
+                <TextView
+                    android:id="@+id/pin_alphabetics_7"
+                    style="@style/key_pad_buttons_lock_screen_alphabetics"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PQRS" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/pin_button_8"
+                style="@style/key_pad_buttons_lock_screen" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+                <TextView
+                    android:id="@+id/pin_text_num_8"
+                    style="@style/key_pad_buttons_lock_screen_digits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="8" />
+                <TextView
+                    android:id="@+id/pin_alphabetics_8"
+                    style="@style/key_pad_buttons_lock_screen_alphabetics"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TUV" />
+            </LinearLayout>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/pin_button_9"
+                style="@style/key_pad_buttons_lock_screen"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+                <TextView
+                    android:id="@+id/pin_text_num_9"
+                    style="@style/key_pad_buttons_lock_screen_digits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="9" />
+                <TextView
+                    android:id="@+id/pin_alphabetics_9"
+                    style="@style/key_pad_buttons_lock_screen_alphabetics"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="WXYZ" />
+            </LinearLayout>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:visibility="invisible">
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/pin_button_0"
+                style="@style/key_pad_buttons_lock_screen"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+                <TextView
+                    android:id="@+id/pin_text_num_0"
+                    style="@style/key_pad_buttons_lock_screen_digits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+            <Button
+                android:id="@+id/pin_button_OK"
+                style="@style/key_pad_buttons_lock_screen"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true">
+                <TextView
+                    android:id="@+id/pin_text_OK"
+                    style="@style/key_pad_buttons_lock_screen_digits"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="OK" />
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

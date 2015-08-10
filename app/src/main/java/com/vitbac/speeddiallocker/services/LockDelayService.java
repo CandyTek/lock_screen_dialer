@@ -7,6 +7,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.vitbac.speeddiallocker.ErrorPageActivity;
+import com.vitbac.speeddiallocker.LockScreenActivity2;
 import com.vitbac.speeddiallocker.LockScreenKeypadPatternActivity;
 import com.vitbac.speeddiallocker.LockScreenKeypadPinActivity;
 import com.vitbac.speeddiallocker.R;
@@ -32,11 +33,17 @@ public class LockDelayService extends Service {
         Intent newIntent;
 
         if (lockScreenType != null) {
-            //newIntent = new Intent(context, LockScreenLauncherActivity.class);
+            newIntent = new Intent(this, LockScreenActivity2.class);
             if (lockScreenType.equals(getString(R.string.value_lock_screen_type_keypad_pin))) {
-                newIntent = new Intent(this, LockScreenKeypadPinActivity.class);
+                newIntent.putExtra(
+                        getString(R.string.key_lock_screen_type),
+                        getString(R.string.value_lock_screen_type_keypad_pin)
+                );
             } else if (lockScreenType.equals(getString(R.string.value_lock_screen_type_keypad_pattern))) {
-                newIntent = new Intent(this, LockScreenKeypadPatternActivity.class);
+                newIntent.putExtra(
+                        getString(R.string.key_lock_screen_type),
+                        getString(R.string.value_lock_screen_type_keypad_pattern)
+                );
             } else { //An error of some kind
                 Log.e(TAG, "No value for key " + getString(R.string.key_lock_screen_type));
                 newIntent = new Intent(this, ErrorPageActivity.class);

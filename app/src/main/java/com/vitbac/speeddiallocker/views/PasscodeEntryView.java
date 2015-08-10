@@ -2,13 +2,15 @@ package com.vitbac.speeddiallocker.views;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.vitbac.speeddiallocker.R;
@@ -29,7 +31,7 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
 
     private boolean mBlockInputFlag;
 
-    protected View[] mKeys;
+    protected Button[] mKeys;
 
     protected String mFont;
 
@@ -44,18 +46,27 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
 
     public PasscodeEntryView (Context context, AttributeSet attrs) {
         super(context, attrs);
-        // TODO: do styled attributes
+        TypedArray attributeArray = context.obtainStyledAttributes(attrs,
+                R.styleable.PasscodeEntryView, 0, 0);
+        mLongPressDelay = attributeArray.getInt(
+                R.styleable.PasscodeEntryView_longPressDelay,
+                getResources().getInteger(R.integer.lock_screen_pattern_long_press_delay));
+        mFont = attributeArray.getString(R.styleable.PasscodeEntryView_fontFamily);
+        validateFont(); // Checks that the font is valid, assigning mFont to the def font if not
         init();
+        attributeArray.recycle();
     }
 
     private void init() {
         inflate(getContext(), getLayout(), this);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        mLongPressDelay = getResources().getInteger(R.integer.lock_screen_pattern_long_press_delay);
+        //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         mKeys = initKeys();
-        mFont = prefs.getString(
+        for (int i=0; i < mKeys.length; i++) {
+            mKeys[i].setOnTouchListener(this);
+        }
+        /*mFont = prefs.getString(
                 getContext().getString(R.string.key_select_lock_screen_fonts),
-                getContext().getString(R.string.font_default));
+                getContext().getString(R.string.font_default));*/
         mLongPressFlag = false;
         mBlockInputFlag = false;
     }
@@ -103,9 +114,14 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
         mBlockInputFlag = false;
     }
 
+    public boolean isInputBlocked(){
+        return mBlockInputFlag;
+    }
+
     public void clearPasscode() {
         mPasscode = null;
     }
+
 
     protected boolean matchesPasscode(String input) {
         if (mPasscode == null || !mPasscode.equals(input)) {
@@ -126,10 +142,28 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
         }
     }
 
+    public void setTypeface(Typeface tf) {
+        for (int i=0; i < mKeys.length; i++) {
+            mKeys[i].setTypeface(tf);
+        }
+        /*String currentFont = mFont;
+
+        mFont = font;
+        validateFont();
+        if (!mFont.equals(font)) {
+            mFont = currentFont;
+        } else {
+            for (int i=0; i < mKeys.length; i++) {
+                mKeys[i].setTypeface(Typeface.create(mFont, Typeface.NORMAL));
+            }
+        }*/
+    }
+
     // Method that assigns the View[] mKeys field
-    abstract View[] initKeys();
+    abstract Button[] initKeys();
     abstract int getLayout();
     public abstract void resetView();
+    public abstract void backspace();
 
 
     /**
@@ -229,9 +263,11 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
         try {
             return ((KeyMarker) view.getTag()).keyNumber;
         } catch (ClassCastException e) {
-            Log.e(TAG, "View has invalid tag to identify a key");
+            return def;
+        } catch (NullPointerException e) {
+            return def;
         }
-        return def;
+
     }
 
     protected String getKeyNumber(View view) {
@@ -265,6 +301,22 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
             return true;
         }
         return false;
+    }
+
+    private void validateFont() {
+        String defFont = getResources().getString(R.string.font_default);
+        if (mFont == null) {
+            mFont = defFont;
+            return;
+        }
+
+        TypedArray fontArray = getResources().obtainTypedArray(R.array.fonts);
+        for (int i=0; i < fontArray.length(); i++) {
+            if (fontArray.getString(i) != null && mFont.equals(fontArray.getString(i))) {
+                return;
+            }
+        }
+        mFont = defFont;
     }
 
     public KeyMarker getKeyMarker(View view) {

@@ -2,10 +2,14 @@ package com.vitbac.speeddiallocker.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Typeface;
 import android.os.Handler;
-import android.os.Vibrator;
+import android.text.method.PasswordTransformationMethod;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.vitbac.speeddiallocker.R;
@@ -13,7 +17,7 @@ import com.vitbac.speeddiallocker.R;
 /**
  * Created by nick on 8/7/15.
  */
-public class PasscodeEntryDisplay extends TextView {
+public class PasscodeEntryDisplay extends RelativeLayout implements View.OnClickListener {
 
     private static final String TAG = "PasscodeEntryDisplay";
     private static final String DEF_INSTRUCTION = "Enter passcode";
@@ -27,12 +31,16 @@ public class PasscodeEntryDisplay extends TextView {
     private static final int DEF_LOCKOUT_LEVEL_THRESHOLD = 3;
     private static final int DEF_DISPLAY_TIME = 3000;
 
+    private TextView mTextView;
+    private Button mDeleteButton;
+
     private String mInstructionText, mWrongPasscodeText, mLockout1Text, mLockout2Text, mLockout3Text;
     private int mDisplayTime, mLockout1Delay, mLockout2Delay, mLockout3Delay;
     private int mNumTries, mLockoutThreshold;
     private Handler mHandler;
     private Runnable mRunnable;
-    private OnLockoutListener mListener;
+    private OnLockoutListener mLockoutListener;
+    private OnDeletePressed mDeleteListener;
 
     public PasscodeEntryDisplay(Context context) {
         super(context);
@@ -61,9 +69,14 @@ public class PasscodeEntryDisplay extends TextView {
         mDisplayTime = attributeArray.getInt(R.styleable.PasscodeEntryDisplay_displayTime,
                 DEF_DISPLAY_TIME);
         init();
+        if (attributeArray.getBoolean(R.styleable.PasscodeEntryDisplay_displayDeleteButton, false)) {
+            // If visibility is set to View.GONE, then we never address it and it stays gone.
+            mDeleteButton.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void init(){
+
         if (mInstructionText == null) {
             mInstructionText = DEF_INSTRUCTION;
         }
@@ -80,7 +93,11 @@ public class PasscodeEntryDisplay extends TextView {
             mLockout3Text = DEF_LOCKOUT_3;
         }
 
-        setText(mInstructionText);
+        inflate(getContext(), R.layout.view_passcode_display, this);
+        mTextView = (TextView) findViewById(R.id.passcode_display);
+        mDeleteButton = (Button) findViewById(R.id.delete_button);
+        mTextView.setText(mInstructionText);
+        mDeleteButton.setOnClickListener(this);
         mNumTries = 0;
     }
 
@@ -88,9 +105,18 @@ public class PasscodeEntryDisplay extends TextView {
         void onLockout(int delay);
     }
 
-    public void setOnLockoutListener(OnLockoutListener listener) {
-        mListener = listener;
+    public interface OnDeletePressed {
+        void onDeletePressed();
     }
+
+    public void setOnLockoutListener(OnLockoutListener listener) {
+        mLockoutListener = listener;
+    }
+
+    public void setOnDeletePressedListener(OnDeletePressed listener) {
+        mDeleteListener = listener;
+    }
+
     public void setInstructionText(String text) {
         mInstructionText = text;
     }
@@ -133,29 +159,6 @@ public class PasscodeEntryDisplay extends TextView {
         return null;
     }
 
-    /*public void displayInstructionText() {
-        setText(mInstructionText);
-    }
-
-    public void displayWrongPasscodeText() {
-        setText(mWrongPasscodeText);
-    }
-
-    public void displayLockoutText(int i) {
-        String text = "";
-        switch (i) {
-            case 1:
-                text = mLockout1Text;
-                break;
-            case 2:
-                text = mLockout2Text;
-                break;
-            case 3:
-                text = mLockout3Text;
-                break;
-        }
-        setText(text);
-    }*/
 
     /**
      * Returns true if no delay has been imposed on the display
@@ -176,22 +179,22 @@ public class PasscodeEntryDisplay extends TextView {
                 Log.d(TAG, "lockout delay level 1");
                 delay = mLockout1Delay;
                 message = mLockout1Text;
-                if (mListener != null) {
-                    mListener.onLockout(delay);
+                if (mLockoutListener != null) {
+                    mLockoutListener.onLockout(delay);
                 }
                 break;
             case 2:  // raised to level 2
                 delay = mLockout2Delay;
                 message = mLockout2Text;
-                if (mListener != null) {
-                    mListener.onLockout(delay);
+                if (mLockoutListener != null) {
+                    mLockoutListener.onLockout(delay);
                 }
                 break;
             default: // raised to level 3
                 delay = mLockout3Delay;
                 message = mLockout3Text;
-                if (mListener != null) {
-                    mListener.onLockout(delay);
+                if (mLockoutListener != null) {
+                    mLockoutListener.onLockout(delay);
                 }
         }
         mNumTries++;
@@ -201,11 +204,14 @@ public class PasscodeEntryDisplay extends TextView {
     }
 
     public void displayMessage(String message) {
-        displayMessage(message,mDisplayTime);
+        displayMessage(message, mDisplayTime);
     }
 
     public void displayMessage(String message, int delay) {
-        setText(message);
+        clearTransformationMethod();
+        mTextView.setText(message);
+        // Hide the delete button if necessary
+        hideDeleteButton();
 
         // Clear any pending runnables
         if (mHandler != null && mRunnable != null) {
@@ -215,11 +221,71 @@ public class PasscodeEntryDisplay extends TextView {
         mHandler = new Handler();
         mRunnable = new Runnable() {
             public void run() {
-                setText(mInstructionText);
+                // Only set the text if we aren't typing in a password!
+                if (mTextView.getTransformationMethod() == null) {
+                    mTextView.setText(mInstructionText);
+                }
             }
         };
         mHandler.postDelayed(mRunnable, delay);
     }
 
+    public void setPasscodeText(String text) {
+        mTextView.setTransformationMethod(new PasswordTransformationMethod());  // Turns the text to dots
+        mTextView.setTextScaleX(1.2f);
+        mTextView.setText(text);
+        // Show the delete button if necessary
+        showDeleteButton();
+    }
+
+    private void clearTransformationMethod() {
+        if (mTextView.getTransformationMethod() == null) {
+            return;
+        }
+        mTextView.setTransformationMethod(null);  // Turns the text to dots
+        mTextView.setTextScaleX(1.0f);
+    }
+
+    public void setTypeface(Typeface typeface) {
+        mTextView.setTypeface(typeface);
+        mDeleteButton.setTypeface(typeface);
+    }
+
+    public void onClick (View view) {
+        if (view.getId() == mDeleteButton.getId()) {
+            backspace();
+            if (mDeleteListener != null) {
+                mDeleteListener.onDeletePressed();
+            }
+        }
+    }
+
+    public void backspace() {
+        String text = (String) mTextView.getText();
+        if (text != null && text.length() > 0) {
+            mTextView.setText(text.substring(0, text.length()-1));
+
+            // Now some clean up if the length of the text is now 0;
+            if (text.length() == 1) {
+                hideDeleteButton();
+                mTextView.setText(mInstructionText);
+                clearTransformationMethod();
+            }
+        }
+    }
+
+
+
+    private void hideDeleteButton() {
+        if (mDeleteButton.getVisibility() == View.VISIBLE) {
+            mDeleteButton.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void showDeleteButton() {
+        if (mDeleteButton.getVisibility() == View.INVISIBLE) {
+            mDeleteButton.setVisibility(View.VISIBLE);
+        }
+    }
 
 }

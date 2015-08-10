@@ -22,11 +22,11 @@
 
     <string name="lock_screen_initiate_call">Initiating speed dial...</string>
 
-    <string name="lock_screen_wrong_entry_3_times">Invalid: Imposing 5s delay...</string>
+    <string name="lock_screen_wrong_entry_3_times">Invalid: locking 5s...</string>
 
-    <string name="lock_screen_wrong_entry_6_times">Invalid: Imposing 30s delay...</string>
+    <string name="lock_screen_wrong_entry_6_times">Invalid: locking 30s...</string>
 
-    <string name="lock_screen_wrong_entry_max_times">Invalid: Imposing 60s delay...</string>
+    <string name="lock_screen_wrong_entry_max_times">Invalid: locking 60s...</string>
 
 
 </resources>

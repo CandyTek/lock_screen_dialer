@@ -174,14 +174,20 @@ public class PhoneCallReceiver extends PhoneStateReceiver {
 
         Intent newIntent;
         if (lockScreenType != null) {
-
+            newIntent = new Intent(context, LockScreenActivity2.class);
             if (lockScreenType.equals(
                     context.getString(R.string.value_lock_screen_type_keypad_pin))) {
-                newIntent = new Intent(context, LockScreenKeypadPinActivity.class);
+                newIntent.putExtra(
+                        context.getString(R.string.key_lock_screen_type),
+                        context.getString(R.string.value_lock_screen_type_keypad_pin)
+                );
             } else if (lockScreenType.equals(
                     context.getString(R.string.value_lock_screen_type_keypad_pattern))) {
                 //newIntent = new Intent(context, LockScreenKeypadPatternActivity.class);
-                newIntent = new Intent(context, LockScreenActivity2.class);
+                newIntent.putExtra(
+                        context.getString(R.string.key_lock_screen_type),
+                        context.getString(R.string.value_lock_screen_type_keypad_pattern)
+                );
                 //Log.d(TAG, "Phone receiver starting intent to pattern activity");
             } else { //An error of some kind
                 Log.d(TAG, "No value for key " + context

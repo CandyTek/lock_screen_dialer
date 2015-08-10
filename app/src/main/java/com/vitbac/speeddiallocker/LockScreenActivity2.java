@@ -36,6 +36,7 @@ import android.support.v4.view.GestureDetectorCompat;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.text.format.DateFormat;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
@@ -83,7 +84,8 @@ import java.util.TimeZone;
 public class LockScreenActivity2 extends Activity implements View.OnClickListener,
         View.OnTouchListener, CompoundButton.OnCheckedChangeListener,
         BitmapToViewHelper.GetBitmapFromTaskInterface, PasscodeEntryView.OnPasscodeEntryListener,
-        PasscodeEntryView.OnLongPressListener, PasscodeEntryDisplay.OnLockoutListener{
+        PasscodeEntryView.OnLongPressListener, PasscodeEntryDisplay.OnLockoutListener,
+        PasscodeEntryView.OnInputReceivedListener, PasscodeEntryDisplay.OnDeletePressed {
 
     private final static String TAG = "LSActivity2";
 
@@ -259,10 +261,16 @@ public class LockScreenActivity2 extends Activity implements View.OnClickListene
             return;
         }
 
-        //Inflate the locking mechanism fragment XML
-
-        View lockMechFragment = getLayoutInflater()
-                .inflate(R.layout.fragment_lock_screen_pattern2, null);
+        //Inflate the locking mechanism fragment XML and prepare those views
+        String lockScreenType = getIntent().getStringExtra(getString(R.string.key_lock_screen_type));
+        View lockMechFragment;
+        if (lockScreenType.equals(getString(R.string.value_lock_screen_type_keypad_pattern))) {
+            lockMechFragment = getLayoutInflater()
+                    .inflate(R.layout.fragment_lock_screen_pattern2, null);
+        } else { // TODO: default to PIN for now
+            lockMechFragment = getLayoutInflater()
+                    .inflate(R.layout.fragment_lock_screen_keypad_pin2, null);
+        }
         FrameLayout container = (FrameLayout) getView(R.id.lock_screen_fragment_container);
         if (lockMechFragment == null) {
             Log.e(TAG, "Null fragment provided by subclass.");
@@ -277,11 +285,23 @@ public class LockScreenActivity2 extends Activity implements View.OnClickListene
         mDisplayView =
                 (PasscodeEntryDisplay)lockMechFragment.findViewById(R.id.lock_screen_passcode_display);
         mDisplayView.setOnLockoutListener(this);
+        // Set an on input received listener only if PIN
+        if (lockScreenType.equals(getString(R.string.value_lock_screen_type_keypad_pin))) {
+            mPasscodeView.setOnInputReceivedListener(this);
+            mDisplayView.setOnDeletePressedListener(this);
+        }
 
+        // Set the font for these views
+        String font = prefs.getString(
+                getString(R.string.key_select_lock_screen_fonts),
+                getString(R.string.font_default));
+        mPasscodeView.setTypeface(Typeface.create(font, Typeface.NORMAL));
+        mDisplayView.setTypeface(Typeface.create(font, Typeface.NORMAL));
+
+        // Now add the lock mech XML to the view tree
         container.addView(lockMechFragment);
 
         // Determine if the sheath screen is enabled and prepare the display
-
         mSheathScreenOn = prefs.getBoolean(getString(R.string.key_toggle_sheath_screen), false);
         mPhoneCallAnimOn = prefs
                 .getBoolean(getString(R.string.key_toggle_phone_call_animations), true);
@@ -1549,9 +1569,13 @@ public class LockScreenActivity2 extends Activity implements View.OnClickListene
         onIncorrectPasscode();
     }
 
+    public void onInputReceived(String input) {
+        // The listener was only set for lock mech type PIN, so we can do as we please here
+        mDisplayView.setPasscodeText(input);
+    }
+
     public void onLockout(int delay) {
         //  PasscodeView should already have it's input blocked
-        Log.d(TAG, "onLockout()");
         if (mPasscodeResetHandler == null) {
             mPasscodeResetHandler = new Handler();
         }
@@ -1562,7 +1586,10 @@ public class LockScreenActivity2 extends Activity implements View.OnClickListene
             }
         };
         mPasscodeResetHandler.postDelayed(mPasscodeResetRunnable, delay);
-        Log.d(TAG, "onLockout delaying " + delay + "ms");
+    }
+
+    public void onDeletePressed() {
+        mPasscodeView.backspace();
     }
 
     public void onLongPress (int key) {
