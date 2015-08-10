@@ -81,7 +81,7 @@ import java.util.Random;
 import java.util.TimeZone;
 
 
-public class LockScreenActivity2 extends Activity implements View.OnClickListener,
+public class LockScreenActivity extends Activity implements View.OnClickListener,
         View.OnTouchListener, CompoundButton.OnCheckedChangeListener,
         BitmapToViewHelper.GetBitmapFromTaskInterface, PasscodeEntryView.OnPasscodeEntryListener,
         PasscodeEntryView.OnLongPressListener, PasscodeEntryDisplay.OnLockoutListener,
@@ -265,13 +265,16 @@ public class LockScreenActivity2 extends Activity implements View.OnClickListene
 
         //Inflate the locking mechanism fragment XML and prepare those views
         String lockScreenType = getIntent().getStringExtra(getString(R.string.key_lock_screen_type));
+        Log.d(TAG, "Lock screen type is " + lockScreenType);
         View lockMechFragment;
         if (lockScreenType.equals(getString(R.string.value_lock_screen_type_keypad_pattern))) {
             lockMechFragment = getLayoutInflater()
                     .inflate(R.layout.fragment_lock_screen_pattern2, null);
-        } else { // TODO: fix, default to PIN for now
+        } else if (lockScreenType.equals(getString(R.string.value_lock_screen_type_keypad_pin))){
             lockMechFragment = getLayoutInflater()
                     .inflate(R.layout.fragment_lock_screen_keypad_pin2, null);
+        } else {
+            throw new IllegalArgumentException("Received invalid value for lock screen type: " + lockScreenType);
         }
         FrameLayout container = (FrameLayout) getView(R.id.lock_screen_fragment_container);
         if (lockMechFragment == null) {

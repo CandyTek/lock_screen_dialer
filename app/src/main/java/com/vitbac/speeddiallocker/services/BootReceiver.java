@@ -7,8 +7,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.vitbac.speeddiallocker.ErrorPageActivity;
-import com.vitbac.speeddiallocker.LockScreenActivity2;
+import com.vitbac.speeddiallocker.LockScreenActivity;
 import com.vitbac.speeddiallocker.R;
 
 public class BootReceiver extends BroadcastReceiver {
@@ -39,7 +38,7 @@ public class BootReceiver extends BroadcastReceiver {
                         context.getString(R.string.key_lock_screen_type),
                         null);
                 if (lockScreenType != null) {
-                    lockScreenIntent = new Intent(context, LockScreenActivity2.class);
+                    lockScreenIntent = new Intent(context, LockScreenActivity.class);
                     if (lockScreenType.equals(
                             context.getString(R.string.value_lock_screen_type_keypad_pin))) {
                         //newIntent = new Intent(context, LockScreenKeypadPinActivity.class);

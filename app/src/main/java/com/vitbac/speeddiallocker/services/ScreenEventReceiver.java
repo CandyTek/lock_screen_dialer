@@ -1,16 +1,19 @@
 package com.vitbac.speeddiallocker.services;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.vitbac.speeddiallocker.ErrorPageActivity;
-import com.vitbac.speeddiallocker.LockScreenActivity2;
+import com.vitbac.speeddiallocker.LockScreenActivity;
 import com.vitbac.speeddiallocker.R;
 
 public class ScreenEventReceiver extends BroadcastReceiver {
@@ -19,12 +22,14 @@ public class ScreenEventReceiver extends BroadcastReceiver {
 
     private static boolean mIssueIntentOnScreenOn = false;
 
-    private static Handler mDelayHandler;
-    private static Runnable mDelayRunnable;
+    /*private static Handler mDelayHandler;
+    private static Runnable mDelayRunnable;*/
+    private static AlarmManager mAlarmMgr;
+    private static PendingIntent mAlarmIntent;
 
 
     public ScreenEventReceiver() {
-        mDelayHandler = new Handler();
+
     }
 
     /**
@@ -72,12 +77,13 @@ public class ScreenEventReceiver extends BroadcastReceiver {
             }
 
             // Stop the delay lock service
-            context.stopService(new Intent(context, LockDelayService.class));
-            /*
-            // Regardless, we should be clearing any runnables seeking to turn the screen off
-            if (mDelayHandler != null && mDelayRunnable != null) {
-                mDelayHandler.removeCallbacks(mDelayRunnable);
-            }*/
+            //context.stopService(new Intent(context, LockDelayService.class));
+
+            // Kill any alarms
+            if (mAlarmMgr != null && mAlarmIntent != null) {
+                mAlarmMgr.cancel(mAlarmIntent);
+            }
+
         }
         else {
             Log.e(TAG, "onReceive() received unanticipated event.");
@@ -94,9 +100,10 @@ public class ScreenEventReceiver extends BroadcastReceiver {
             lockScreenType = prefs.getString(
                     context.getString(R.string.key_lock_screen_type),
                     null);
+            Log.d(TAG, "Lock Screen Type is " + lockScreenType);
 
             if (lockScreenType != null) {
-                newIntent = new Intent(context, LockScreenActivity2.class);
+                newIntent = new Intent(context, LockScreenActivity.class);
                 if (lockScreenType.equals(
                         context.getString(R.string.value_lock_screen_type_keypad_pin))) {
                     //newIntent = new Intent(context, LockScreenKeypadPinActivity.class);
@@ -113,13 +120,16 @@ public class ScreenEventReceiver extends BroadcastReceiver {
                             context.getString(R.string.value_lock_screen_type_keypad_pattern)
                     );
                 } else { //An error of some kind
-                    Log.e(TAG, "No value for key " + context
+                    /*Log.e(TAG, "No value for key " + context
                             .getString(R.string.key_lock_screen_type));
-                    newIntent = new Intent(context, ErrorPageActivity.class);
+                    newIntent = new Intent(context, ErrorPageActivity.class);*/
+                    throw new IllegalArgumentException("Invalid value for key " + context
+                            .getString(R.string.key_lock_screen_type) + ": " + lockScreenType);
                 }
             } else {
-                Log.e(TAG, "Unable to get the lock screen type from shared preferences.");
-                return;
+                /*Log.e(TAG, "Unable to get the lock screen type from shared preferences.");
+                return;*/
+                throw new IllegalArgumentException("Unable to get the lock screen type from shared preferences.");
             }
             newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -130,12 +140,21 @@ public class ScreenEventReceiver extends BroadcastReceiver {
                 context.startActivity(newIntent);
                 mIssueIntentOnScreenOn = false;
             } else {
-                Intent serviceIntent = new Intent(context, LockDelayService.class);
+                /*Intent serviceIntent = new Intent(context, LockDelayService.class);
                 serviceIntent.putExtra("delay", delay);
                 serviceIntent.putExtra("startTime", System.currentTimeMillis());
                 serviceIntent.putExtra("lockScreenType", lockScreenType);
                 Log.d(TAG, "starting delay service");
-                context.startService(serviceIntent);
+                context.startService(serviceIntent);*/
+
+                // Set an alarm
+                if (mAlarmMgr == null) {
+                    mAlarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+                }
+                mAlarmIntent = PendingIntent.getActivity(context, 0, newIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                mAlarmMgr.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                        SystemClock.elapsedRealtime() + delay,
+                        mAlarmIntent);
             }
         }
     }

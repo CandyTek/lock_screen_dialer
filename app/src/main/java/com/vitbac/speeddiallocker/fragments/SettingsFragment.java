@@ -36,10 +36,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vitbac.speeddiallocker.AppBackgroundActivity;
-import com.vitbac.speeddiallocker.ErrorPageActivity;
 import com.vitbac.speeddiallocker.KeypadPatternConfigActivity;
 import com.vitbac.speeddiallocker.KeypadPinConfigActivity;
-import com.vitbac.speeddiallocker.LockScreenActivity2;
+import com.vitbac.speeddiallocker.LockScreenActivity;
 import com.vitbac.speeddiallocker.R;
 import com.vitbac.speeddiallocker.helpers.BitmapToViewHelper;
 import com.vitbac.speeddiallocker.services.LockScreenService;
@@ -455,7 +454,7 @@ public class SettingsFragment extends PreferenceFragment
                     false,
                     getString(R.string.alert_dialog_button_text_about)
             );*/
-            Intent intent = new Intent(getActivity(), LockScreenActivity2.class);
+            Intent intent = new Intent(getActivity(), LockScreenActivity.class);
             getActivity().startActivity(intent);
         }
         return false;

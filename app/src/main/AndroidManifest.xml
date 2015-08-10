@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-feature
         android:name="android.hardware.telephony"
@@ -97,10 +98,8 @@
                 android:value="com.vitbac.speeddiallocker.SettingsActivity" />
         </activity>
 
-
-
         <activity
-            android:name="com.vitbac.speeddiallocker.LockScreenActivity2"
+            android:name=".LockScreenActivity"
             android:configChanges="keyboardHidden|screenSize|orientation"
             android:label="@string/title_activity_lock_screen_keypad_pattern"
             android:excludeFromRecents="true"

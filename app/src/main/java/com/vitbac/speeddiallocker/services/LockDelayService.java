@@ -7,7 +7,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.vitbac.speeddiallocker.ErrorPageActivity;
-import com.vitbac.speeddiallocker.LockScreenActivity2;
+import com.vitbac.speeddiallocker.LockScreenActivity;
 import com.vitbac.speeddiallocker.R;
 
 /**
@@ -31,7 +31,7 @@ public class LockDelayService extends Service {
         Intent newIntent;
 
         if (lockScreenType != null) {
-            newIntent = new Intent(this, LockScreenActivity2.class);
+            newIntent = new Intent(this, LockScreenActivity.class);
             if (lockScreenType.equals(getString(R.string.value_lock_screen_type_keypad_pin))) {
                 newIntent.putExtra(
                         getString(R.string.key_lock_screen_type),

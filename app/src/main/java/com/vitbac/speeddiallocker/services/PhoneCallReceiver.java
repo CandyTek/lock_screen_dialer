@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.vitbac.speeddiallocker.ErrorPageActivity;
-import com.vitbac.speeddiallocker.LockScreenActivity2;
+import com.vitbac.speeddiallocker.LockScreenActivity;
 import com.vitbac.speeddiallocker.R;
 
 import java.util.Date;
@@ -170,7 +170,7 @@ public class PhoneCallReceiver extends PhoneStateReceiver {
 
         Intent newIntent;
         if (lockScreenType != null) {
-            newIntent = new Intent(context, LockScreenActivity2.class);
+            newIntent = new Intent(context, LockScreenActivity.class);
             if (lockScreenType.equals(
                     context.getString(R.string.value_lock_screen_type_keypad_pin))) {
                 newIntent.putExtra(
