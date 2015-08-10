@@ -7,8 +7,6 @@ import android.util.Log;
 
 import com.vitbac.speeddiallocker.ErrorPageActivity;
 import com.vitbac.speeddiallocker.LockScreenActivity2;
-import com.vitbac.speeddiallocker.LockScreenKeypadPatternActivity;
-import com.vitbac.speeddiallocker.LockScreenKeypadPinActivity;
 import com.vitbac.speeddiallocker.R;
 
 import java.util.Date;
@@ -28,8 +26,6 @@ public class PhoneCallReceiver extends PhoneStateReceiver {
 
     public PhoneCallReceiver() {
         resetLastState();
-
-        //Log.d(TAG, "Constructor called.");
     }
 
     /**

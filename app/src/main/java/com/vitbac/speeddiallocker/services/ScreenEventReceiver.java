@@ -11,9 +11,6 @@ import android.util.Log;
 
 import com.vitbac.speeddiallocker.ErrorPageActivity;
 import com.vitbac.speeddiallocker.LockScreenActivity2;
-import com.vitbac.speeddiallocker.LockScreenKeypadPatternActivity;
-import com.vitbac.speeddiallocker.LockScreenKeypadPinActivity;
-import com.vitbac.speeddiallocker.LockScreenLauncherActivity;
 import com.vitbac.speeddiallocker.R;
 
 public class ScreenEventReceiver extends BroadcastReceiver {
@@ -94,14 +91,9 @@ public class ScreenEventReceiver extends BroadcastReceiver {
             String lockScreenType;
             Intent newIntent;
 
-            try {
-                lockScreenType = prefs.getString(
-                        context.getString(R.string.key_lock_screen_type),
-                        null);
-            } catch (NullPointerException e) {
-                Log.e(TAG, "Unable to access shared preferences for lock screen type");
-                return;
-            }
+            lockScreenType = prefs.getString(
+                    context.getString(R.string.key_lock_screen_type),
+                    null);
 
             if (lockScreenType != null) {
                 newIntent = new Intent(context, LockScreenActivity2.class);

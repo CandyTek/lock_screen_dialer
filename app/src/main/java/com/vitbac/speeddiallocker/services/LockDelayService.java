@@ -8,8 +8,6 @@ import android.util.Log;
 
 import com.vitbac.speeddiallocker.ErrorPageActivity;
 import com.vitbac.speeddiallocker.LockScreenActivity2;
-import com.vitbac.speeddiallocker.LockScreenKeypadPatternActivity;
-import com.vitbac.speeddiallocker.LockScreenKeypadPinActivity;
 import com.vitbac.speeddiallocker.R;
 
 /**

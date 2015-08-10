@@ -117,9 +117,10 @@
     <string name="error_description_offhook">Device failed to initiate call.</string>
     <string name="title_activity_app_background">Select App Background</string>
     <string name="error_title_invalid_number">Unassigned Key</string>
-    <string name="error_description_invalid_number">Assign phone numbers in settings!</string>
+    <string name="error_description_invalid_number">Set speed dial numbers in settings.</string>
     <string name="error_title_speed_dial_inactive">Dialer disabled</string>
     <string name="error_description_speed_dial_inactive">Speed dial disabled; change in settings.</string>
+    <string name="error_page_text">You have encountered an error.</string>
 
     <string name="instruction_app_content_flipper">Select a background:</string>
     <string name="button_app_background_random_text">Randomize</string>

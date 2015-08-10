@@ -77,63 +77,27 @@
             android:exported="false" />
 
         <activity
-            android:name="com.vitbac.speeddiallocker.LockScreenSelectionActivity"
-            android:label="@string/title_activity_lock_screen_selection"
-            android:parentActivityName="com.vitbac.speeddiallocker.SettingsActivity" >
+            android:name="com.vitbac.speeddiallocker.KeypadPatternConfigActivity"
+            android:label="@string/title_activity_keypad_pattern_config"
+            android:parentActivityName="com.vitbac.speeddiallocker.SettingsActivity"
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.vitbac.speeddiallocker.SettingsActivity" />
         </activity>
 
         <activity
-            android:name="com.vitbac.speeddiallocker.KeypadPatternConfigActivity"
-            android:label="@string/title_activity_keypad_pattern_config"
-            android:parentActivityName="com.vitbac.speeddiallocker.LockScreenSelectionActivity"
-            android:screenOrientation="portrait" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.vitbac.speeddiallocker.LockScreenSelectionActivity" />
-        </activity>
-
-        <activity
             android:name="com.vitbac.speeddiallocker.KeypadPinConfigActivity"
             android:label="@string/title_activity_keypad_pin_config"
-            android:parentActivityName="com.vitbac.speeddiallocker.LockScreenSelectionActivity"
+            android:parentActivityName="com.vitbac.speeddiallocker.SettingsActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.vitbac.speeddiallocker.LockScreenSelectionActivity" />
+                android:value="com.vitbac.speeddiallocker.SettingsActivity" />
         </activity>
 
-        <activity
-            android:name="com.vitbac.speeddiallocker.LockScreenLauncherActivity"
-            android:label="@string/title_activity_lock_screen_launcher"
-            android:excludeFromRecents="true"
-            android:noHistory="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/lock_screen_window_theme" />
 
-        <activity
-            android:name="com.vitbac.speeddiallocker.LockScreenKeypadPinActivity"
-            android:configChanges="keyboardHidden|screenSize|orientation"
-            android:label="@string/title_activity_lock_screen_keypad_pin"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask"
-            android:taskAffinity=""
-            android:screenOrientation="portrait"
-            android:theme="@style/lock_screen_window_theme">
-        </activity>
-
-        <activity
-            android:name="com.vitbac.speeddiallocker.LockScreenKeypadPatternActivity"
-            android:configChanges="keyboardHidden|screenSize|orientation"
-            android:label="@string/title_activity_lock_screen_keypad_pattern"
-            android:excludeFromRecents="true"
-            android:launchMode="singleTask"
-            android:taskAffinity=""
-            android:screenOrientation="portrait"
-            android:theme="@style/lock_screen_window_theme" />
 
         <activity
             android:name="com.vitbac.speeddiallocker.LockScreenActivity2"
@@ -172,7 +136,7 @@
             android:name="com.vitbac.speeddiallocker.services.BootReceiver"
             android:enabled="true"
             android:exported="false">
-            <intent-filter android:priority="1000">
+            <intent-filter android:priority="999">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>

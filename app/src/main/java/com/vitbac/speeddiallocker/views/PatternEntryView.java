@@ -267,7 +267,7 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
         getKeyMarker(view).isMarked = true;
         //view.setTag(new KeyMarker(getKeyNumber(view, -1), true));
         mMarkedCounter++;
-        Log.d(TAG, "marking view " + getKeyNumber(view) + "; " + mMarkedCounter + " now marked");
+        //Log.d(TAG, "marking view " + getKeyNumber(view) + "; " + mMarkedCounter + " now marked");
 
         View markerView = getCorrespondingMarkerView(view);
 
@@ -325,7 +325,7 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
                     public void onAnimationEnd(Animator animation) {
                         getKeyMarker(view).isMarked = false;
                         mMarkedCounter--;
-                        Log.d(TAG, "Ended animation for view " + getKeyNumber(view, -1) + "; " + mMarkedCounter + " left to unlock");
+                        //Log.d(TAG, "Ended animation for view " + getKeyNumber(view, -1) + "; " + mMarkedCounter + " left to unlock");
                         // This lock prevents touches during un-marking animations
                         if (mMarkedCounter == 0) {
                             unblockInput();
@@ -336,14 +336,14 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
 
     public void resetView() {
         // Input should be blocked by the time this method is called
-        Log.d(TAG, "resetView(), pattern is " + mPatternEntered);
+        //Log.d(TAG, "resetView(), pattern is " + mPatternEntered);
 
         mPatternDrawView.clearLines();
         mPatternDrawView.invalidate();
 
         for (int i=0; i < mKeys.length; i++) {
             if (mPatternEntered.contains(getKeyNumber(mKeys[i]))) {
-                Log.d(TAG, "unmarking view with key " + getKeyNumber(mKeys[i]));
+                //Log.d(TAG, "unmarking view with key " + getKeyNumber(mKeys[i]));
                 unmarkView(mKeys[i]);
             }
         }

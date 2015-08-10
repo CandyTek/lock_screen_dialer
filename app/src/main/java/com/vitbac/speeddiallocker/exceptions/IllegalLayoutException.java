@@ -3,7 +3,7 @@ package com.vitbac.speeddiallocker.exceptions;
 /**
  * Created by nick on 6/11/15.
  */
-public class IllegalLayoutException extends Exception {
+public class IllegalLayoutException extends RuntimeException {
     public IllegalLayoutException() {
         super();
     }
