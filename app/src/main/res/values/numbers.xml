@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="lock_screen_pin_wrong_entry_delay">1400</integer>
-    <integer name="lock_screen_pattern_config_wrong_entry_delay">1800</integer>
+    <integer name="lock_screen_pattern_config_wrong_entry_delay">1400</integer>
     <integer name="lock_screen_pin_wrong_entry_delay_begin">3600</integer>
     <integer name="lock_screen_pin_wrong_entry_delay_plus">28600</integer>
     <integer name="lock_screen_pin_wrong_entry_delay_max">58600</integer>

@@ -83,10 +83,7 @@
         <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
     </style>
 
-    <style name="ancilliary_instruction">
-        <item name="android:padding">2dp</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-    </style>
+
 
 
 

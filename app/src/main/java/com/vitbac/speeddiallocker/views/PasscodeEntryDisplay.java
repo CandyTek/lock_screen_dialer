@@ -121,6 +121,14 @@ public class PasscodeEntryDisplay extends RelativeLayout implements View.OnClick
         mInstructionText = text;
     }
 
+    public void displayInstructionText() {
+        if (mInstructionText != null) {
+            mTextView.setText(mInstructionText);
+        } else {
+            mTextView.setText("");
+        }
+    }
+
     public void setWrongPasscodeText(String text) {
         mWrongPasscodeText = text;
     }
@@ -276,6 +284,14 @@ public class PasscodeEntryDisplay extends RelativeLayout implements View.OnClick
 
     public void setMaxLines(int lines) {
         mTextView.setMaxLines(lines);
+    }
+
+    public void setTextColor(int color) {
+        mTextView.setTextColor(color);
+    }
+
+    public void setShadowLayer (float radius, float dx, float dy, int color) {
+        mTextView.setShadowLayer(radius, dx, dy, color);
     }
 
     public void displayDeleteButton(boolean display) {

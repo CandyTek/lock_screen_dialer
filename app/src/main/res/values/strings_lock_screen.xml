@@ -8,6 +8,8 @@
 
     <string name="keypad_pattern_config_instructions_3">Confirm pattern</string>
 
+    <string name="keypad_pattern_config_instructions_4">Pattern confirmed!</string>
+
     <string name="keypad_pattern_config_warning">Be sure to TOUCH each digit you want in your passcode -- pattern line can go through unused digits!</string>
 
     <string name="keypad_pattern_config_rules_1">&#8226; Pattern is order of digits touched</string>

@@ -18,39 +18,49 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.vitbac.speeddiallocker.views.DrawView;
+import com.vitbac.speeddiallocker.views.PasscodeEntryDisplay;
+import com.vitbac.speeddiallocker.views.PasscodeEntryWidget;
+import com.vitbac.speeddiallocker.views.PatternEntryWidget;
 
 
-public class KeypadPatternConfigActivity extends Activity implements View.OnTouchListener {
+public class KeypadPatternConfigActivity extends Activity
+        implements PasscodeEntryWidget.OnPasscodeEntryListener,
+        PasscodeEntryWidget.OnInputReceivedListener {
 
     private static final String TAG = "KeypadPatternConfig";
-    private TextView mKeyPadEntryInstructions;
+    /*private TextView mKeyPadEntryInstructions;
     private Button[] mPatternBtns;
-    private DrawView mPatternDrawView, mTouchDrawView;
-    private int mLastBtnTouchedNum;
+    private DrawView mPatternDrawView, mTouchDrawView;*/
+
+    private PatternEntryWidget mPatternWidget;
+    private PasscodeEntryDisplay mDisplay;
+    //private int mLastBtnTouchedNum;
     private String mPatternEntered, mPatternStored;
-    private boolean mTouchInactiveFlag;
+    //private boolean mTouchInactiveFlag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_keypad_pattern_config);
-        mTouchInactiveFlag = false;
+        mPatternWidget = (PatternEntryWidget) findViewById(R.id.pattern_widget);
+        mPatternWidget.setOnPassCodeEntryListener(this);
+        mPatternWidget.setOnInputReceivedListener(this);
+        mDisplay = (PasscodeEntryDisplay) findViewById(R.id.pattern_display);
+        mDisplay.setShadowLayer(0, 0, 0, 0);
+        mDisplay.setTextColor(getResources().getColor(R.color.black_cow));
+        //mTouchInactiveFlag = false;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        mKeyPadEntryInstructions = (TextView) this.findViewById(R.id.keypad_pin_config_instruction);
+        /*mKeyPadEntryInstructions = (TextView) this.findViewById(R.id.keypad_pin_config_instruction);
         mPatternBtns = getPatternButtons();
         mPatternDrawView = (DrawView) this.findViewById(R.id.lock_screen_pattern_canvas);
-        mTouchDrawView = (DrawView) this.findViewById(R.id.lock_screen_touch_canvas);
-
-        for (int i = 0; i < 9; i++) {
-            mPatternBtns[i].setOnTouchListener(this);
-        }
-
-        setActivityToFirstState(getString(R.string.lock_screen_keypad_pattern_instruction_1));  // calls method to ensure that entry onResume is always in first state
+        mTouchDrawView = (DrawView) this.findViewById(R.id.lock_screen_touch_canvas);*/
+        mPatternWidget.resetView();
+        setActivityToFirstState();  // calls method to ensure that entry onResume is always in first state
     }
 
 
@@ -84,18 +94,101 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
         super.onBackPressed();
     }
 
+    public void onInputReceived(String input) {
+        mPatternEntered = input;
+    }
+
+    public void onPasscodeEntered(boolean irrelevant) {
+        int delay = getResources().getInteger(R.integer.lock_screen_pattern_config_wrong_entry_delay);
+        if (mPatternStored == null) { // We are in the first state
+            if (mPatternEntered.length() < 3) { // Pattern too short
+                mDisplay.setInstructionText(getString(R.string.lock_screen_keypad_pattern_instruction_1));
+                mDisplay.displayMessage(
+                        getString(R.string.lock_screen_pattern_entry_error_too_short),
+                        delay
+                );
+                mPatternWidget.resetView(delay);
+                setActivityToFirstState();
+                /*SetTextInViewRunnable r = new SetTextInViewRunnable(
+                        getString(R.string.lock_screen_keypad_pattern_instruction_1),
+                        mKeyPadEntryInstructions);
+                Handler h = new Handler();
+                h.postDelayed(r, getResources()
+                        .getInteger(R.integer.lock_screen_pattern_config_wrong_entry_delay));*/
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                v.vibrate(200);
+                return;
+            }
+            setActivityToSecondState(mPatternEntered);
+        } else { // We are in the second state
+            if (mPatternStored.equals(mPatternEntered)) { // pattern is good
+                SharedPreferences sharedPref = this.getSharedPreferences(
+                        getString(R.string.file_lock_screen_type),
+                        Context.MODE_PRIVATE
+                );
+                SharedPreferences.Editor editor = sharedPref.edit();
+                // Set the preferences to indicate Keypad Pattern is the type of entry
+                editor.putString(
+                        getString(R.string.key_lock_screen_type),
+                        getString(R.string.value_lock_screen_type_keypad_pattern));
+                // Store the PIN
+                editor.putString(
+                        getString(R.string.value_lock_screen_passcode),
+                        mPatternEntered);
+                editor.commit();
+                Intent returnIntent = new Intent();
+                setResult(RESULT_OK, returnIntent);
+
+                mDisplay.displayMessage(
+                        getString(R.string.keypad_pattern_config_instructions_4),
+                        delay
+                );
+                Handler handler = new Handler();
+                Runnable runnable = new Runnable(){
+                    @Override
+                    public void run() {
+                        finish();
+                    }
+                };
+                handler.postDelayed(runnable, delay);
+                return;
+            } else {
+                mDisplay.setInstructionText(getString(R.string.lock_screen_keypad_pattern_instruction_1));
+                mDisplay.displayMessage(
+                        getString(R.string.lock_screen_pattern_entry_not_matching),
+                        delay
+                );
+                mPatternWidget.resetView(delay);
+                setActivityToFirstState();
+                /*setActivityToFirstState(getString(R.string.lock_screen_pattern_entry_not_matching));
+                SetTextInViewRunnable r = new SetTextInViewRunnable(
+                        getString(R.string.lock_screen_keypad_pattern_instruction_1),
+                        mKeyPadEntryInstructions);
+                Handler h = new Handler();
+                h.postDelayed(r, getResources()
+                        .getInteger(R.integer.lock_screen_pattern_config_wrong_entry_delay));*/
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                v.vibrate(200);
+                return;
+            }
+
+        }
+    }
+
     /**
      * Sets the activity to the first state
      */
-    private void setActivityToFirstState(String text) {
-        mKeyPadEntryInstructions.setText(text);
+    private void setActivityToFirstState() {
+        //mKeyPadEntryInstructions.setText(text);
+        //mDisplay.displayInstructionText();
         mPatternEntered = "";  //Can test for this to see if Activity is in re-enter PIN state.
         mPatternStored = null;
-        resetPatternButtons();
+        //mPatternWidget.resetView();
+        /*resetPatternButtons();
         mPatternDrawView.clearLines();
         mPatternDrawView.invalidate();
         mTouchDrawView.clearLines();
-        mTouchDrawView.invalidate();
+        mTouchDrawView.invalidate();*/
     }
 
     /**
@@ -104,10 +197,14 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
      * @param
      */
     private void setActivityToSecondState(String pattern) {
-        mKeyPadEntryInstructions.setText(getString(R.string.keypad_pattern_config_instructions_2));
+        int delay = getResources().getInteger(R.integer.lock_screen_pattern_confirm_delay);
+        //mKeyPadEntryInstructions.setText(getString(R.string.keypad_pattern_config_instructions_2));
+        mDisplay.displayMessage(getString(R.string.keypad_pattern_config_instructions_2), delay);
+        mDisplay.setInstructionText(getString(R.string.keypad_pattern_config_instructions_3));
+        mPatternWidget.resetView(delay);
         mPatternStored = pattern;
         mPatternEntered = "";
-        Handler handler = new Handler();
+        /*Handler handler = new Handler();
         Runnable runnable = new Runnable() {
             public void run() {
                 resetPatternButtons();
@@ -122,11 +219,11 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
         handler.postDelayed(
                 runnable,
                 getResources().getInteger(R.integer.lock_screen_pattern_confirm_delay));
-        mTouchInactiveFlag = true;
+        mTouchInactiveFlag = true;*/
 
     }
 
-    private Button[] getPatternButtons() {
+    /*private Button[] getPatternButtons() {
         Button[] patternButtons = new Button[9];
 
         try {
@@ -149,9 +246,9 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
             return null;
         }
         return patternButtons;
-    }
+    }*/
 
-    private void resetPatternButtons() {
+    /*private void resetPatternButtons() {
         if (mPatternBtns == null) {
             return;
         }
@@ -159,9 +256,9 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
             mPatternBtns[i].setPressed(false);
             mPatternBtns[i].setTextColor(getResources().getColor(R.color.white));
         }
-    }
+    }*/
 
-    public boolean onTouch(View v, MotionEvent event) {
+    /*public boolean onTouch(View v, MotionEvent event) {
 
         if (mTouchInactiveFlag) {
             return true;
@@ -230,8 +327,8 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
                                 coord[1] + mPatternBtns[i].getHeight());
                         if (r.contains((int) event.getRawX(), (int) event.getRawY())) {
                             // Outside last button AND inside new button
-                            /*mLastBtnTouchedNum = Integer
-                                    .getInteger(mPatternBtns[i].getText().toString());*/
+                            *//*mLastBtnTouchedNum = Integer
+                                    .getInteger(mPatternBtns[i].getText().toString());*//*
                             Button b = mPatternBtns[i];
 
                             if (mLastBtnTouchedNum < 1 || mLastBtnTouchedNum > 9) {
@@ -332,14 +429,14 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
                                     } else {
                                         Log.e(TAG, "Error drawing arc; startAngle or sweepAngle invalid");
                                     }
-                                    /*float radius = 20;
+                                    *//*float radius = 20;
                                     int startAngle = (int) (180 / Math.PI * Math.atan2(endCoord[1]
                                             - startCoord[1], endCoord[0] - startCoord[0]));
                                     final RectF oval = new RectF();
                                     oval.set(startCoord[0] - radius, startCoord[1] - radius,
                                             startCoord[0] + radius, startCoord[1] + radius);
                                     Path myPath = new Path();
-                                    myPath.arcTo(oval, startAngle, -(float) sweepAngle, true);*/
+                                    myPath.arcTo(oval, startAngle, -(float) sweepAngle, true);*//*
                                 }
                                 mPatternDrawView.invalidate();
                                 mTouchDrawView.clearLines();
@@ -367,16 +464,16 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
                                 event.getRawY(),
                                 p);
                         mTouchDrawView.invalidate();
-                        /*Log.d(TAG, "(" + (startCoord[0] + last.getWidth() / 2f)
+                        *//*Log.d(TAG, "(" + (startCoord[0] + last.getWidth() / 2f)
                                 + ", " + (startCoord[1] + last.getHeight() / 2f)
-                                + ") --> (" + event.getRawX() + ", " + event.getRawY() + ")");*/
+                                + ") --> (" + event.getRawX() + ", " + event.getRawY() + ")");*//*
                     }
                 }
         }
         return true;
-    }
+    }*/
 
-    private void onPatternSubmitted() {
+    /*private void onPatternSubmitted() {
         if (mPatternStored == null) { // We are in the first state
             if (mPatternEntered.length() < 3) { // Pattern too short
                 setActivityToFirstState(getString(R.string.lock_screen_pattern_entry_error_too_short));
@@ -425,7 +522,7 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
             }
 
         }
-    }
+    }*/
 
     /**
      * Returns true if, based on a square 9 digit keypad, int a and b requires an arc to draw a line
@@ -435,7 +532,7 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
      * @param b
      * @return
      */
-    private boolean lineRequiresArc(int a, int b) {
+    /*private boolean lineRequiresArc(int a, int b) {
         int difference = Math.abs(a - b);
         switch (difference) {
             case 6:
@@ -456,13 +553,13 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
         return false;
     }
 
-    /**
+    *//**
      * Method assumes that an arc is appropriate already
      *
      * @param a
      * @param b
      * @return
-     */
+     *//*
     private float getStartAngle(int a, int b) {
         int difference = Math.abs(a - b);
         switch (difference) {
@@ -532,13 +629,13 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
         return -1;
     }
 
-    /**
+    *//**
      * Returns oval rotation based on configuring the dominating length of the oval in the y direction
      *
      * @param a
      * @param b
      * @return
-     */
+     *//*
     private float getRotation(int a, int b, float width, float height) {
 
         int difference = Math.abs(a - b);
@@ -590,5 +687,5 @@ public class KeypadPatternConfigActivity extends Activity implements View.OnTouc
         public void run() {
             view.setText(text);
         }
-    }
+    }*/
 }

@@ -183,6 +183,9 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
                 // Now handle pattern logic
                 mLastKey = view;
                 mPatternEntered += keyNum;
+                if (mInputListener != null) {
+                    mInputListener.onInputReceived(mPatternEntered);
+                }
                 // Draw the pattern
                 markView(view);
 
@@ -212,6 +215,9 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
 
                         mLastKey = touchedKey;
                         mPatternEntered += getKeyNumber(touchedKey);
+                        if (mInputListener != null) {
+                            mInputListener.onInputReceived(mPatternEntered);
+                        }
                     }
                     // Now based on what happened, we decide whether to draw to touch
                     if (drawToTouch) {

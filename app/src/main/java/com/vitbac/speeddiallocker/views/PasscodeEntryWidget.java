@@ -165,6 +165,16 @@ public abstract class PasscodeEntryWidget extends RelativeLayout implements View
     public abstract void backspace();
 
 
+    public void resetView(int delay) {
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                resetView();
+            }
+        };
+        handler.postDelayed(runnable, delay);
+    }
     /**
      * We want to implement on touch here so far as to tell a listener whether a long touch
      * has taken place.  It will never consume the event.

@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_marginBottom="25dp"
+        android:padding="12dp"
         android:maxLines="1"/>
 
     <Button
@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/passcode_display"
+        android:layout_toRightOf="@id/passcode_entry_display_textview"
         android:background="@drawable/selector_speed_dial"
         android:minWidth="40dp"
         android:shadowColor="#000000"
