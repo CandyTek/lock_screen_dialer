@@ -1,7 +1,6 @@
 package com.vitbac.speeddiallocker.views;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -16,7 +15,7 @@ import com.vitbac.speeddiallocker.R;
 /**
  * Created by nick on 8/9/15.
  */
-public class PinEntryView extends PasscodeEntryView
+public class PinEntryWidget extends PasscodeEntryWidget
         implements View.OnClickListener{
     private static final String TAG = "PinEntryView";
 
@@ -24,13 +23,13 @@ public class PinEntryView extends PasscodeEntryView
     private Button mOkButton;
     private boolean mLongPressFlag;
 
-    public PinEntryView (Context context) {
+    public PinEntryWidget(Context context) {
         super(context);
         mLongPressFlag = false;
         resetView();
     }
 
-    public PinEntryView (Context context, AttributeSet attrs) {
+    public PinEntryWidget(Context context, AttributeSet attrs) {
         super(context, attrs);
         mLongPressFlag = false;
         resetView();

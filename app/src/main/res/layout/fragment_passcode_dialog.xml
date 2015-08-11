@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="6"
+        android:background="@color/gunmetal"/>
+
+    <FrameLayout
+        android:id="@+id/passcode_widget_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@color/gunmetal"/>
+
+    <Button
+        android:id="@+id/cancel_button"
+        style="@style/dialog_buttons"
+        android:layout_weight="0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_keypad_pin_config_cancel"
+        android:textAllCaps="false" />
+
+</LinearLayout>

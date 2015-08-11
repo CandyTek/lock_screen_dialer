@@ -36,12 +36,12 @@
         <attr name="defaultValueMinutes" format="integer" />
     </declare-styleable>
 
-    <declare-styleable name="PasscodeEntryView">
+    <declare-styleable name="PasscodeEntryWidget">
         <attr name="fontFamily" format="string"/>
         <attr name="longPressDelay" format="integer" />
     </declare-styleable>
 
-    <declare-styleable name="PatternEntryView" parent="PasscodeEntryView">
+    <declare-styleable name="PatternEntryWidget" parent="PasscodeEntryView">
         <attr name="markedColor" format="color" />
         <attr name="drawColor" format="color" />
         <attr name="animTime" format="integer" />

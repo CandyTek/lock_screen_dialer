@@ -61,6 +61,6 @@ public class MyListPreference extends ListPreference {
     }
 
     public interface ListItemClickListener {
-        public void onListItemClick(String value, String key);
+        void onListItemClick(String value, String key);
     }
 }

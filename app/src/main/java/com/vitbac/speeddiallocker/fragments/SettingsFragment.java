@@ -41,6 +41,7 @@ import com.vitbac.speeddiallocker.KeypadPinConfigActivity;
 import com.vitbac.speeddiallocker.LockScreenActivity;
 import com.vitbac.speeddiallocker.R;
 import com.vitbac.speeddiallocker.helpers.BitmapToViewHelper;
+import com.vitbac.speeddiallocker.preferences.LockedListPreference;
 import com.vitbac.speeddiallocker.services.LockScreenService;
 import com.vitbac.speeddiallocker.preferences.ColorPreference;
 import com.vitbac.speeddiallocker.preferences.MyListPreference;
@@ -56,7 +57,8 @@ public class SettingsFragment extends PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener,
         Preference.OnPreferenceClickListener, Preference.OnPreferenceChangeListener,
         MyListPreference.ListItemClickListener, ColorPickerDialogFragment.OnNoColorSelectedListener,
-        BitmapCropDialogFragment.GetBitmapCrop {
+        BitmapCropDialogFragment.GetBitmapCrop, PasscodeDialogFragment.OnAccessGranted,
+        LockedListPreference.OnPrefAccessRequestedListener {
 
     public static final String KEY_PREVIOUS_BG_TYPE = "KEY_PREVIOUS_BACKGROUND_TYPE";
     private static final String TAG = "SettingsFragment";
@@ -169,9 +171,18 @@ public class SettingsFragment extends PreferenceFragment
         }
 
         try {
-            MyListPreference listPref = (MyListPreference)
+            /*MyListPreference listPref = (MyListPreference)
+                    findPreference(getString(R.string.key_select_lock_screen_type));*/
+            LockedListPreference listPref = (LockedListPreference)
                     findPreference(getString(R.string.key_select_lock_screen_type));
             listPref.setOnListItemClickListener(this);
+            listPref.setOnPrefAccessRequestedListener(this);
+            if (!listPref.getValue().equals(getString(R.string.value_lock_screen_type_none))) {
+                listPref.lock();
+            } else {
+                listPref.unlock();
+            }
+            //listPref.setOnPreferenceClickListener(this);
         } catch (NullPointerException e) {
             Log.e(TAG, "Lock screen type selection preference missing from layout");
             throw e;
@@ -372,6 +383,30 @@ public class SettingsFragment extends PreferenceFragment
     }
 
     public boolean onPreferenceClick(Preference preference) {
+       /* if (preference.getKey().equals(getString(R.string.key_select_lock_screen_type))) {
+            // Show a lock screen dialog to deny access if necessary
+            //MyListPreference pref = (MyListPreference) preference;
+            LockedListPreference pref = (LockedListPreference) preference;fff
+            PasscodeDialogFragment frag;
+            if (pref.getValue().equals(getString(R.string.value_lock_screen_type_keypad_pin))) {
+                frag = PasscodeDialogFragment.newInstance(
+                        PasscodeDialogFragment.PASSCODE_PIN,
+                        getStoredPasscode()
+                );
+            } else if (pref.getValue().equals(getString(R.string.value_lock_screen_type_keypad_pattern))) {
+                frag = PasscodeDialogFragment.newInstance(
+                        PasscodeDialogFragment.PASSCODE_PATTERN,
+                        getStoredPasscode()
+                );
+            } else {
+                // Should be NONE
+                return false;
+            }
+            frag.setOnAccessGrantedListener(this);
+            frag.show(getFragmentManager(), getString(R.string.dialog_title_config_access));
+            Log.d(TAG, "Showing passcode dialog fragment");
+            return true;
+        }*/
         if (preference.getKey().equals(getString(R.string.key_select_speed_dial_button_color))) {
             ColorPickerDialogFragment dialogFragment;
             int color = PreferenceManager
@@ -506,13 +541,16 @@ public class SettingsFragment extends PreferenceFragment
                 getActivity().stopService(new Intent(getActivity(), LockScreenService.class));
             }
         } else if (key.equals(getString(R.string.key_select_lock_screen_type))) {
-            MyListPreference listPref = (MyListPreference) findPreference(key);
+            //MyListPreference listPref = (MyListPreference) findPreference(key);
+            LockedListPreference listPref = (LockedListPreference) findPreference(key);
             if (listPref.getValue().equals(getString(R.string.value_lock_screen_type_none))) {
                 CheckBoxPreference checkPref =
                         (CheckBoxPreference) findPreference(getString(R.string.key_toggle_lock_screen));
                 if (checkPref.isChecked()) {
                     checkPref.setChecked(false);
                 }
+                // Unlock it
+                listPref.unlock();
             }
         }
     }
@@ -525,16 +563,13 @@ public class SettingsFragment extends PreferenceFragment
     public void onListItemClick(String value, String key) {
         // Reset to no lock screen regardless until get good result in onActivityResult()
         if (key.equals(getString(R.string.key_select_lock_screen_type))) {
-            try {
-                CheckBoxPreference pref = (CheckBoxPreference) findPreference(
-                        getString(R.string.key_toggle_lock_screen));
-                pref.setChecked(false);
-                MyListPreference listPref = (MyListPreference) findPreference(
-                        getString(R.string.key_select_lock_screen_type));
-                listPref.setValue(getString(R.string.value_lock_screen_type_none));
-            } catch (ClassCastException e) {
-                Log.e(TAG, "Lock screen enabled preference of wrong type, unable to modify");
-            }
+
+            CheckBoxPreference pref = (CheckBoxPreference) findPreference(
+                    getString(R.string.key_toggle_lock_screen));
+            pref.setChecked(false);
+            MyListPreference listPref = (MyListPreference) findPreference(
+                    getString(R.string.key_select_lock_screen_type));
+            listPref.setValue(getString(R.string.value_lock_screen_type_none));
 
             if (value.equals(getString(R.string.value_lock_screen_type_keypad_pin))) {
                 //Log.d(TAG, "Selected PIN activity");
@@ -636,7 +671,36 @@ public class SettingsFragment extends PreferenceFragment
         }
     }
 
+    public void onAccessGranted(String key) {
+        if (key.equals(getString(R.string.key_select_lock_screen_type))) {
+            LockedListPreference pref = (LockedListPreference) findPreference(key);
+            pref.grantAccess();
+        }
+    }
 
+    public void onPrefAccessRequested(LockedListPreference pref) {
+        if (pref.getKey().equals(getString(R.string.key_select_lock_screen_type))) {
+            PasscodeDialogFragment frag;
+            if (pref.getValue().equals(getString(R.string.value_lock_screen_type_keypad_pin))) {
+                frag = PasscodeDialogFragment.newInstance(
+                        PasscodeDialogFragment.PASSCODE_PIN,
+                        getStoredPasscode(),
+                        pref.getKey()
+                );
+            } else if (pref.getValue().equals(getString(R.string.value_lock_screen_type_keypad_pattern))) {
+                frag = PasscodeDialogFragment.newInstance(
+                        PasscodeDialogFragment.PASSCODE_PATTERN,
+                        getStoredPasscode(),
+                        pref.getKey()
+                );
+            } else {
+                throw new IllegalArgumentException("Preference access requested for LockedListPreference, but pref value was " + pref.getValue());
+            }
+            frag.setOnAccessGrantedListener(this);
+            frag.show(getFragmentManager(), getString(R.string.dialog_title_config_access));
+            Log.d(TAG, "Showing passcode dialog fragment");
+        }
+    }
     public void onBitmapCropSelect(final RectF rectF, final int scaleW, final int scaleH,
                                    final String filePath, final int orientation){
         SharedPreferences prefs1 = getActivity().getSharedPreferences(
@@ -894,6 +958,13 @@ public class SettingsFragment extends PreferenceFragment
                 });
         AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();
+    }
+
+    private String getStoredPasscode() {
+        SharedPreferences sharedPref = getActivity().getSharedPreferences(
+                getString(R.string.file_lock_screen_type),
+                Context.MODE_PRIVATE);
+        return sharedPref.getString(getString(R.string.value_lock_screen_passcode), null);
     }
 
 }

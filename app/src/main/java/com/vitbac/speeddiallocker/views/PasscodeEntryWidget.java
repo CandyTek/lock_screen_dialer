@@ -1,7 +1,6 @@
 package com.vitbac.speeddiallocker.views;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -18,7 +17,7 @@ import com.vitbac.speeddiallocker.R;
 /**
  * Created by nick on 8/5/15.
  */
-public abstract class PasscodeEntryView extends RelativeLayout implements View.OnTouchListener{
+public abstract class PasscodeEntryWidget extends RelativeLayout implements View.OnTouchListener{
 
     private static final String TAG = "PasscodeEntryView";
     private String mPasscode;
@@ -39,19 +38,19 @@ public abstract class PasscodeEntryView extends RelativeLayout implements View.O
     protected OnInputReceivedListener mInputListener;
     protected OnLongPressListener mLongPressListener;
 
-    public PasscodeEntryView (Context context) {
+    public PasscodeEntryWidget(Context context) {
         super(context);
         init();
     }
 
-    public PasscodeEntryView (Context context, AttributeSet attrs) {
+    public PasscodeEntryWidget(Context context, AttributeSet attrs) {
         super(context, attrs);
         TypedArray attributeArray = context.obtainStyledAttributes(attrs,
-                R.styleable.PasscodeEntryView, 0, 0);
+                R.styleable.PasscodeEntryWidget, 0, 0);
         mLongPressDelay = attributeArray.getInt(
-                R.styleable.PasscodeEntryView_longPressDelay,
+                R.styleable.PasscodeEntryWidget_longPressDelay,
                 getResources().getInteger(R.integer.lock_screen_pattern_long_press_delay));
-        mFont = attributeArray.getString(R.styleable.PasscodeEntryView_fontFamily);
+        mFont = attributeArray.getString(R.styleable.PasscodeEntryWidget_fontFamily);
         validateFont(); // Checks that the font is valid, assigning mFont to the def font if not
         init();
         attributeArray.recycle();

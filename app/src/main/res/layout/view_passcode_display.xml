@@ -6,16 +6,17 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="5dp">
     <TextView
-        android:id="@+id/passcode_display"
+        android:id="@+id/passcode_entry_display_textview"
         style="@style/key_pad_pin_instruction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_marginBottom="25dp"/>
+        android:layout_marginBottom="25dp"
+        android:maxLines="1"/>
 
     <Button
-        android:id="@+id/delete_button"
+        android:id="@+id/passcode_entry_display_delete_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"

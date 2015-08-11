@@ -4,31 +4,28 @@
     xmlns:auto="http://schemas.android.com/apk/res-auto"
     android:id="@+id/lock_screen_interaction_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_marginTop="5dp"
-    android:layout_weight="1"
+
     android:orientation="vertical">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp">
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp">
         <com.vitbac.speeddiallocker.views.PasscodeEntryDisplay
-            android:id="@+id/lock_screen_passcode_display"
-            style="@style/key_pad_pattern_instruction"
+            android:id="@+id/passcode_display"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="1"
-            auto:instruction="@string/lock_screen_keypad_pattern_instruction_1"
-            auto:wrongPasscode="@string/lock_screen_wrong_pattern_entered"
-            auto:lockout1Text="@string/lock_screen_wrong_entry_3_times"
-            auto:lockout2Text="@string/lock_screen_wrong_entry_6_times"
-            auto:lockout3Text="@string/lock_screen_wrong_entry_max_times"/>
+            android:padding="8dp"
+            auto:instruction="@string/config_access_pattern_default_display"
+            auto:wrongPasscode="@string/lock_screen_wrong_pin_entered" />
     </RelativeLayout>
 
     <com.vitbac.speeddiallocker.views.PatternEntryWidget
-        android:id="@+id/lock_screen_passcode_entry_view"
+        android:id="@+id/passcode_widget"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         auto:animTime="250"/>
-
 </LinearLayout>

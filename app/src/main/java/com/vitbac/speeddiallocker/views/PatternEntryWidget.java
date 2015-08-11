@@ -26,7 +26,7 @@ import com.vitbac.speeddiallocker.R;
 /**
  * Created by nick on 8/5/15.
  */
-public class PatternEntryView extends PasscodeEntryView implements View.OnTouchListener{
+public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTouchListener{
 
     private static final String TAG = "PatternEntryView";
     protected int mButtonMarkedColor;
@@ -42,26 +42,26 @@ public class PatternEntryView extends PasscodeEntryView implements View.OnTouchL
     private View mLastKey;
     private String mPatternEntered;
 
-    public PatternEntryView (Context context) {
+    public PatternEntryWidget(Context context) {
         super(context);
         init();
     }
 
-    public PatternEntryView (Context context, AttributeSet attrs) {
+    public PatternEntryWidget(Context context, AttributeSet attrs) {
         super(context, attrs);
         TypedArray attributeArray = context.obtainStyledAttributes(attrs,
-                R.styleable.PatternEntryView, 0, 0);
+                R.styleable.PatternEntryWidget, 0, 0);
 
         mButtonMarkedColor = attributeArray.getInt(
-                R.styleable.PatternEntryView_markedColor,
+                R.styleable.PatternEntryWidget_markedColor,
                 getResources().getColor(R.color.default_pattern_marked_color)
         );
         mDrawColor = attributeArray.getColor(
-                R.styleable.PatternEntryView_drawColor,
+                R.styleable.PatternEntryWidget_drawColor,
                 getResources().getColor(R.color.default_pattern_draw_color)
         );
-        mAnimTime = attributeArray.getInt(R.styleable.PatternEntryView_animTime, 500);
-        mDrawWidth = attributeArray.getFloat(R.styleable.PatternEntryView_drawWidth, 5f);
+        mAnimTime = attributeArray.getInt(R.styleable.PatternEntryWidget_animTime, 500);
+        mDrawWidth = attributeArray.getFloat(R.styleable.PatternEntryWidget_drawWidth, 5f);
 
         init();
         attributeArray.recycle();

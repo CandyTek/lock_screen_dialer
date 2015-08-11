@@ -28,5 +28,11 @@
 
     <string name="lock_screen_wrong_entry_max_times">Invalid: locking 60s...</string>
 
+    <string name="config_access_pin_default_display">Enter PIN for access</string>
+
+    <string name="config_access_pattern_default_display">Enter pattern for access</string>
+
+    <string name="dialog_title_config_access">Authorization required</string>
+
 
 </resources>

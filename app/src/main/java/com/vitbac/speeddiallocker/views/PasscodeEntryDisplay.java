@@ -94,8 +94,8 @@ public class PasscodeEntryDisplay extends RelativeLayout implements View.OnClick
         }
 
         inflate(getContext(), R.layout.view_passcode_display, this);
-        mTextView = (TextView) findViewById(R.id.passcode_display);
-        mDeleteButton = (Button) findViewById(R.id.delete_button);
+        mTextView = (TextView) findViewById(R.id.passcode_entry_display_textview);
+        mDeleteButton = (Button) findViewById(R.id.passcode_entry_display_delete_button);
         mTextView.setText(mInstructionText);
         mDeleteButton.setOnClickListener(this);
         mNumTries = 0;
@@ -271,6 +271,19 @@ public class PasscodeEntryDisplay extends RelativeLayout implements View.OnClick
                 mTextView.setText(mInstructionText);
                 clearTransformationMethod();
             }
+        }
+    }
+
+    public void setMaxLines(int lines) {
+        mTextView.setMaxLines(lines);
+    }
+
+    public void displayDeleteButton(boolean display) {
+        // Display it depending on whether a passcode is being entered
+        if (mTextView.getTransformationMethod() == null) {
+            mDeleteButton.setVisibility(View.INVISIBLE);
+        } else {
+            mDeleteButton.setVisibility(View.VISIBLE);
         }
     }
 

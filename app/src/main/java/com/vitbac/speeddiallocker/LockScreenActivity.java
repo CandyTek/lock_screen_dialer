@@ -36,7 +36,6 @@ import android.support.v4.view.GestureDetectorCompat;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.text.format.DateFormat;
-import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
@@ -63,7 +62,7 @@ import com.vitbac.speeddiallocker.services.PhoneCallReceiver;
 import com.vitbac.speeddiallocker.services.PhoneStateReceiver;
 import com.vitbac.speeddiallocker.services.PhoneStateService;
 import com.vitbac.speeddiallocker.views.PasscodeEntryDisplay;
-import com.vitbac.speeddiallocker.views.PasscodeEntryView;
+import com.vitbac.speeddiallocker.views.PasscodeEntryWidget;
 import com.vitbac.speeddiallocker.views.PullBackView;
 
 import java.io.ByteArrayInputStream;
@@ -83,9 +82,9 @@ import java.util.TimeZone;
 
 public class LockScreenActivity extends Activity implements View.OnClickListener,
         View.OnTouchListener, CompoundButton.OnCheckedChangeListener,
-        BitmapToViewHelper.GetBitmapFromTaskInterface, PasscodeEntryView.OnPasscodeEntryListener,
-        PasscodeEntryView.OnLongPressListener, PasscodeEntryDisplay.OnLockoutListener,
-        PasscodeEntryView.OnInputReceivedListener, PasscodeEntryDisplay.OnDeletePressed {
+        BitmapToViewHelper.GetBitmapFromTaskInterface, PasscodeEntryWidget.OnPasscodeEntryListener,
+        PasscodeEntryWidget.OnLongPressListener, PasscodeEntryDisplay.OnLockoutListener,
+        PasscodeEntryWidget.OnInputReceivedListener, PasscodeEntryDisplay.OnDeletePressed {
 
     private final static String TAG = "LSActivity2";
 
@@ -134,7 +133,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
 
     // Views that concern the passcode
     private PasscodeEntryDisplay mDisplayView;
-    private PasscodeEntryView mPasscodeView;
+    private PasscodeEntryWidget mPasscodeView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -284,7 +283,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             throw new IllegalLayoutException("lock mechanism fragment was null");
         }
         mPasscodeView =
-                (PasscodeEntryView)lockMechFragment.findViewById(R.id.lock_screen_passcode_entry_view);
+                (PasscodeEntryWidget)lockMechFragment.findViewById(R.id.lock_screen_passcode_entry_view);
         mPasscodeView.setPasscode(getStoredPasscode());
         mPasscodeView.setOnPassCodeEntryListener(this);
         mPasscodeView.setOnLongPressListener(this);
