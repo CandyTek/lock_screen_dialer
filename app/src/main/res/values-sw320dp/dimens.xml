@@ -25,4 +25,5 @@
 
     <dimen name="lock_screen_main_info_size">38sp</dimen>
     <dimen name="lock_screen_minor_info_size">18sp</dimen>
+    <dimen name="passcode_dialog_height">300dp</dimen>
 </resources>

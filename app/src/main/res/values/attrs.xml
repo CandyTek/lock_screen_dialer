@@ -42,8 +42,8 @@
     </declare-styleable>
 
     <declare-styleable name="PatternEntryWidget" parent="PasscodeEntryView">
-        <attr name="markedColor" format="color" />
-        <attr name="drawColor" format="color" />
+        <attr name="markingColor" format="color" />
+        <attr name="drawingColor" format="color" />
         <attr name="animTime" format="integer" />
         <attr name="drawWidth" format="float"/>
     </declare-styleable>
@@ -54,6 +54,7 @@
         <attr name="displayDeleteButton" format="boolean" />
         <attr name="instruction" format="string" />
         <attr name="wrongPasscode" format="string" />
+        <attr name="textColor" format="color" />
         <attr name="lockout1Text" format="string" />
         <attr name="lockout2Text" format="string"/>
         <attr name="lockout3Text" format="string" />

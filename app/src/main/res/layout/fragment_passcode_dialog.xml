@@ -2,27 +2,31 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <View
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="6"
-        android:background="@color/gunmetal"/>
+        android:layout_height="wrap_content"
+        android:background="@color/gunmetal"
+        android:src="@mipmap/speed_dial_locker_logo"
+        android:padding="10dp"/>
 
     <FrameLayout
         android:id="@+id/passcode_widget_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:background="@color/gunmetal"/>
 
     <Button
         android:id="@+id/cancel_button"
-        style="@style/dialog_buttons"
-        android:layout_weight="0"
+        android:textColor="@color/black_cow"
+        android:textSize="@dimen/abc_text_size_medium_material"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        android:padding="12dp"
+        android:background="@drawable/selector_dialog_buttons"
         android:text="@string/btn_keypad_pin_config_cancel"
         android:textAllCaps="false" />
 

@@ -63,6 +63,7 @@ import com.vitbac.speeddiallocker.services.PhoneStateReceiver;
 import com.vitbac.speeddiallocker.services.PhoneStateService;
 import com.vitbac.speeddiallocker.views.PasscodeEntryDisplay;
 import com.vitbac.speeddiallocker.views.PasscodeEntryWidget;
+import com.vitbac.speeddiallocker.views.PatternEntryWidget;
 import com.vitbac.speeddiallocker.views.PullBackView;
 
 import java.io.ByteArrayInputStream;
@@ -294,6 +295,18 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         if (lockScreenType.equals(getString(R.string.value_lock_screen_type_keypad_pin))) {
             mPasscodeView.setOnInputReceivedListener(this);
             mDisplayView.setOnDeletePressedListener(this);
+        }
+        // Set colors if it is a pattern mech
+        if (mPasscodeView instanceof PatternEntryWidget) {
+            PatternEntryWidget widget = (PatternEntryWidget) mPasscodeView;
+            int drawColor = prefs.getInt(getString(R.string.key_select_pattern_draw_color), -1);
+            int markColor = prefs.getInt(getString(R.string.key_select_pattern_button_pressed_color), -1);
+            if (drawColor != -1) {
+                widget.setDrawingColor(drawColor);
+            }
+            if (markColor != -1) {
+                widget.setMarkingColor(markColor);
+            }
         }
 
         // Set the font for these views

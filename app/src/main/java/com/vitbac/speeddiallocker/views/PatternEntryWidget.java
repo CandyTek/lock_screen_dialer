@@ -29,8 +29,8 @@ import com.vitbac.speeddiallocker.R;
 public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTouchListener{
 
     private static final String TAG = "PatternEntryView";
-    protected int mButtonMarkedColor;
-    protected int mDrawColor;
+    protected int mMarkingColor;
+    protected int mDrawingColor;
     protected float mDrawWidth;
     protected int mAnimTime;
     private int mMarkedCounter;
@@ -52,30 +52,31 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
         TypedArray attributeArray = context.obtainStyledAttributes(attrs,
                 R.styleable.PatternEntryWidget, 0, 0);
 
-        mButtonMarkedColor = attributeArray.getInt(
-                R.styleable.PatternEntryWidget_markedColor,
+        mMarkingColor = attributeArray.getColor(
+                R.styleable.PatternEntryWidget_markingColor,
                 getResources().getColor(R.color.default_pattern_marked_color)
         );
-        mDrawColor = attributeArray.getColor(
-                R.styleable.PatternEntryWidget_drawColor,
+        mDrawingColor = attributeArray.getColor(
+                R.styleable.PatternEntryWidget_drawingColor,
                 getResources().getColor(R.color.default_pattern_draw_color)
         );
         mAnimTime = attributeArray.getInt(R.styleable.PatternEntryWidget_animTime, 500);
         mDrawWidth = attributeArray.getFloat(R.styleable.PatternEntryWidget_drawWidth, 5f);
 
         init();
+        prepareKeyAttributes();  // Colors and fonts
         attributeArray.recycle();
     }
 
     private void init() {
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        mButtonMarkedColor = prefs.getInt(
+        /*SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mMarkingColor = prefs.getInt(
                 getContext().getString(R.string.key_select_pattern_button_pressed_color),
-                mButtonMarkedColor);
-        mDrawColor = prefs.getInt(
+                mMarkingColor);
+        mDrawingColor = prefs.getInt(
                 getContext().getString(R.string.key_select_pattern_draw_color),
-                mDrawColor);
+                mDrawingColor);*/
 
         mPatternDrawView = (DrawView) findViewById(R.id.pattern_canvas);
         mTouchDrawView = (DrawView) findViewById(R.id.touch_canvas);
@@ -93,12 +94,6 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
 
     protected Button[] initKeys() {
 
-        // TODO: put this in the controlling activity
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        mButtonMarkedColor = prefs.getInt(
-                getContext().getString(R.string.key_select_pattern_button_pressed_color),
-                getResources().getColor(R.color.default_pattern_marked_color));
-
         Button[] buttons = new Button[9];
 
         buttons[0] = (Button) findViewById(R.id.pattern_button_1);
@@ -111,7 +106,7 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
         buttons[7] = (Button) findViewById(R.id.pattern_button_8);
         buttons[8] = (Button) findViewById(R.id.pattern_button_9);
 
-        for (int i = 0; i < 9; i++) {
+        /*for (int i = 0; i < 9; i++) {
             buttons[i].setTag(new KeyMarker(i + 1));
 
             View markerView = getCorrespondingMarkerView(buttons[i]);
@@ -120,11 +115,11 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
             GradientDrawable shape = (GradientDrawable) layerList
                     .findDrawableByLayerId(R.id.pattern_button_marked);
 
-            if (mButtonMarkedColor != -1) {
-                //shape.setColor(mButtonMarkedColor);
-                //markerView.setBackgroundColor(mButtonMarkedColor);
+            if (mMarkingColor != -1) {
+                //shape.setColor(mMarkingColor);
+                //markerView.setBackgroundColor(mMarkingColor);
                 //GradientDrawable shape = (GradientDrawable) getResources().getDrawable(R.drawable.pattern_button_marked);
-                shape.setColor(mButtonMarkedColor);
+                shape.setColor(mMarkingColor);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     markerView.setBackground(layerList);
                 } else {
@@ -136,11 +131,40 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
             if (mFont != null) {
                 buttons[i].setTypeface(Typeface.create(mFont, Typeface.NORMAL));
             }
-        }
+        }*/
 
         return buttons;
     }
 
+    private void prepareKeyAttributes() {
+
+        for (int i = 0; i < 9; i++) {
+            mKeys[i].setTag(new KeyMarker(i + 1));
+
+            View markerView = getCorrespondingMarkerView(mKeys[i]);
+            LayerDrawable layerList = (LayerDrawable) getResources()
+                    .getDrawable(R.drawable.pattern_button_marked);
+            GradientDrawable shape = (GradientDrawable) layerList
+                    .findDrawableByLayerId(R.id.pattern_button_marked);
+
+            if (mMarkingColor != -1) {
+                //shape.setColor(mMarkingColor);
+                //markerView.setBackgroundColor(mMarkingColor);
+                //GradientDrawable shape = (GradientDrawable) getResources().getDrawable(R.drawable.pattern_button_marked);
+                shape.setColor(mMarkingColor);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    markerView.setBackground(layerList);
+                } else {
+                    markerView.setBackgroundDrawable(layerList);
+                }
+            }
+            markerView.setVisibility(View.INVISIBLE);
+
+            if (mFont != null) {
+                mKeys[i].setTypeface(Typeface.create(mFont, Typeface.NORMAL));
+            }
+        }
+    }
     protected View getCorrespondingMarkerView(View patternButton) throws IllegalArgumentException{
         try {
             ViewGroup parent = (ViewGroup) patternButton.getParent();
@@ -222,7 +246,7 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
                     // Now based on what happened, we decide whether to draw to touch
                     if (drawToTouch) {
                         Paint p = new Paint();
-                        p.setColor(mDrawColor);
+                        p.setColor(mDrawingColor);
                         p.setStrokeWidth(3f);
 
                         int[] startCoord = new int[2];
@@ -242,7 +266,7 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
 
             case MotionEvent.ACTION_UP:
                 // Again, check the pattern to avoid touch event and blocking with no pattern entered
-                if (mPatternEntered == "") {
+                if (mPatternEntered.equals("")) {
                     break;
                 }
 
@@ -360,6 +384,24 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
     public void backspace() {
         // Don't implement -- we won't be using this function in this class
     }
+
+    public void setDrawingColor (int color) {
+        mDrawingColor = color;
+    }
+
+    public void setMarkingColor (int color) {
+        mMarkingColor = color;
+    }
+
+    public void setDrawWidth (float width) {
+        mDrawWidth = width;
+    }
+
+
+    /**********************************************************************************
+     * UTILITY DRAWING METHODS
+     * ********************************************************************************
+     */
     private void drawLineToView(View start, View end) throws IllegalArgumentException{
         int startNum = getKeyNumber(start, -1), endNum = getKeyNumber(end, -1);
         if (startNum == -1 || endNum == -1) {
@@ -379,7 +421,7 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
         if (!lineRequiresArc(startNum, endNum)) {
             // Draw a line
             Paint p = new Paint();
-            p.setColor(mDrawColor);
+            p.setColor(mDrawingColor);
             p.setStrokeWidth(mDrawWidth);
             mPatternDrawView.addLineWithAbsoluteCoords(
                     startX,
@@ -452,7 +494,7 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
 
         if (startAngle != -1 && sweepAngle != -1) {
             Paint p = new Paint();
-            p.setColor(mDrawColor);
+            p.setColor(mDrawingColor);
             // TODO: set stroke width in attributes
             p.setStrokeWidth(mDrawWidth);
             p.setAntiAlias(true);

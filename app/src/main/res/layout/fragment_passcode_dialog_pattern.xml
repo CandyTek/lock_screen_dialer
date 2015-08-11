@@ -27,5 +27,7 @@
         android:id="@+id/passcode_widget"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        auto:animTime="250"/>
+        auto:animTime="250"
+        auto:drawingColor="@color/lava_red"
+        auto:markingColor="@color/lava_red"/>
 </LinearLayout>

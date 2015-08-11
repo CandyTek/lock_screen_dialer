@@ -198,5 +198,6 @@
     <style name="ancilliary_instruction">
         <item name="android:padding">2dp</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 </resources>

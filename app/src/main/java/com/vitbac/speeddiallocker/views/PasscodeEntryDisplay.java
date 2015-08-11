@@ -68,11 +68,16 @@ public class PasscodeEntryDisplay extends RelativeLayout implements View.OnClick
                 DEF_LOCKOUT_3_DELAY);
         mDisplayTime = attributeArray.getInt(R.styleable.PasscodeEntryDisplay_displayTime,
                 DEF_DISPLAY_TIME);
+        int color = attributeArray.getColor(R.styleable.PasscodeEntryDisplay_textColor, -1);
         init();
+        if (color != -1) {
+            setTextColor(color);
+        }
         if (attributeArray.getBoolean(R.styleable.PasscodeEntryDisplay_displayDeleteButton, false)) {
             // If visibility is set to View.GONE, then we never address it and it stays gone.
             mDeleteButton.setVisibility(View.INVISIBLE);
         }
+        attributeArray.recycle();
     }
 
     private void init(){
@@ -280,6 +285,10 @@ public class PasscodeEntryDisplay extends RelativeLayout implements View.OnClick
                 clearTransformationMethod();
             }
         }
+    }
+
+    public int getDisplayTime() {
+        return mDisplayTime;
     }
 
     public void setMaxLines(int lines) {

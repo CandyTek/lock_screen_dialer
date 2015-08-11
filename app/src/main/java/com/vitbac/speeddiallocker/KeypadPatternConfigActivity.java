@@ -47,7 +47,7 @@ public class KeypadPatternConfigActivity extends Activity
         mPatternWidget.setOnInputReceivedListener(this);
         mDisplay = (PasscodeEntryDisplay) findViewById(R.id.pattern_display);
         mDisplay.setShadowLayer(0, 0, 0, 0);
-        mDisplay.setTextColor(getResources().getColor(R.color.black_cow));
+        //mDisplay.setTextColor(getResources().getColor(R.color.black_cow));
         //mTouchInactiveFlag = false;
     }
 
@@ -139,10 +139,9 @@ public class KeypadPatternConfigActivity extends Activity
                 Intent returnIntent = new Intent();
                 setResult(RESULT_OK, returnIntent);
 
-                mDisplay.displayMessage(
-                        getString(R.string.keypad_pattern_config_instructions_4),
-                        delay
-                );
+                mDisplay.setInstructionText(getString(R.string.keypad_pattern_config_instructions_4));
+                mDisplay.displayInstructionText();
+
                 Handler handler = new Handler();
                 Runnable runnable = new Runnable(){
                     @Override

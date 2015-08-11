@@ -3,7 +3,7 @@
     xmlns:auto="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/milk_white"
+    android:background="@color/gunmetal"
     android:orientation="vertical"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.vitbac.speeddiallocker.KeypadPinConfigActivity">
@@ -12,25 +12,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/pattern_display"
-        auto:instruction="@string/lock_screen_keypad_pattern_instruction_1"/>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:background="@color/tuan_green" />
+        auto:instruction="@string/lock_screen_keypad_pattern_instruction_1"
+        auto:textColor="@color/white"/>
 
     <com.vitbac.speeddiallocker.views.PatternEntryWidget
         android:id="@+id/pattern_widget"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/gunmetal"/>
+        auto:drawingColor="@color/mint_green"
+        auto:markingColor="@color/mint_green"
+        auto:animTime="200"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="5dp"
-        android:background="@color/tuan_green"
         android:orientation="vertical">
         <TextView
             style="@style/ancilliary_instruction"

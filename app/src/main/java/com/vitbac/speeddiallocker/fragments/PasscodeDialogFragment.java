@@ -2,11 +2,13 @@ package com.vitbac.speeddiallocker.fragments;
 
 import android.app.DialogFragment;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.vitbac.speeddiallocker.R;
@@ -24,6 +26,7 @@ public class PasscodeDialogFragment extends DialogFragment
 
     private PasscodeEntryWidget mPasscodeWidget;
     private PasscodeEntryDisplay mPasscodeDisplay;
+    private Button mCancelButton;
     private String mPasscode;
     private String mKey;
     private int mPasscodeType;
@@ -81,11 +84,16 @@ public class PasscodeDialogFragment extends DialogFragment
 
         mPasscodeDisplay = (PasscodeEntryDisplay) rootView.findViewById(R.id.passcode_display);
         mPasscodeWidget = (PasscodeEntryWidget) rootView.findViewById(R.id.passcode_widget);
-        View cancelButton = rootView.findViewById(R.id.cancel_button);
-        cancelButton.setOnClickListener(this);
+        mCancelButton = (Button) rootView.findViewById(R.id.cancel_button);
+        mCancelButton.setOnClickListener(this);
         return rootView;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        //getDialog().getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+    }
     @Override
     public void onResume(){
         super.onResume();
@@ -118,6 +126,7 @@ public class PasscodeDialogFragment extends DialogFragment
 
 
     public void onDeletePressed(){
+        // Listener only set in PIN mode
         mPasscodeWidget.backspace();
     }
 
@@ -128,6 +137,7 @@ public class PasscodeDialogFragment extends DialogFragment
     }
 
     public void onInputReceived(String input) {
+        // Listener is only set in PIN mode
         mPasscodeDisplay.setPasscodeText(input);
     }
 
@@ -140,9 +150,19 @@ public class PasscodeDialogFragment extends DialogFragment
             }
         } else if (mPasscodeDisplay.wrongEntry()) {
             // if true, a delay has been imposed, which here we will take to dismiss this dialog
-            dismiss();
+            mPasscodeDisplay.setInstructionText(getString(R.string.config_access_denied));
+            mPasscodeDisplay.displayInstructionText();
+            Handler handler = new Handler();
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    dismiss();
+                }
+            };
+            handler.postDelayed(runnable,4000);
+            mCancelButton.setClickable(false);
         } else {
-            mPasscodeWidget.resetView();
+            mPasscodeWidget.resetView(mPasscodeDisplay.getDisplayTime());
         }
     }
 
