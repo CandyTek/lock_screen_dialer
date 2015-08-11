@@ -422,22 +422,6 @@ public class SettingsFragment extends PreferenceFragment
                     false,
                     getString(R.string.alert_dialog_button_text_sound_attributions)
             );
-
-            /*AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-
-            dialogBuilder.setTitle(getString(R.string.alert_dialog_title_sound_attributions));
-            dialogBuilder
-                    .setMessage(getString(R.string.alert_dialog_message_sound_attributions))
-                    .setCancelable(false)
-                    .setNegativeButton(getString(R.string.alert_dialog_button_text_sound_attributions),
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.cancel();
-                                }
-                            });
-            AlertDialog alertDialog = dialogBuilder.create();
-            alertDialog.show();*/
         } else if (preference.getKey().equals(getString(R.string.key_about))) {
             String version;
             try {
@@ -448,14 +432,12 @@ public class SettingsFragment extends PreferenceFragment
                 version = "unknown";
             }
 
-            /*buildAndShowSimpleAlertDialog(
+            buildAndShowSimpleAlertDialog(
                     getString(R.string.alert_dialog_title_about),
                     getString(R.string.alert_dialog_message_about) + version,
                     false,
                     getString(R.string.alert_dialog_button_text_about)
-            );*/
-            Intent intent = new Intent(getActivity(), LockScreenActivity.class);
-            getActivity().startActivity(intent);
+            );
         }
         return false;
     }

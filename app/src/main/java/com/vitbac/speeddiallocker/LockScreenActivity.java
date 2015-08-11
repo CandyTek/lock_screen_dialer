@@ -532,7 +532,6 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         //Log.d(TAG, "onDestroy called");
         super.onDestroy();
 
-        // TODO: is there a way to animate this?
         if (mWindowManager != null && mWindowView != null) {
             mWindowManager.removeView(mWindowView);
             ((ImageView) mWindowView.findViewById(R.id.lock_screen_background_view)).setImageBitmap(null);  // Probably not necessary
@@ -1778,8 +1777,6 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         Log.d(TAG, "onFatalError() called.");
         stopService(new Intent(this, PhoneStateService.class));
         finish();
-
-        //TODO: some kind of dialog or toast or something?
     }*/
 
 

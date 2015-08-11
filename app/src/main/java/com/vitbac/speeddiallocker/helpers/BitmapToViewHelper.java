@@ -71,31 +71,6 @@ public final class BitmapToViewHelper {
             throw new FileNotFoundException("decodeSampledBitmapFromFile() returned null.");
         }
 
-        /*Log.d(TAG, "Bitmap size=(" + bmp.getWidth() + ", " + bmp.getHeight() + ")");
-
-        float scalerW = ((float) bmp.getWidth())/scaleW;
-        float scalerH = ((float) bmp.getHeight())/scaleH;
-        int startX = (int) (crop.left * scalerW);
-        int startY = (int) (crop.top * scalerH);
-        int cropWidth = (int) ((crop.right - crop.left) * scalerW);
-        int cropHeight = (int) ((crop.bottom - crop.top) * scalerH);
-        Log.d(TAG, "Crop coords: (" + startX + ", " + startY + ") w=" + cropWidth + " h=" + cropHeight);
-
-        // TODO: make this robust -- if x+w > bitmap size, just max it at bitmap size, etc.
-        bmp = Bitmap.createBitmap(
-                bmp,
-                startX, // start x coordinate
-                startY, // start y coordinate
-                cropWidth, // width
-                cropHeight // height
-        );
-        Log.d(TAG, "croppedBmp Width = " + bmp.getWidth() + " croppedBmp Height = " + bmp.getHeight());
-        bmp = Bitmap.createScaledBitmap(bmp, width, height, false);
-        Log.d(TAG, "scaledBmp Width = " + bmp.getWidth() + " scaledBmp Height = " + bmp.getHeight());
-        if (bmp == null) {
-            throw new FileNotFoundException("Bitmap could not be obtained from file " + fromFilePath);
-        }*/
-
         FileOutputStream out = null;
         try {
             out = context.openFileOutput(toFileName, Context.MODE_PRIVATE);

@@ -265,22 +265,6 @@ public class ContactSelectionFragment extends Fragment implements
      */
     @Override
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
-
-        //TODO: fix DB search so that it only searches field names, instead of any field in the contact
-        //Uri baseUri;
-
-/*        if (mSearchString != null && mSearchString.length() != 0) {
-            Log.d("DB QUERY", "mSearchString length is not 0");
-            //mSelectionArgs[0] = "'%" + mSearchString + "%'";
-            baseUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_FILTER_URI, Uri.encode(mSearchString));
-
-        }
-        else {
-            Log.d("DB QUERY", "mSearchString length is 0");
-            //mSelectionArgs[0] = "'%a%'";
-            baseUri = ContactsContract.Contacts.CONTENT_URI;
-        }*/
-
         mSelectionArgs[0] = "%" + mSearchString + "%";
 
         // Start the query
