@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import com.vitbac.speeddiallocker.helpers.BitmapToViewHelper;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -44,21 +46,33 @@ public class AppBackgroundActivity extends Activity
         findViewById(R.id.about_background_button).setOnClickListener(this);
         findViewById(R.id.random_background_button).setOnClickListener(this);
         mCounterView = (TextView) findViewById(R.id.app_content_view_flipper_counter);
-        TypedArray appPics = getResources().obtainTypedArray(R.array.app_pics);
+        final TypedArray appPics = getResources().obtainTypedArray(R.array.app_pics);
         mNumPics = appPics.length();
         for (int i = 0; i < mNumPics; i++) {
             View child = getLayoutInflater().inflate(R.layout.child_app_content_flipper, null);
-            Drawable d = appPics.getDrawable(i);
-            if (d != null) {
+            final Drawable drawable = appPics.getDrawable(i);
+            if (drawable != null) {
                 child.setId(i+1);  // Should be OK so long as we do a findView through the parent; need to set POSITIVE number
                 if (i == 0) { // just set the initial view
-                    ImageView iView = (ImageView) child.findViewById(R.id.flipper_image);
-                    iView.setImageDrawable(d);
+                    final ImageView iView = (ImageView) child.findViewById(R.id.flipper_image);
+                    //iView.setImageDrawable(d);
+
+                    // Resize the drawable after the view has been sized
+                    iView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            BitmapToViewHelper.resizeBitmapToView(
+                                    iView,
+                                    ((BitmapDrawable)drawable).getBitmap()
+                            );
+                        }
+                    });
                 }
                 mFlipper.addView(child);
             }
         }
         mCounterView.setText(setCounterViewText(1, mNumPics));
+        appPics.recycle();
     }
 
     @Override
