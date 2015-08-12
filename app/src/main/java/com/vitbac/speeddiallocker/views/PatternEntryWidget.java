@@ -64,7 +64,9 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
         mDrawWidth = attributeArray.getFloat(R.styleable.PatternEntryWidget_drawWidth, 5f);
 
         init();
-        prepareKeyAttributes();  // Colors and fonts
+        //prepareKeyAttributes();  // Colors and fonts
+        prepareFontOnKeys();
+        prepareMarkingColorOnKeys();
         attributeArray.recycle();
     }
 
@@ -85,6 +87,7 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
 
         for (int i=0; i < mKeys.length; i++) {
             mKeys[i].setOnTouchListener(this); // Overrides the super's listener, but that's OK because we call the super in onTouch
+            mKeys[i].setTag(new KeyMarker(i + 1));
         }
     }
 
@@ -136,7 +139,7 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
         return buttons;
     }
 
-    private void prepareKeyAttributes() {
+    /*private void prepareKeyAttributes() {
 
         for (int i = 0; i < 9; i++) {
             mKeys[i].setTag(new KeyMarker(i + 1));
@@ -160,6 +163,39 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
             }
             markerView.setVisibility(View.INVISIBLE);
 
+            if (mFont != null) {
+                mKeys[i].setTypeface(Typeface.create(mFont, Typeface.NORMAL));
+            }
+        }
+    }*/
+
+    private void prepareMarkingColorOnKeys() {
+        for (int i = 0; i < mKeys.length; i++) {
+            mKeys[i].setTag(new KeyMarker(i + 1));
+
+            View markerView = getCorrespondingMarkerView(mKeys[i]);
+            LayerDrawable layerList = (LayerDrawable) getResources()
+                    .getDrawable(R.drawable.pattern_button_marked);
+            GradientDrawable shape = (GradientDrawable) layerList
+                    .findDrawableByLayerId(R.id.pattern_button_marked);
+
+            if (mMarkingColor != -1) {
+                //shape.setColor(mMarkingColor);
+                //markerView.setBackgroundColor(mMarkingColor);
+                //GradientDrawable shape = (GradientDrawable) getResources().getDrawable(R.drawable.pattern_button_marked);
+                shape.setColor(mMarkingColor);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    markerView.setBackground(layerList);
+                } else {
+                    markerView.setBackgroundDrawable(layerList);
+                }
+            }
+            markerView.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void prepareFontOnKeys() {
+        for (int i=0; i < mKeys.length; i++) {
             if (mFont != null) {
                 mKeys[i].setTypeface(Typeface.create(mFont, Typeface.NORMAL));
             }
@@ -391,6 +427,7 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
 
     public void setMarkingColor (int color) {
         mMarkingColor = color;
+        prepareMarkingColorOnKeys();
     }
 
     public void setDrawWidth (float width) {
