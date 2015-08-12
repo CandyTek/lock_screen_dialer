@@ -305,6 +305,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 widget.setDrawingColor(drawColor);
             }
             if (markColor != -1) {
+                Log.d(TAG, "Setting marking color");
                 widget.setMarkingColor(markColor);
             }
         }
@@ -1377,8 +1378,9 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             }
             Bitmap bitmap = BitmapFactory.decodeResource(
                     getResources(), picResourceId);
-            mBackgroundView.setImageBitmap(bitmap);
-            crossFadeViewsOnStart(mBackgroundView, mBackgroundProgress);
+            //mBackgroundView.setImageBitmap(bitmap);
+            BitmapToViewHelper.getResizedBitmap(this, bitmap, 0, getDisplayWidth(), getDisplayHeight());
+            //crossFadeViewsOnStart(mBackgroundView, mBackgroundProgress);
             return;
         } else if (bgTypeValue.equals(getString(R.string.value_background_type_user_device))) {
             try {
@@ -1386,8 +1388,6 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                         openFileInput(getString(R.string.stored_background_file_name));
                 Bitmap bitmap = BitmapFactory.decodeStream(streamIn);
                 mBackgroundView.setImageBitmap(bitmap);
-                //mBackgroundSetFlag = true;
-                //Log.d(TAG, "About to crossfade bitmap background");
                 crossFadeViewsOnStart(mBackgroundView, mBackgroundProgress);
                 return;
             } catch (IOException e) {
@@ -1925,7 +1925,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
      * @return
      */
     private int getDisplayHeight(){
-        /*Display display = getWindowManager().getDefaultDisplay();
+        Display display = getWindowManager().getDefaultDisplay();
 
         // Get the right screen size in manner depending on version
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
@@ -1935,8 +1935,8 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
 
         } else {
             return display.getHeight();
-        }*/
-        return mContainerView.getHeight();
+        }
+        //return mContainerView.getHeight();
     }
 
     protected boolean isSpeedDialEnabled() {

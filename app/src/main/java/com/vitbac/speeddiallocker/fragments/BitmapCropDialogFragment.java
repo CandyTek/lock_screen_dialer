@@ -1,6 +1,5 @@
 package com.vitbac.speeddiallocker.fragments;
 
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.graphics.Bitmap;
 import android.graphics.Paint;
@@ -99,7 +98,7 @@ public class BitmapCropDialogFragment extends DialogFragment
         if (file != null && file.exists()) {
             int w = getDisplayWidth();
             int h = getDisplayHeight();
-            BitmapToViewHelper.assignBitmapWithData(this, mFilePath, mOrientation, w, h);
+            BitmapToViewHelper.getBitmapFromFile(this, mFilePath, mOrientation, w, h);
         }
 
         return view;

@@ -61,9 +61,15 @@ public final class BitmapToViewHelper {
         task.execute(orientation, width, height);
     }
 
-    public static void assignBitmapWithData (GetBitmapFromTaskInterface activityInterface,
-                                             String filePath, int orientation, int width, int height) {
+    public static void getBitmapFromFile(GetBitmapFromTaskInterface activityInterface,
+                                         String filePath, int orientation, int width, int height) {
         DataToBitmapTask task = new DataToBitmapTask(activityInterface, filePath);
+        task.execute(orientation, width, height);
+    }
+
+    public static void getResizedBitmap(GetBitmapFromTaskInterface activityInterface,
+                                        Bitmap bitmap, int orientation, int width, int height) {
+        DataToBitmapTask task = new DataToBitmapTask(activityInterface, bitmap);
         task.execute(orientation, width, height);
     }
 
@@ -100,7 +106,92 @@ public final class BitmapToViewHelper {
 
     }
 
+    /**
+     * Takes a URI and does magic to return the actual absolute file path of the image
+     * @param context - the context, usually just the activity itself
+     * @param photoUri - the uri of the photo
+     * @return
+     */
+    public static String getBitmapFilePath (Context context, Uri photoUri) {
+        String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
+        // Get the cursor
+        Cursor cursor = context.getContentResolver().query(photoUri,
+                filePathColumn, null, null, null);
+        // Move to first row
+        if (cursor == null || cursor.getCount() < 1) {
+            return null;
+        }
+
+        cursor.moveToFirst();
+
+
+        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        String imgDecodableString = cursor.getString(columnIndex);
+        cursor.close();
+        return imgDecodableString;
+    }
+
+    /**
+     * Returns the orientation of a photo, or the defaultReturn if unknown
+     * @param photoUri
+     * @param defaultReturn
+     * @return
+     */
+    public static int getBitmapOrientation (Context context, Uri photoUri, int defaultReturn) {
+        Cursor cursor = context.getContentResolver().query(photoUri,
+                new String[] { MediaStore.Images.ImageColumns.ORIENTATION },
+                null, null, null);
+
+        if ( cursor == null || cursor.getCount() != 1) {
+            return defaultReturn;
+        }
+
+        cursor.moveToFirst();
+        int orientation = cursor.getInt(0);
+        cursor.close();
+        return orientation;
+    }
+
+    /**
+     * This method converts device specific pixels to density independent pixels.
+     *
+     * @param px      A value in px (pixels) unit. Which we need to convert into db
+     * @param context Context to get resources and device specific display metrics
+     * @return A float value to represent dp equivalent to px value
+     */
+    public static float convertPixelsToDp(float px, Context context) {
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float dp = px / (metrics.densityDpi / 160f);
+        return dp;
+    }
+
+    /**
+     * This method converts dp unit to equivalent pixels, depending on device density.
+     *
+     * @param dp      A value in dp (density independent pixels) unit. Which we need to convert into pixels
+     * @param context Context to get resources and device specific display metrics
+     * @return A float value to represent px equivalent to dp depending on device density
+     */
+    public static float convertDpToPixel(float dp, Context context) {
+        Resources resources = context.getResources();
+        DisplayMetrics metrics = resources.getDisplayMetrics();
+        float px = dp * (metrics.densityDpi / 160f);
+        return px;
+    }
+
+    /**
+     * Interface assists an activity in obtaining a bitmap from the async task
+     */
+    public interface GetBitmapFromTaskInterface {
+        void getBitmapFromTask(Bitmap bitmap);
+    }
+
+    /***********************************************************************************
+     * PRIVATE METHODS
+     * *********************************************************************************
+     */
     private static Bitmap decodeSampledBitmapFromFile(String filePath, int orientation,
                                                       int reqWidth, int reqHeight) {
         return decodeSampledBitmapFromFile(filePath, orientation, reqWidth, reqHeight, null, 0, 0);
@@ -241,7 +332,7 @@ public final class BitmapToViewHelper {
         }
     }
 
-    public static int calculateInSampleSize(
+    private static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
         final int height = options.outHeight;
@@ -264,87 +355,7 @@ public final class BitmapToViewHelper {
         return inSampleSize;
     }
 
-    /**
-     * Takes a URI and does magic to return the actual absolute file path of the image
-     * @param context - the context, usually just the activity itself
-     * @param photoUri - the uri of the photo
-     * @return
-     */
-    public static String getBitmapFilePath (Context context, Uri photoUri) {
-        String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
-        // Get the cursor
-        Cursor cursor = context.getContentResolver().query(photoUri,
-                filePathColumn, null, null, null);
-        // Move to first row
-        if (cursor == null || cursor.getCount() < 1) {
-            return null;
-        }
-
-        cursor.moveToFirst();
-
-
-        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-        String imgDecodableString = cursor.getString(columnIndex);
-        cursor.close();
-        return imgDecodableString;
-    }
-
-    /**
-     * Returns the orientation of a photo, or the defaultReturn if unknown
-     * @param photoUri
-     * @param defaultReturn
-     * @return
-     */
-    public static int getBitmapOrientation (Context context, Uri photoUri, int defaultReturn) {
-        Cursor cursor = context.getContentResolver().query(photoUri,
-                new String[] { MediaStore.Images.ImageColumns.ORIENTATION },
-                null, null, null);
-
-        if ( cursor == null || cursor.getCount() != 1) {
-            return defaultReturn;
-        }
-
-        cursor.moveToFirst();
-        int orientation = cursor.getInt(0);
-        cursor.close();
-        return orientation;
-    }
-
-    /**
-     * This method converts device specific pixels to density independent pixels.
-     *
-     * @param px      A value in px (pixels) unit. Which we need to convert into db
-     * @param context Context to get resources and device specific display metrics
-     * @return A float value to represent dp equivalent to px value
-     */
-    public static float convertPixelsToDp(float px, Context context) {
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        float dp = px / (metrics.densityDpi / 160f);
-        return dp;
-    }
-
-    /**
-     * This method converts dp unit to equivalent pixels, depending on device density.
-     *
-     * @param dp      A value in dp (density independent pixels) unit. Which we need to convert into pixels
-     * @param context Context to get resources and device specific display metrics
-     * @return A float value to represent px equivalent to dp depending on device density
-     */
-    public static float convertDpToPixel(float dp, Context context) {
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        float px = dp * (metrics.densityDpi / 160f);
-        return px;
-    }
-
-    /**
-     * Interface assists an activity in obtaining a bitmap from the async task
-     */
-    public interface GetBitmapFromTaskInterface {
-        void getBitmapFromTask(Bitmap bitmap);
-    }
 
     private static class BitmapToViewTask extends AsyncTask<Integer, Void, Bitmap> {
         private final WeakReference<ImageView> imageViewReference;
@@ -405,6 +416,7 @@ public final class BitmapToViewHelper {
     private static class DataToBitmapTask extends AsyncTask<Integer, Void, Bitmap> {
         private final WeakReference<GetBitmapFromTaskInterface> activityInterfaceReference;
         private final WeakReference<String> filePathReference;
+        private final WeakReference<Bitmap> bitmapReference;
         private int orientation = 0;
         private int width = 0;
         private int height = 0;
@@ -412,6 +424,13 @@ public final class BitmapToViewHelper {
         public DataToBitmapTask(GetBitmapFromTaskInterface activityInterface, String filePath) {
             activityInterfaceReference = new WeakReference<GetBitmapFromTaskInterface>(activityInterface);
             filePathReference = new WeakReference<String>(filePath);
+            bitmapReference = new WeakReference<Bitmap>(null);
+        }
+
+        public DataToBitmapTask(GetBitmapFromTaskInterface activityInterface, Bitmap bitmap) {
+            activityInterfaceReference = new WeakReference<GetBitmapFromTaskInterface>(activityInterface);
+            filePathReference = new WeakReference<String>(null);
+            bitmapReference = new WeakReference<Bitmap>(bitmap);
         }
 
         // Decode image in background.
@@ -421,10 +440,13 @@ public final class BitmapToViewHelper {
             orientation = params[0];
             width = params[1];
             height = params[2];
-            if (filePathReference.get() == null) {
-                return null;
+            if (filePathReference.get() != null) {
+                return decodeSampledBitmapFromFile(filePathReference.get(), orientation, width, height);
+            } else if (bitmapReference.get() != null) {
+                return decodeSampledBitmap(bitmapReference.get(), orientation, width, height);
             }
-            return decodeSampledBitmapFromFile(filePathReference.get(), orientation, width, height);
+
+            return null;
         }
 
         // Once complete, see if ImageView is still around and set bitmap.
@@ -435,9 +457,8 @@ public final class BitmapToViewHelper {
                 activityInterfaceReference.get().getBitmapFromTask(bitmap);
             }
             else {
-                Log.d(TAG, "Bitmap calculations undertaken to produce null value");
+                throw new IllegalArgumentException("DataToBitmapTask received null bitmap in onPostExecute()");
             }
-            //activityInterface = null; // necessary?
         }
     }
 }
