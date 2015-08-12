@@ -122,7 +122,7 @@
     <string name="pref_title_sound_attributions">Attributions</string>
 
     <string name="pref_title_screen_off_timer">Screen lock delay</string>
-    <string name="pref_description_screen_off_timer">Delay until lock screen activates after the screen turns off</string>
+    <string name="pref_description_screen_off_timer">Time between screen-off and lock activation</string>
 
     <string name="pref_title_about">About</string>
 

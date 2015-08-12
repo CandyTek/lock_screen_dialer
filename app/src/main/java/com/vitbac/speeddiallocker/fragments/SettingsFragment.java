@@ -487,7 +487,7 @@ public class SettingsFragment extends PreferenceFragment
             // Where no lock screen type has been selected
             if (pref.getValue().equals(getString(R.string.value_lock_screen_type_none))) {
                 //Set toast
-                LayoutInflater inflater = getActivity().getLayoutInflater();
+                /*LayoutInflater inflater = getActivity().getLayoutInflater();
                 View layout = inflater.inflate(
                         R.layout.toast_custom,
                         (ViewGroup) getView().findViewById(R.id.toast_custom));
@@ -497,7 +497,7 @@ public class SettingsFragment extends PreferenceFragment
                 toast.setDuration(Toast.LENGTH_LONG);
                 toast.setView(layout);
                 toast.show();
-
+*/
                 // Show the lock screen selection dialog
                 pref.show();
                 return false;

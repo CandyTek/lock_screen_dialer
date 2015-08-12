@@ -30,6 +30,7 @@ public class ColorPickerDialogFragment extends DialogFragment
     private OnColorSelectedListener mListener;
     private OnNoColorSelectedListener mOtherListener;
     private int mColorSelected;
+    private ColorListItem mColorItem;
     private boolean mNoColorSelected;
     private int mKey;
     private View mFragView;
@@ -87,8 +88,14 @@ public class ColorPickerDialogFragment extends DialogFragment
         }
 
         for (int i = 0; i < length; i++) {
-            mItems.add(new ColorListItem(colors.getColor(i, 0), names.getString(i)));
+            ColorListItem cli = new ColorListItem(colors.getColor(i, 0), names.getString(i));
+            mItems.add(cli);
+            if (colors.getColor(i, 0) == mColorSelected) {
+                mColorItem = cli;
+            }
         }
+        colors.recycle();
+        names.recycle();
     }
 
     @Override
@@ -99,13 +106,6 @@ public class ColorPickerDialogFragment extends DialogFragment
         getDialog().setCanceledOnTouchOutside(true);
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-        /*// Set the adapter
-        mListView = (AbsListView) view.findViewById(android.R.id.list);
-        ((AdapterView<ListAdapter>) mListView).setAdapter(mAdapter);
-
-        // Set OnItemClickListener so we can be notified on item clicks
-        mListView.setOnItemClickListener(this);*/
-
         return mFragView;
     }
 
@@ -115,6 +115,16 @@ public class ColorPickerDialogFragment extends DialogFragment
         Window window = getDialog().getWindow();
         window.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         window.setGravity(Gravity.CENTER);
+
+        // Scroll to the selected color to indicate the window's scrollability
+        final ListView colorList = (ListView) mFragView.findViewById(R.id.color_list);
+        final int position = ((ColorListAdapter)colorList.getAdapter()).getPosition(mColorItem);
+        colorList.post(new Runnable() {
+            @Override
+            public void run() {
+                colorList.smoothScrollToPosition(position);
+            }
+        });
     }
 
     @Override
@@ -149,7 +159,7 @@ public class ColorPickerDialogFragment extends DialogFragment
         ColorListAdapter adapter = (ColorListAdapter) parent.getAdapter();
         ColorListItem item = adapter.getItem(position);
 
-        if (null != mListener) {
+        if (mListener != null) {
             mListener.onColorSelected(item.color, mKey);
             dismiss();
         }
@@ -217,24 +227,10 @@ public class ColorPickerDialogFragment extends DialogFragment
             viewHolder.colorView.setTextColor(getResources().getColor(R.color.white));
             viewHolder.colorView.setShadowLayer(3, 1, 1, getResources().getColor(R.color.black_cow));
 
-            /*TypedArray darkTypeList =
-                    getResources().obtainTypedArray(R.array.color_req_dark_type_list);
-            boolean useDarkTextColor = false;
-            for (int i=0; i < darkTypeList.length(); i++) {
-                if (item.color == darkTypeList.getColor(i, getResources().getColor(R.color.white))) {
-                    useDarkTextColor = true;
-                    break;
-                }
-            }
-            if (!useDarkTextColor) {
-                viewHolder.colorView.setTextColor(getResources().getColor(R.color.white));
-            } else {
-                viewHolder.colorView.setTextColor(getResources().getColor(R.color.white));
-                viewHolder.colorView.setShadowLayer(4, 1, 1, Color.BLACK);
-            }*/
             if (!mNoColorSelected && item.color == mColorSelected) {
                 viewHolder.colorView.setTypeface(Typeface.MONOSPACE, Typeface.BOLD_ITALIC);
                 viewHolder.colorView.setText(item.name + " (*)");
+
             } else {
                 // To prevent recycling of views with remnants of bold italic
                 viewHolder.colorView.setTypeface(null, Typeface.NORMAL);
