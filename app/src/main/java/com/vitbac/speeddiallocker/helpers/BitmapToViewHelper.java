@@ -55,6 +55,12 @@ public final class BitmapToViewHelper {
         task.execute(0, view.getWidth(), view.getHeight());
     }
 
+    public static void resizeBitmapToView (ImageView view, Bitmap bitmap, int orientation,
+                                           int width, int height) {
+        BitmapToViewTask task = new BitmapToViewTask(view, bitmap);
+        task.execute(orientation, width, height);
+    }
+
     public static void assignBitmapWithData (GetBitmapFromTaskInterface activityInterface,
                                              String filePath, int orientation, int width, int height) {
         DataToBitmapTask task = new DataToBitmapTask(activityInterface, filePath);
@@ -123,11 +129,13 @@ public final class BitmapToViewHelper {
                 cropScaleW, cropScaleH);
     }
 
-    private static Bitmap decodeSampledBitmap(Bitmap bitmap, int orientation, int reqWidth, int reqHeight) {
+    private static Bitmap decodeSampledBitmap(Bitmap bitmap, int orientation, int reqWidth,
+                                              int reqHeight) {
         return decodeSampledBitmap(bitmap, orientation, reqWidth, reqHeight, null, 0, 0);
     }
     private static Bitmap decodeSampledBitmap(Bitmap bitmap, int orientation, int reqWidth,
-                                              int reqHeight, RectF crop, int cropScaleW, int cropScaleH) {
+                                              int reqHeight, RectF crop, int cropScaleW,
+                                              int cropScaleH) {
 
         if (bitmap == null || reqWidth <= 0 || reqHeight <=0) {
             throw new IllegalArgumentException("Invalid parameters to decode bitmap");
@@ -220,6 +228,14 @@ public final class BitmapToViewHelper {
             //Log.d(TAG, "Bitmap has w/h " + bitmap.getWidth() + "/" + bitmap.getHeight());
 
         } else {
+            float scale;
+            if (((float) bitmap.getWidth()) / reqWidth < ((float) bitmap.getWidth()) / reqHeight) {
+                scale = ((float) reqWidth) / bitmap.getWidth();
+            } else {
+                scale = ((float) reqHeight) / bitmap.getHeight();
+            }
+            // Set scale matrix
+            matrix.postScale(scale, scale);
             return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(),
                     matrix, true);
         }
@@ -371,19 +387,18 @@ public final class BitmapToViewHelper {
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             if (bitmap != null) {
+                Log.d(TAG, "Bitmap dimens: w=" + bitmap.getWidth() + " h=" + bitmap.getHeight());
                 ImageView imageView = imageViewReference.get();
                 if (imageView != null) {
                     imageView.setImageBitmap(bitmap);
                 }
                 else {
-                    Log.e(TAG, "Async received null imageView onPostExecute");
+                    throw new IllegalArgumentException("BitmapToViewTask received null ImageView in onPostExecute()");
                 }
             }
             else {
-                Log.e(TAG, "Async received null bitmap onPostExecute");
-
+                throw new IllegalArgumentException("BitmapToViewTask received null bitmap in onPostExecute()");
             }
-
         }
     }
 
