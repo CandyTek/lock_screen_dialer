@@ -40,6 +40,8 @@
     <color name="crimson">#E238EC</color>
     <color name="watermelon">#FC6C85</color>
     <color name="powder_blue">#C6DEFF</color>
+    <color name="indigo">#4B0082</color>
+    <color name="violet">#8D38C9</color>
 
     <color name="tuan_green">#b2eb7e</color>
     <color name="tuan_phone_green">#70b72a</color>
@@ -65,7 +67,9 @@
         <item>@color/coral</item>
         <item>@color/bean_red</item>
         <item>@color/lava_red</item>
+        <item>@color/violet</item>
         <item>@color/plum_velvet</item>
+        <item>@color/indigo</item>
         <item>@color/pink_lemonade</item>
         <item>@color/crimson</item>
         <item>@color/watermelon</item>
@@ -93,7 +97,9 @@
         <item>@string/coral</item>
         <item>@string/bean_red</item>
         <item>@string/lava_red</item>
+        <item>@string/violet</item>
         <item>@string/plum_velvet</item>
+        <item>@string/indigo</item>
         <item>@string/pink_lemonade</item>
         <item>@string/crimson</item>
         <item>@string/watermelon</item>
