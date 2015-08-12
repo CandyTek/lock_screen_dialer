@@ -169,6 +169,8 @@ public class FontPickerDialogFragment extends DialogFragment
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
+                // To prevent a reused view from holding the selected color
+                viewHolder.textView.setBackgroundColor(getResources().getColor(R.color.white));
             }
 
             viewHolder.textView.setText(getString(R.string.font_test_text));
