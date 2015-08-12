@@ -221,24 +221,7 @@
         <item>boolean</item>
     </array>
 
-    <string-array name="extraRingtones">
-        <item>@string/camera_flash_raw</item>
-        <item>@string/door_unlock_raw</item>
-    </string-array>
 
-    <string-array name="extraRingtoneTitles">
-        <item>@string/sound_entry_camera_flash</item>
-        <item>@string/sound_entry_door_unlock</item>
-    </string-array>
-
-    <string name="sound_entry_camera_flash">Camera flash</string>
-    <string name="sound_entry_door_unlock">Door unlock</string>
-
-    <string name="camera_flash_raw" translatable="false">camera_flash</string>
-    <string name="door_unlock_raw" translatable="false">door_unlock</string>
-
-    <string name="passcode_correct_default" translatable="false">camera_flash</string>
-    <string name="silent">Silent</string>
 
     <string name="pref_description_off_toggle_lock_screen">The lock screen is currently OFF</string>
     <string name="pref_description_on_toggle_lock_screen">The lock screen is currently ON</string>
