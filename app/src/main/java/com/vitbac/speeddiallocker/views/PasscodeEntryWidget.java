@@ -19,13 +19,14 @@ import com.vitbac.speeddiallocker.R;
  */
 public abstract class PasscodeEntryWidget extends RelativeLayout implements View.OnTouchListener{
 
-    private static final String TAG = "PasscodeEntryView";
+    private static final String TAG = "PasscodeEntryWidget";
     private String mPasscode;
 
     private Handler mLongPressHandler;
     private Runnable mLongPressRunnable;
     private boolean mLongPressFlag;
     private int mLongPressDelay;
+
     private View mLastViewPressed;
 
     private boolean mBlockInputFlag;
@@ -63,9 +64,6 @@ public abstract class PasscodeEntryWidget extends RelativeLayout implements View
         for (int i=0; i < mKeys.length; i++) {
             mKeys[i].setOnTouchListener(this);
         }
-        /*mFont = prefs.getString(
-                getContext().getString(R.string.key_select_lock_screen_fonts),
-                getContext().getString(R.string.font_default));*/
         mLongPressFlag = false;
         mBlockInputFlag = false;
     }
@@ -108,6 +106,11 @@ public abstract class PasscodeEntryWidget extends RelativeLayout implements View
         mBlockInputFlag = true;
     }
 
+    public void blockInput(int delay) {
+        blockInput();
+
+    }
+
     public void unblockInput() {
         Log.d(TAG, "unblockInput()");
         mBlockInputFlag = false;
@@ -145,17 +148,6 @@ public abstract class PasscodeEntryWidget extends RelativeLayout implements View
         for (int i=0; i < mKeys.length; i++) {
             mKeys[i].setTypeface(tf);
         }
-        /*String currentFont = mFont;
-
-        mFont = font;
-        validateFont();
-        if (!mFont.equals(font)) {
-            mFont = currentFont;
-        } else {
-            for (int i=0; i < mKeys.length; i++) {
-                mKeys[i].setTypeface(Typeface.create(mFont, Typeface.NORMAL));
-            }
-        }*/
     }
 
     // Method that assigns the View[] mKeys field

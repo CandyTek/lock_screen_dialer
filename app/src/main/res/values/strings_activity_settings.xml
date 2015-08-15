@@ -382,7 +382,7 @@
     <string name="alert_dialog_button_text_first_time">Got it!</string>
 
     <string name="alert_dialog_title_sound_attributions" translatable="false">Attributions:</string>
-    <string name="alert_dialog_message_sound_attributions" translatable="false">The following are licensed under Creative Commons license Attribution 3.0 Unported:\n\nDymewiz, \"locking a door_01.wav\"\n\nemmanuel, \"one use camera clic with flash.wav\" </string>
+    <string name="alert_dialog_message_sound_attributions" translatable="false">The following are licensed under Creative Commons license Attribution 3.0 Unported:\n\nDymewiz, \"locking a door_01.wav\"\n\nemmanuel, \"one use camera clic with flash.wav\"\n\ndobroide, \"20110503_clucking.01.wav\"</string>
     <string name="alert_dialog_button_text_sound_attributions">OK</string>
 
     <string name="alert_dialog_title_about">About this app</string>

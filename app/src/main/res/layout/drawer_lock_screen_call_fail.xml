@@ -18,7 +18,8 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingRight="5dp">
 
         <TextView
             android:id="@+id/drawer_phone_call_fail_title"

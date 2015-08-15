@@ -11,7 +11,9 @@ import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
+import android.os.Handler;
 import android.os.Vibrator;
+import android.os.Process;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -34,7 +36,6 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
     protected float mDrawWidth;
     protected int mAnimTime;
     private int mMarkedCounter;
-
 
     private DrawView mPatternDrawView;
     private DrawView mTouchDrawView;
@@ -71,15 +72,6 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
     }
 
     private void init() {
-
-        /*SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        mMarkingColor = prefs.getInt(
-                getContext().getString(R.string.key_select_pattern_button_pressed_color),
-                mMarkingColor);
-        mDrawingColor = prefs.getInt(
-                getContext().getString(R.string.key_select_pattern_draw_color),
-                mDrawingColor);*/
-
         mPatternDrawView = (DrawView) findViewById(R.id.pattern_canvas);
         mTouchDrawView = (DrawView) findViewById(R.id.touch_canvas);
         mPatternEntered = "";
@@ -240,6 +232,15 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                if (getKeyMarker(view).isMarked) {
+                    /*onPasscodeCorrect();
+                    throw new IllegalArgumentException("Pattern entry of " + mPatternEntered
+                            + " received marked key " + keyNum + " on MotionEvent.ACTION_DOWN");*/
+                    // Robustly return -- Can't throw an exception here because screen freezes
+                    Log.e(TAG, "Pattern entry of " + mPatternEntered
+                            + " received marked key " + keyNum + " on MotionEvent.ACTION_DOWN");
+                    return true;
+                }
                 // Now handle pattern logic
                 mLastKey = view;
                 mPatternEntered += keyNum;
@@ -328,7 +329,9 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
     }
 
     private void markView(final View view) {
-
+        if (getKeyMarker(view).isMarked) {
+            return;
+        }
         // Mark the view
         getKeyMarker(view).isMarked = true;
         //view.setTag(new KeyMarker(getKeyNumber(view, -1), true));
@@ -413,6 +416,7 @@ public class PatternEntryWidget extends PasscodeEntryWidget implements View.OnTo
                 unmarkView(mKeys[i]);
             }
         }
+        //mRobustUnblockHandler.postDelayed(mRobustUnblockRunnable, mAnimTime*2);
 
         mPatternEntered="";
     }

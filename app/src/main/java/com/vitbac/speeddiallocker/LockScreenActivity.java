@@ -215,7 +215,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         if (prefs.getBoolean(getString(R.string.key_toggle_status_bar_access), false)) {
             localLayoutParams = new WindowManager.LayoutParams(
                     WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | // To avoid notification bar
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | // To keyboard type things covering it
                             WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL, //Same
                     PixelFormat.TRANSLUCENT);
 
@@ -269,10 +269,10 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         View lockMechFragment;
         if (lockScreenType.equals(getString(R.string.value_lock_screen_type_keypad_pattern))) {
             lockMechFragment = getLayoutInflater()
-                    .inflate(R.layout.fragment_lock_screen_pattern2, null);
+                    .inflate(R.layout.fragment_lock_screen_pattern, null);
         } else if (lockScreenType.equals(getString(R.string.value_lock_screen_type_keypad_pin))){
             lockMechFragment = getLayoutInflater()
-                    .inflate(R.layout.fragment_lock_screen_keypad_pin2, null);
+                    .inflate(R.layout.fragment_lock_screen_keypad_pin, null);
         } else {
             throw new IllegalArgumentException("Received invalid value for lock screen type: " + lockScreenType);
         }
@@ -1597,10 +1597,12 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         if (mPasscodeResetHandler == null) {
             mPasscodeResetHandler = new Handler();
         }
+        //Log.d(TAG, "Delaying passcode widget reset for " + delay + "ms");
         mPasscodeResetRunnable = new Runnable() {
             @Override
             public void run() {
                 mPasscodeView.resetView();
+                //Log.d(TAG, "Passcode widget reset on delay.");
             }
         };
         mPasscodeResetHandler.postDelayed(mPasscodeResetRunnable, delay);

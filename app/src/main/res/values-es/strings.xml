@@ -228,4 +228,12 @@
     <string name="error_title_speed_dial_inactive">Marcador discapaz</string>
     <string name="pref_header_title_misc">Misc.</string>
     <string name="pref_title_about">Acera de</string>
+    <string name="config_access_denied">Acceso denegado</string>
+    <string name="config_access_pattern_default_display">Introduzca patrón para acceso</string>
+    <string name="config_access_pin_default_display">Introduzca PIN para acceso</string>
+    <string name="sound_entry_chicken_clucking">Cacareo de pollo</string>
+    <string name="violet">violeta</string>
+    <string name="keypad_pattern_config_instructions_4">Patrón confirmado</string>
+    <string name="dialog_title_config_access">Autorización requerida</string>
+    <string name="indigo">añil</string>
 </resources>
