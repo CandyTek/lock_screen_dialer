@@ -209,6 +209,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         };
         mErrorHandler = new Handler();
         mPhoneCallActiveFlag = false;
+        mSpeedDialNumPressed = -1; // Initialize for catching calls from the status bar
 
         // Set up the window
         WindowManager.LayoutParams localLayoutParams;
@@ -243,23 +244,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
 
         mContainerView = mWindowView.findViewById(R.id.activity_container);
 
-        /*try {
-            validateLayout();
-        } catch (IllegalLayoutException e) {
-            Log.e(TAG, e.getMessage(), e);
-            onFatalError();
-            return;
-        }*/
         validateLayout();
-
-        /*try {
-            instantiateOptionalViewsInView();
-            mDate = new Date();
-        } catch (IllegalLayoutException e) {
-            Log.e(TAG, e.getMessage(), e);
-            onFatalError();
-            return;
-        }*/
         instantiateOptionalViewsInView();
         mDate = new Date();
 
@@ -351,6 +336,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 // A call was initiated in the lock screen, a passcode was not entered, and the call
                 // ended.
                 mContactNameOnCall = mPhoneNumOnCall = mPhoneTypeOnCall = null;
+                mSpeedDialNumPressed = -1;  // Prevents erroneous information display if user calls back through status bar
                 disableCallViewsInView(true);
                 enableOptionalViewsInView();
                 /*try {
@@ -371,22 +357,37 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 if (!mPhoneCallActiveFlag) {
                     // We don't want to reinstantiate the call views on a call to onResume() if the
                     // phone call active flag is already set
+
                     SharedPreferences sharedPref = getSharedPreferences(
                             getString(R.string.speed_dial_preference_file_key),
                             Context.MODE_PRIVATE);
 
-                    String telNum = sharedPref.getString(
-                            getString(R.string.key_number_store_prefix_phone)
-                                    + mSpeedDialNumPressed, null);
-                    String name = sharedPref.getString(
-                            getString(R.string.key_number_store_prefix_name)
-                                    + mSpeedDialNumPressed, "Unknown");
-                    String type = sharedPref.getString(
-                            getString(R.string.key_number_store_prefix_type)
-                                    + mSpeedDialNumPressed, "Phone");
-                    String thumbUri = sharedPref.getString(
-                            getString(R.string.key_number_store_prefix_thumb)
-                                    + mSpeedDialNumPressed, null);
+                    String telNum;
+                    String name;
+                    String type;
+                    String thumbUri;
+
+                    if (mSpeedDialNumPressed != -1) {
+                        // Call was initiated through the speed dial, not the status bar
+                        telNum = sharedPref.getString(
+                                getString(R.string.key_number_store_prefix_phone)
+                                        + mSpeedDialNumPressed, null);
+                        name = sharedPref.getString(
+                                getString(R.string.key_number_store_prefix_name)
+                                        + mSpeedDialNumPressed, getString(R.string.call_unknown_callee));
+                        type = sharedPref.getString(
+                                getString(R.string.key_number_store_prefix_type)
+                                        + mSpeedDialNumPressed, getString(R.string.call_unknown_type));
+                        thumbUri = sharedPref.getString(
+                                getString(R.string.key_number_store_prefix_thumb)
+                                        + mSpeedDialNumPressed, null);
+                    } else {
+                        // Because speed dial num not initialized, must be a call through the status bar
+                        telNum = null;
+                        name = getString(R.string.call_unknown_callee);
+                        type = null;
+                        thumbUri = null;
+                    }
 
                     enableCallViewsInView(telNum, name, type, thumbUri);
 
@@ -399,6 +400,11 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                     }*/
 
                     mPhoneCallActiveFlag = true;
+
+                    // If the sheath screen is active, lets move it!
+                    if (mSheathScreenOn && isSheathed()) {
+                        doSheathScreenAnimation(true);
+                    }
 
                     // Remove any runnables for error messages
                     if (mErrorHandler != null) {
@@ -595,6 +601,13 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         sheathScreen.setOnTouchListener(this);
     }
 
+    private boolean isSheathed() {
+        View sheathScreen = getView(R.id.lock_screen_sheath_container);
+        if (sheathScreen.getTranslationY() == 0) {
+            return true;
+        }
+        return false;
+    }
     private void doSheathScreenAnimation(final boolean swiped) {
         //Log.d(TAG, "doSheathScreenAnimation() called, swiped = " + swiped);
         final View sheathScreen = getView(R.id.lock_screen_sheath_container);
@@ -770,12 +783,19 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             phoneCallDescr = (TextView) getView(R.id.drawer_phone_call_description);
             phoneCallNum = (TextView) getView(R.id.drawer_phone_call_number);
             phoneCallName.setText(name);
-            phoneCallDescr.setText("Calling at " + type + "...");
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (type != null) {
+                phoneCallDescr.setText("Calling at " + type + "...");
+            } else {
+                phoneCallDescr.setText("Calling ...");
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && telNum != null) {
                 TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
                 phoneCallNum.setText(PhoneNumberUtils.formatNumber(telNum, tm.getSimCountryIso()));
-            } else {
+            } else if (telNum != null) {
                 phoneCallNum.setText(PhoneNumberUtils.formatNumber(telNum));
+            } else {
+                // Means telNum is null
+                phoneCallNum.setText("");
             }
             phoneCallNum.setText(telNum);
 
@@ -817,6 +837,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                     //Log.d(TAG, "Thumb drawable null");
                 }
             } else {
+                // Set the default contact image
                 phoneCallThumb.setImageResource(android.R.color.transparent);
                 phoneCallThumb.setImageResource(R.drawable.default_contact_image);
             }

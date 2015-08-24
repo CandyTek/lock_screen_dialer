@@ -109,6 +109,9 @@
 
     <string name="font_selection_instruction">Select a font:</string>
 
+    <string name="call_unknown_callee">Unknown</string>
+    <string name="call_unknown_type">phone</string>
+
     <string name="error_title_roaming">Roaming Error</string>
     <string name="error_description_roaming">Lock screen can\'t initiate call while roaming.</string>
     <string name="error_title_airplane">Airplane Mode</string>
