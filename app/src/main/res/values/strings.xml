@@ -129,6 +129,9 @@
     <string name="button_app_background_random_text">Randomize</string>
     <string name="button_app_background_about_pics">About</string>
     <string name="instruction_app_content_swipe">Swipe to browse</string>
+    <string name="dialog_button_about_app_background">OK</string>
+    <string name="title_about_app_background">Photo credit</string>
+    <string name="message_about_app_background">Macro background photography licensed courtesy of: \n\nGary Boisvert\n\nCopyright to all images reserved by Gary Boisvert.</string>
 
 
 </resources>

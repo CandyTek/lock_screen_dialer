@@ -1,6 +1,8 @@
 package com.vitbac.speeddiallocker;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -215,7 +217,20 @@ public class AppBackgroundActivity extends Activity
                 break;
 
             case R.id.about_background_button:
-                // TODO: create dialog fragment for simple author information
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+                dialogBuilder.setTitle(getString(R.string.title_about_app_background));
+                dialogBuilder
+                        .setMessage(getString(R.string.message_about_app_background))
+                        .setCancelable(false)
+                        .setNegativeButton(getString(R.string.dialog_button_about_app_background),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
+                AlertDialog alertDialog = dialogBuilder.create();
+                alertDialog.show();
                 break;
         }
     }
