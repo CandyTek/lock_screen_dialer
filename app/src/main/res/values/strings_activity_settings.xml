@@ -269,13 +269,13 @@
     <integer name="default_background_random">-1</integer>
     <color name="default_background_color">@color/gunmetal</color>
 
-    <array name="app_pics">
+    <string-array name="app_pics">
         <item>@drawable/boisvert_1</item>
         <item>@drawable/boisvert_2</item>
         <item>@drawable/boisvert_3</item>
         <item>@drawable/boisvert_4</item>
         <item>@drawable/boisvert_5</item>
-    </array>
+    </string-array>
 
     <string-array name="app_pics_names" translatable="false">
         <item>boisvert_1</item>

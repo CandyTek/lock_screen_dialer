@@ -55,12 +55,25 @@ public class AppBackgroundActivity extends Activity
         mNumPics = mAppPics.length();
         for (int i = 0; i < mNumPics; i++) {
             View child = getLayoutInflater().inflate(R.layout.child_app_content_flipper, null);
-            final Drawable drawable = mAppPics.getDrawable(i);
-            if (drawable != null) {
+            //final Drawable drawable = mAppPics.getDrawable(i);
+            int drawableResourceId = mAppPics.getResourceId(i, -1);
+            //if (drawable != null) {
+            if (drawableResourceId != -1) {
                 child.setId(i+1);  // Should be OK so long as we do a findView through the parent; need to set POSITIVE number
                 // just set an image in the initial two views
                 if (i <= 1) {
-                    setImageViewWithDrawable((ImageView) child.findViewById(R.id.flipper_image), drawable);
+                    //setImageViewWithDrawable((ImageView) child.findViewById(R.id.flipper_image), drawable);
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        setImageViewWithDrawable(
+                                (ImageView) child.findViewById(R.id.flipper_image),
+                                getDrawable(drawableResourceId)
+                        );
+                    } else {
+                        setImageViewWithDrawable(
+                                (ImageView) child.findViewById(R.id.flipper_image),
+                                getResources().getDrawable(drawableResourceId)
+                        );
+                    }
                 }
                 mFlipper.addView(child);
             }
@@ -104,6 +117,21 @@ public class AppBackgroundActivity extends Activity
 
     @Override
     public void onDestroy() {
+        // Clear imageviews
+        /*int i = 1;
+        View child;
+        do {
+            child = mFlipper.findViewById(i);
+            if (child != null) {
+                final ImageView iView = (ImageView) child.findViewById(R.id.flipper_image);
+                if (iView.getDrawable() != null) {
+                    ((BitmapDrawable) iView.getDrawable()).getBitmap().recycle();
+                }
+                iView.setImageBitmap(null);
+            }
+            i++;
+        } while (child != null);*/
+
         mAppPics.recycle();
         super.onDestroy();
     }
@@ -203,9 +231,20 @@ public class AppBackgroundActivity extends Activity
         int id = num + 1;
         //TypedArray appPics = getResources().obtainTypedArray(R.array.app_pics);
         View child = mFlipper.findViewById(id);
-        setImageViewWithDrawable(
+        /*setImageViewWithDrawable(
                 (ImageView) child.findViewById(R.id.flipper_image), mAppPics.getDrawable(num)
-        );
+        );*/
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setImageViewWithDrawable(
+                    (ImageView) child.findViewById(R.id.flipper_image),
+                    getDrawable(mAppPics.getResourceId(num, -1))
+            );
+        } else {
+            setImageViewWithDrawable(
+                    (ImageView) child.findViewById(R.id.flipper_image),
+                    getResources().getDrawable(mAppPics.getResourceId(num, -1))
+            );
+        }
         //BitmapToViewHelper.resizeBitmapToView(iView, ((BitmapDrawable)drawable).getBitmap());
         //iView.setImageDrawable(d);
 
