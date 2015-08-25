@@ -1738,12 +1738,12 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         stopService(new Intent(this, PhoneStateService.class));
-        /*if (!prefs.getBoolean(getString(R.string.key_toggle_lock_screen), true)) {
+        if (!prefs.getBoolean(getString(R.string.key_toggle_lock_screen), true)) {
             // This covers situation where call is made, screen opened, then user unclicks the lock
             // screen.  The lock screen will have one last go (to prevent tampering), but should be
             // disabled once passcode entered.
             stopService(new Intent(this, LockScreenService.class));
-        }*/
+        }
 
 
         String sound = prefs.getString(
