@@ -268,34 +268,21 @@
 
     <integer name="default_background_random">-1</integer>
     <color name="default_background_color">@color/gunmetal</color>
-    <!--
+
     <array name="app_pics">
-        <item>@drawable/background_default</item>
-        <item>@drawable/background_default_2</item>
-        <item>@drawable/background_default_3</item>
-    </array>
-    <string-array name="app_pics_names">
-        <item>Gus looking</item>
-        <item>Bonnie and Khalessi</item>
-        <item>Snake</item>
-    </string-array>
-    -->
-    <array name="app_pics">
-        <item>@drawable/blue_abstract_balls_spheres</item>
-        <item>@drawable/lights_abstract_things_bubbles</item>
-        <item>@drawable/lights_night_dark_abstract</item>
-        <item>@drawable/mountains_adventure_wild_beauty</item>
-        <item>@drawable/nature_forest_trees_wilderness</item>
-        <item>@drawable/night_clouds_trees_stars</item>
+        <item>@drawable/boisvert_1</item>
+        <item>@drawable/boisvert_2</item>
+        <item>@drawable/boisvert_3</item>
+        <item>@drawable/boisvert_4</item>
+        <item>@drawable/boisvert_5</item>
     </array>
 
     <string-array name="app_pics_names" translatable="false">
-        <item>Blue spheres</item>
-        <item>Pearl bubbles</item>
-        <item>Abstract lights</item>
-        <item>Mountain path</item>
-        <item>Pine forest</item>
-        <item>Night sky</item>
+        <item>boisvert_1</item>
+        <item>boisvert_2</item>
+        <item>boisvert_3</item>
+        <item>boisvert_4</item>
+        <item>boisvert_5</item>
     </string-array>
 
     <string-array name="pref_entries_date_format">
