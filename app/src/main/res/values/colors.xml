@@ -5,6 +5,7 @@
 
     <color name="holo_blue">#ff00ddff</color>
     <color name="gray">#736F6E</color>
+    <color name="granite">#837E7C</color>
     <color name="pressed">#7F737CA1</color>
     <color name="black_cow">#4C4646</color>
     <color name="divider">#646D7E</color>

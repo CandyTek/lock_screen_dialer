@@ -8,8 +8,8 @@ android {
         applicationId "com.vitbac.speeddiallocker"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 8
-        versionName "1.08"
+        versionCode 9
+        versionName "1.09"
     }
     buildTypes {
         release {
