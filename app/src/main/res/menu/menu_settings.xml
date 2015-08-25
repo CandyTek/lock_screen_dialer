@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_instructions"
+        android:icon="@drawable/ic_help_outline_black_24dp"
+        android:title="@string/action_instructions"
+        android:showAsAction="ifRoom"/>
+</menu>

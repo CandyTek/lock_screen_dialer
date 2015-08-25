@@ -1,7 +1,12 @@
 package com.vitbac.speeddiallocker;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.vitbac.speeddiallocker.fragments.ColorPickerDialogFragment;
 import com.vitbac.speeddiallocker.fragments.FontPickerDialogFragment;
@@ -22,6 +27,36 @@ public class SettingsActivity extends Activity
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, mFragment)
                 .commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_settings, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected (MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_instructions:
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+                dialogBuilder.setTitle(getString(R.string.alert_dialog_title_instructions));
+                dialogBuilder
+                        .setMessage(getString(R.string.alert_dialog_message_instructions))
+                        .setCancelable(false)
+                        .setNegativeButton(getString(R.string.alert_dialog_button_text_instructions),
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
+                AlertDialog alertDialog = dialogBuilder.create();
+                alertDialog.show();
+                return true;
+        }
+        return true;
     }
 
     /**
