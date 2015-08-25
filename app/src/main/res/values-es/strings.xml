@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="action_settings">Ajustes</string>
-    <string name="alert_dialog_button_text_first_time">Lo tengo!</string>
+    <string name="alert_dialog_button_text_first_time">&#161;Lo tengo!</string>
     <string name="alert_dialog_message_first_time">Para esta aplicación funcione correctamente , asegúrese de que ha desactivado cualquier otro pantallas de bloqueo, especialmente la pantalla de bloqueo del sistema Android.  Vas a la configuración &#8658; haga clic en el \"mi dispositivo\" lengüeta, haga clic en \"Bloqueo de pantalla\"  &#8658;y cambiar el bloqueo de pantalla a \" Ninguna\" o \"Sin seguridad\". ( Android no nos dejó hacer esto para usted , lo siento. )</string>
     <string name="alert_dialog_title_first_time">&#161;Importante!</string>
     <string name="bean_red">frijol rojo</string>
@@ -142,7 +142,7 @@
     <string name="pref_summary_prefix_app_content_background">Contenido de la app :</string>
     <string name="pref_summary_prefix_color_background">Color:</string>
     <string name="pref_summary_prefix_user_device_background">Foto de dispositivo</string>
-    <string name="pref_title_assign_speed_dial_contacts">Configurar los contactos de marcación rápida</string>
+    <string name="pref_title_assign_speed_dial_contacts">Configurar contactos de marcación rápida</string>
     <string name="pref_title_date_format">Formato de fecha</string>
     <string name="pref_title_display_contact_info">Visualizar otro texto</string>
     <string name="pref_title_enable_pattern_draw">Mostrar dibujo patrón</string>
@@ -236,4 +236,13 @@
     <string name="keypad_pattern_config_instructions_4">Patrón confirmado</string>
     <string name="dialog_title_config_access">Autorización requerida</string>
     <string name="indigo">añil</string>
+    <string name="action_instructions">Ayuda</string>
+    <string name="alert_dialog_button_text_instructions">&#161;Lo tengo!</string>
+    <string name="alert_dialog_message_instructions">(1) Asignar quién quieres marcar rápidamente bajo \"Configurar contactos de marcación rápida\".\n\n(2) Ir a \"Seleccione seguridad\" para habilitar su seguridad.\n\n(3) Desactiva cualquier pantalla de bloqueo del sistema habilitado u othro casillero.  &#161;Y estas hecho!\n\nHay mucho opciones para personalizar.   Echa un vistazo a la \"Retardo del bloqueo\", \"Ver barra de estado\", los colores y tipos de letra.</string>
+    <string name="dialog_button_about_app_background">OK</string>
+    <string name="alert_dialog_title_instructions">Pantalla de bloqueo establecido:</string>
+    <string name="call_unknown_callee">Incógnita </string>
+    <string name="call_unknown_type">teléfono</string>
+    <string name="message_about_app_background">Macro fotografía cortesía de licencia : \n\nGary Boisvert \n\nCopyright a todas las imágenes reservados por Gary Boisvert .</string>
+    <string name="title_about_app_background">Autor de fotos</string>
 </resources>
