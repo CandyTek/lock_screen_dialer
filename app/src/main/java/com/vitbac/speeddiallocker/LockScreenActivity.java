@@ -141,7 +141,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         Log.d(TAG, "onCreate() called.");
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_lock_screen_launcher); // To clear rotation error on Samsung Galaxy devices pre Lollipop
+        //setContentView(R.layout.activity_lock_screen_launcher); // To clear rotation error on Samsung Galaxy devices pre Lollipop
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         // Check phone call status first -- any phone call status existing in onCreate()
