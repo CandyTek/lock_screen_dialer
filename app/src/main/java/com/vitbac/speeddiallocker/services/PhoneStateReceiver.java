@@ -39,13 +39,17 @@ public abstract class PhoneStateReceiver extends BroadcastReceiver {
         else{*/
         String stateStr = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
         String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+
         int state = 0;
         if (stateStr.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
             state = TelephonyManager.CALL_STATE_IDLE;
+            Log.d(TAG, "*******Received IDLE intent re: phone number " + number);
         } else if (stateStr.equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
             state = TelephonyManager.CALL_STATE_OFFHOOK;
+            Log.d(TAG, "*******Received OFFHOOK intent re: phone number " + number);
         } else if (stateStr.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
             state = TelephonyManager.CALL_STATE_RINGING;
+            Log.d(TAG, "*******Received RINGING intent re: phone number " + number);
         }
 
         //  Need to add robustness to deal with Lollipop's issuing of two intents for each state
@@ -57,7 +61,7 @@ public abstract class PhoneStateReceiver extends BroadcastReceiver {
             //Log.d(TAG, "Received intent with state " + state);
             onCallStateChanged(context, state, number);
         } else {
-            Log.d(TAG, "Received intent with state " + state
+            Log.d(TAG, "!!!!!!!!!!Received intent with state " + state
                     + " that is inconsistent with TelephonyManager.getCallState() "
                     + tm.getCallState());
         }
@@ -69,7 +73,7 @@ public abstract class PhoneStateReceiver extends BroadcastReceiver {
     //Incoming call-  goes from IDLE to RINGING when it rings, to OFFHOOK when it's answered, to IDLE when its hung up
     //Outgoing call-  goes from IDLE to OFFHOOK when it dials out, to IDLE when hung up
     public void onCallStateChanged(Context context, int state, String number) {
-        Log.d(TAG, "onCallStateChanged:  lastState = " + lastState + " state = " + state);
+        //Log.d(TAG, "onCallStateChanged:  lastState = " + lastState + " state = " + state);
         if (lastState == state) {
             //No change, debounce extras
             return;
@@ -79,7 +83,12 @@ public abstract class PhoneStateReceiver extends BroadcastReceiver {
                 isIncoming = true;
                 callStartTime = new Date();
                 savedNumber = number;
-                onIncomingCallStarted(context, number, callStartTime);
+                if (lastState == TelephonyManager.CALL_STATE_OFFHOOK) {
+                    // Then it is a call waiting state
+                    onCallWaitingStarted(context, number, callStartTime);
+                } else {
+                    onIncomingCallStarted(context, number, callStartTime);
+                }
                 break;
             case TelephonyManager.CALL_STATE_OFFHOOK:
                 //Transition of ringing->offhook are pickups of incoming calls.  Nothing done on them
@@ -110,6 +119,8 @@ public abstract class PhoneStateReceiver extends BroadcastReceiver {
 
     //Derived classes should override these to respond to specific events of interest
     abstract protected void onIncomingCallStarted(Context ctx, String number, Date start);
+
+    abstract protected void onCallWaitingStarted(Context ctx, String number, Date start);
 
     abstract protected void onOutgoingCallStarted(Context ctx, String number, Date start);
 

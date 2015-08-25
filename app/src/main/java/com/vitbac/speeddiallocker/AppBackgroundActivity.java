@@ -119,21 +119,6 @@ public class AppBackgroundActivity extends Activity
 
     @Override
     public void onDestroy() {
-        // Clear imageviews
-        /*int i = 1;
-        View child;
-        do {
-            child = mFlipper.findViewById(i);
-            if (child != null) {
-                final ImageView iView = (ImageView) child.findViewById(R.id.flipper_image);
-                if (iView.getDrawable() != null) {
-                    ((BitmapDrawable) iView.getDrawable()).getBitmap().recycle();
-                }
-                iView.setImageBitmap(null);
-            }
-            i++;
-        } while (child != null);*/
-
         mAppPics.recycle();
         super.onDestroy();
     }
@@ -273,13 +258,6 @@ public class AppBackgroundActivity extends Activity
         View child = mFlipper.findViewById(id);
         final ImageView iView = (ImageView) child.findViewById(R.id.flipper_image);
         iView.setImageBitmap(null);
-        /*new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                    //iView.setImageDrawable(null);
-                iView.setImageBitmap(null);
-            }
-        }, getResources().getInteger(R.integer.flipper_delay));*/
     }
 
     private void setImageViewWithDrawable(final ImageView view, final Drawable drawable) {

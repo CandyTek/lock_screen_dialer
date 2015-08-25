@@ -3,6 +3,7 @@ package com.vitbac.speeddiallocker.services;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.vitbac.speeddiallocker.ErrorPageActivity;
@@ -94,13 +95,25 @@ public class PhoneCallReceiver extends PhoneStateReceiver {
     }
     */
     protected void onIncomingCallStarted(Context ctx, String number, Date start) {
+
         Intent lockScreenIntent = getLockScreenIntent(ctx);
         lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PhoneStateReceiver.STATE_STARTED_INCOMING_CALL);
         lockScreenIntent.putExtra(EXTRA_PHONE_DATA_NUMBER, number);
 
         ctx.startActivity(lockScreenIntent);
-        Log.d(TAG, "Incoming call started, state " + PhoneStateReceiver.STATE_STARTED_INCOMING_CALL);
+        Log.d(TAG, "Incoming call started with phone number " + number);
+    }
+
+    protected void onCallWaitingStarted(Context ctx, String number, Date start) {
+        // Start an intent.  If it is caught in Lock Screen's onCreate, then finish() immediately.
+        Intent lockScreenIntent = getLockScreenIntent(ctx);
+        lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PhoneStateReceiver.STATE_STARTED_INCOMING_CALL);
+        lockScreenIntent.putExtra(EXTRA_PHONE_DATA_NUMBER, number);
+
+        ctx.startActivity(lockScreenIntent);
+        Log.d(TAG, "Call waiting started with phone number " + number);
     }
 
     protected void onOutgoingCallStarted(Context ctx, String number, Date start) {
@@ -111,7 +124,7 @@ public class PhoneCallReceiver extends PhoneStateReceiver {
         lockScreenIntent.putExtra(EXTRA_PHONE_DATA_NUMBER, number);
 
         ctx.startActivity(lockScreenIntent);
-        Log.d(TAG, "Outgoing call started, state " + PhoneStateReceiver.STATE_STARTED_OUTGOING_CALL);
+        Log.d(TAG, "Outgoing call started with phone number " + number);
     }
 
     protected void onIncomingCallEnded(Context ctx, String number, Date start, Date end) {
@@ -122,7 +135,7 @@ public class PhoneCallReceiver extends PhoneStateReceiver {
         lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PhoneStateReceiver.STATE_ENDED_INCOMING_CALL);
 
         ctx.startActivity(lockScreenIntent);
-        Log.d(TAG, "Incoming call ended, state " + PhoneStateReceiver.STATE_ENDED_INCOMING_CALL);
+        Log.d(TAG, "Incoming call ended with phone number " + number);
     }
 
     protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date end) {
@@ -132,7 +145,7 @@ public class PhoneCallReceiver extends PhoneStateReceiver {
         lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PhoneStateReceiver.STATE_ENDED_OUTGOING_CALL);
         ctx.startActivity(lockScreenIntent);
-        Log.d(TAG, "Outgoing call ended, state " + PhoneStateReceiver.STATE_ENDED_OUTGOING_CALL);
+        Log.d(TAG, "Outgoing call ended with phone number " + number);
     }
 
     protected void onMissedCall(Context ctx, String number, Date start) {
@@ -142,7 +155,7 @@ public class PhoneCallReceiver extends PhoneStateReceiver {
         lockScreenIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         lockScreenIntent.putExtra(EXTRA_PHONE_STATE, PhoneStateReceiver.STATE_MISSED_CALL);
         ctx.startActivity(lockScreenIntent);
-        Log.d(TAG, "Device missed call, state " + PhoneStateReceiver.STATE_MISSED_CALL);
+        Log.d(TAG, "Device missed call from phone number " + number);
     }
 
     /**

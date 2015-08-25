@@ -153,9 +153,6 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 // An incoming call was received, previously ending the lock screen, and the lock screen
                 // is now restarting.
                 startService(new Intent(this, LockScreenService.class));
-                /*startActivity(new Intent(this, LockScreenLauncherActivity.class));
-                finish();
-                return;*/
                 break;
             case PhoneStateReceiver.STATE_ENDED_OUTGOING_CALL:
                 // End the activity but begin the screen service --
@@ -163,27 +160,26 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 // call, but then unlocked the lock screen. Since phone call ended, just resume the
                 // screen service and end.
                 startService(new Intent(this, LockScreenService.class));
-                //startActivity(new Intent(this, LockScreenLauncherActivity.class));
-                /*finish();
-                return;*/
                 break;
             case PhoneStateReceiver.STATE_MISSED_CALL:
                 // Start the screen service and the lock screen --
                 // An incoming call was received while lock screen initiated, previously ending the lock
                 // screen, and now the lock screen is just restarting
                 startService(new Intent(this, LockScreenService.class));
-                /*startActivity(new Intent(this, LockScreenLauncherActivity.class));
-                finish();
-                return;*/
                 break;
             case PhoneStateReceiver.STATE_STARTED_INCOMING_CALL:
-                // This situation should not result in initiating the lock screen in onCreate()
-                // TODO: Only possibility is for call waiting to have been received, so handle in the receiver!
-                throw new IllegalArgumentException("Received improper state STATE_STARTED_INCOMING_CALL in onCreate().");
+                // Because this is onCreate, this must be a call waiting situation where the user's
+                // lock screen already had been unlocked by a previous incoming call, so we just
+                // exit
+                finish();
+                return;
+                // throw new IllegalArgumentException("Received improper state STATE_STARTED_INCOMING_CALL in onCreate().");
             case PhoneStateReceiver.STATE_STARTED_OUTGOING_CALL:
                 // This situation should not result in initiating the lock screen in onCreate(), but in
                 // onNewIntent()
-                throw new IllegalArgumentException("Received improper state STATE_STARTED_OUTGOING_CALL in onCreate(). Should be received in onNewIntent()");
+                throw new IllegalArgumentException(
+                        "Received improper state STATE_STARTED_OUTGOING_CALL in onCreate(). Should be received in onNewIntent()"
+                );
         }
 
         //  Lock screen was initiated naturally by screen event or by rerouting to the launcher
@@ -326,11 +322,6 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         int phoneState = getIntent().getIntExtra(PhoneCallReceiver.EXTRA_PHONE_STATE, -1);
         //Log.d(TAG, "onResume() called with phone state = " + phoneState);
         switch (phoneState) {
-            /*case PhoneStateReceiver.STATE_ENDED_INCOMING_CALL:
-                // Need to do nothing, everything should have been handled in onCreate()
-                //Log.e(TAG, "Received improper state STATE_ENDED_INCOMING_CALL in onNewIntent().");
-                //throw new IllegalArgumentException("getIntent() provided improper state STATE_ENDED_INCOMING_CALL in onResume().");
-                break;*/
             case PhoneStateReceiver.STATE_ENDED_OUTGOING_CALL:
                 // Close the call views and reenable the screen service--
                 // A call was initiated in the lock screen, a passcode was not entered, and the call
@@ -339,12 +330,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 mSpeedDialNumPressed = -1;  // Prevents erroneous information display if user calls back through status bar
                 disableCallViewsInView(true);
                 enableOptionalViewsInView();
-                /*try {
-                    enableOptionalViewsInView();
-                } catch (IllegalLayoutException e) {
-                    //Log.e(TAG, "Layout renders activity unable to handle calls", e);
-                    onFatalError();
-                }*/
+
                 // Service may or may not have been started already in onCreate(), but should be OK
                 startService(new Intent(this, LockScreenService.class));
                 mPhoneCallActiveFlag = false;
@@ -353,7 +339,6 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 // Initiate the call drawer and call buttons --
                 // User has initiated a speed dial.  Doing the animations here allows them to be
                 // much more fluid
-                //Log.d(TAG, "Outgoing call initiated");
                 if (!mPhoneCallActiveFlag) {
                     // We don't want to reinstantiate the call views on a call to onResume() if the
                     // phone call active flag is already set
@@ -367,8 +352,16 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                     String type;
                     String thumbUri;
 
+                    if (mSpeedDialNumPressed == -1) {
+                        // Must be a callback of missed call through the status bar
+                        mSpeedDialNumPressed = matchSpeedDialToPhoneNum(
+                                getIntent().getStringExtra(PhoneCallReceiver.EXTRA_PHONE_DATA_NUMBER),
+                                -1
+                        );
+                    }
+
                     if (mSpeedDialNumPressed != -1) {
-                        // Call was initiated through the speed dial, not the status bar
+                        // We have easily accessible data for the outgoing call
                         telNum = sharedPref.getString(
                                 getString(R.string.key_number_store_prefix_phone)
                                         + mSpeedDialNumPressed, null);
@@ -382,8 +375,8 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                                 getString(R.string.key_number_store_prefix_thumb)
                                         + mSpeedDialNumPressed, null);
                     } else {
-                        // Because speed dial num not initialized, must be a call through the status bar
-                        telNum = null;
+                        // Call through status bar, but does not match any assigned key
+                        telNum = getIntent().getStringExtra(PhoneCallReceiver.EXTRA_PHONE_DATA_NUMBER);
                         name = getString(R.string.call_unknown_callee);
                         type = null;
                         thumbUri = null;
@@ -419,12 +412,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 //Log.d(TAG, "Received incoming call in onResume()");
                 stopService(new Intent(this, LockScreenService.class));
                 finish();
-                break;
-            /*case PhoneStateReceiver.STATE_MISSED_CALL:
-                // Do nothing because this should have been handled in onCreate()
-                // The lock screen should have been ended when a call was received in the first place
-                //Log.e(TAG, "Received improper state STATE_MISSED_CALL in onResume()");
-                //throw new IllegalArgumentException("getIntent() provided improper state STATE_MISSED_CALL in onResume().");*/
+                return;
             default:
                 if (!mSheathScreenOn && !mBackgroundSetFlag) {
                     //if (!mSheathScreenOn && !mPhoneCallActiveFlag) {
@@ -1434,7 +1422,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
     public void onClick (View view) {
         switch (view.getId()) {
             case R.id.lock_screen_end_call_button:
-                endPhoneCall();  // We have the generation of a phone intent handle the logic in onNewIntent()
+                endPhoneCall();  // We have the generation of a phone intent handle the logic
                 break;
             case R.id.lock_screen_speaker_call_button:
                 try {
@@ -1747,9 +1735,17 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
      * Simple method that handles logic when the correct passcode is entered
      */
     protected void onCorrectPasscode() {
-        stopService(new Intent(this, PhoneStateService.class));
-
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        stopService(new Intent(this, PhoneStateService.class));
+        /*if (!prefs.getBoolean(getString(R.string.key_toggle_lock_screen), true)) {
+            // This covers situation where call is made, screen opened, then user unclicks the lock
+            // screen.  The lock screen will have one last go (to prevent tampering), but should be
+            // disabled once passcode entered.
+            stopService(new Intent(this, LockScreenService.class));
+        }*/
+
+
         String sound = prefs.getString(
                 getString(R.string.key_select_passcode_correct_sound),
                 getString(R.string.passcode_correct_default));
@@ -1757,9 +1753,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         final Context ctx = this;
 
         View v = mContainerView;
-        /*playSound(ctx, uri);
-        finish();*/
-        Log.d(TAG, "Finish() called");
+
         // Fade out the lock screen
         if (v != null) {
             v.animate().alpha(0f).setDuration(200).setListener(new AnimatorListenerAdapter() {
@@ -1807,12 +1801,6 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             Log.e(TAG, "Caught IOException in trying to play sound.", e);
         }
     }
-
-   /* protected void onFatalError() {
-        Log.d(TAG, "onFatalError() called.");
-        stopService(new Intent(this, PhoneStateService.class));
-        finish();
-    }*/
 
 
     /**
@@ -1970,6 +1958,31 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             Log.e(TAG, "Layout has invalid toggle button view; enabling speed dial");
             return true;
         }
+    }
+
+    private int matchSpeedDialToPhoneNum(String telNum, int def) {
+        SharedPreferences sharedPref = getSharedPreferences(
+                getString(R.string.speed_dial_preference_file_key),
+                Context.MODE_PRIVATE);
+
+        if (telNum == null) {
+            return def;
+        }
+
+        // Sanitize the number
+        telNum = telNum.replaceAll("[^\\d]", "").trim();
+
+        for (int i = 1; i <= 9; i ++) {
+            String speedDialNumber = sharedPref.getString(
+                    getString(R.string.key_number_store_prefix_phone) + i,
+                    null
+            );
+            if (speedDialNumber != null &&
+                    telNum.matches(speedDialNumber.replaceAll("[^\\d]", "").trim())) {
+                return i;
+            }
+        }
+        return def;
     }
 
     /**
