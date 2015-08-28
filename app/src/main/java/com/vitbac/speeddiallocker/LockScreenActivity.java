@@ -159,6 +159,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 // Because we are getting this state in onCreate, it means the user initiated an outgoing
                 // call, but then unlocked the lock screen. Since phone call ended, just resume the
                 // screen service and end.
+                // Note, this case should not arise
                 startService(new Intent(this, LockScreenService.class));
                 break;
             case PhoneStateReceiver.STATE_MISSED_CALL:
@@ -177,6 +178,9 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             case PhoneStateReceiver.STATE_STARTED_OUTGOING_CALL:
                 // This situation should not result in initiating the lock screen in onCreate(), but in
                 // onNewIntent()
+                /*finish();
+                return;*/
+
                 throw new IllegalArgumentException(
                         "Received improper state STATE_STARTED_OUTGOING_CALL in onCreate(). Should be received in onNewIntent()"
                 );
@@ -1735,16 +1739,15 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
      * Simple method that handles logic when the correct passcode is entered
      */
     protected void onCorrectPasscode() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
         stopService(new Intent(this, PhoneStateService.class));
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (!prefs.getBoolean(getString(R.string.key_toggle_lock_screen), true)) {
             // This covers situation where call is made, screen opened, then user unclicks the lock
             // screen.  The lock screen will have one last go (to prevent tampering), but should be
             // disabled once passcode entered.
             stopService(new Intent(this, LockScreenService.class));
         }
-
 
         String sound = prefs.getString(
                 getString(R.string.key_select_passcode_correct_sound),

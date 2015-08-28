@@ -46,11 +46,6 @@ public class PhoneStateService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
         //Log.d(TAG, "onStartCommand called");
-
-
-        /*IntentFilter filter = new IntentFilter(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
-        mReceiver = new PhoneStateReceiver();
-        registerReceiver(mReceiver, filter);*/
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -67,10 +62,4 @@ public class PhoneStateService extends Service {
         super.onDestroy();
     }
 
-
-    /*public class PhoneStateBinder extends Binder {
-        PhoneStateService getService() {
-            return PhoneStateService.this;
-        }
-    }*/
 }
