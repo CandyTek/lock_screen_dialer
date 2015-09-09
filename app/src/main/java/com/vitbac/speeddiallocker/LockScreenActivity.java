@@ -27,6 +27,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
@@ -132,6 +133,8 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
 
     private Date mDate; // To check whether date needs updating
 
+    private PowerManager.WakeLock mWakeLock;
+
     // Views that concern the passcode
     private PasscodeEntryDisplay mDisplayView;
     private PasscodeEntryWidget mPasscodeView;
@@ -140,6 +143,11 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate() called.");
         super.onCreate(savedInstanceState);
+
+        // First thing, acquire a wake lock!
+        PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+        mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "LockScreenWakeLock");
+        mWakeLock.acquire();
 
         //setContentView(R.layout.activity_lock_screen_launcher); // To clear rotation error on Samsung Galaxy devices pre Lollipop
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -178,12 +186,12 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             case PhoneStateReceiver.STATE_STARTED_OUTGOING_CALL:
                 // This situation should not result in initiating the lock screen in onCreate(), but in
                 // onNewIntent()
-                /*finish();
-                return;*/
+                finish();
+                return;
 
-                throw new IllegalArgumentException(
+                /*throw new IllegalArgumentException(
                         "Received improper state STATE_STARTED_OUTGOING_CALL in onCreate(). Should be received in onNewIntent()"
-                );
+                );*/
         }
 
         //  Lock screen was initiated naturally by screen event or by rerouting to the launcher
@@ -211,7 +219,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         mPhoneCallActiveFlag = false;
         mSpeedDialNumPressed = -1; // Initialize for catching calls from the status bar
 
-        // Set up the window
+        // Set up the window depending on the status bar option
         WindowManager.LayoutParams localLayoutParams;
         if (prefs.getBoolean(getString(R.string.key_toggle_status_bar_access), false)) {
             localLayoutParams = new WindowManager.LayoutParams(
@@ -233,13 +241,11 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
 
         mWindowManager = (WindowManager) getApplicationContext().getSystemService(WINDOW_SERVICE);
         getWindow().setAttributes(localLayoutParams);
-        //View.inflate(this, R.layout.activity_lock_screen_keypad_pin, mWindowView);
         mWindowView = (RelativeLayout) LayoutInflater
                 .from(this)
                 .inflate(R.layout.activity_lock_screen2,
                         new RelativeLayout(getBaseContext()),
                         false);
-        //mWindowView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
         mWindowManager.addView(mWindowView, localLayoutParams);
 
         mContainerView = mWindowView.findViewById(R.id.activity_container);
@@ -387,14 +393,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                     }
 
                     enableCallViewsInView(telNum, name, type, thumbUri);
-
                     disableOptionalViewsInView();
-                    /*try {
-                        disableOptionalViewsInView();
-                    } catch (IllegalLayoutException e) {
-                        Log.e(TAG, "Activity unable to handle calls", e);
-                        onFatalError();
-                    }*/
 
                     mPhoneCallActiveFlag = true;
 
@@ -463,14 +462,8 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 lockClock.setText(sdf.format(cal.getTime()));
                 sheathClock.setText(sdf.format(cal.getTime()));
             } catch (ClassCastException e) {
-                /*Log.e(TAG, "Layout has improper clock view type for older versions.", e);
-                onFatalError();
-                return;*/
                 throw new IllegalLayoutException("Layout has improper clock view type for older SDK versions.");
             } catch (NullPointerException e) {
-                /*Log.e(TAG, "Layout does not have clock view.", e);
-                onFatalError();
-                return;*/
                 throw new IllegalLayoutException("Layout does not have proper clock view.");
             }
         }
@@ -493,7 +486,6 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         mContactNameOnCall = savedInstanceState.getString("contactNameOnCall");
         mPhoneNumOnCall = savedInstanceState.getString("phoneNumOnCall");
         mPhoneTypeOnCall = savedInstanceState.getString("phoneTypeOnCall");
-
     }
 
     @Override
@@ -510,7 +502,6 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         if (mPhoneTypeOnCall != null) {
             outState.putString("phoneTypeOnCall", mPhoneTypeOnCall);
         }
-        //outState.putBoolean("backgroundSetFlag", mBackgroundSetFlag);
     }
 
     /**
@@ -521,8 +512,6 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        /*int phoneState = intent.getIntExtra(PhoneCallReceiver.EXTRA_PHONE_STATE, -1);
-        Log.d(TAG, "onNewIntent called with phoneState = " + phoneState);*/
         setIntent(intent); // Sets up to handle all logic in onResume()
     }
 
@@ -537,7 +526,13 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         return;
     }
 
-    // Implemented to use TYPE_SYSTEM_ERROR hack
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mWakeLock.isHeld()) {
+            mWakeLock.release();
+        }
+    }
     @Override
     public void onDestroy() {
         //Log.d(TAG, "onDestroy called");
@@ -549,16 +544,11 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             mWindowView.removeAllViews();
         }
 
-        /*if (mBackgroundBitmap != null) {
-            mBackgroundBitmap.recycle();
-        }*/
-
         if (mHandler != null && mRunnable != null) {
             mHandler.removeCallbacks(mRunnable);
         }
         mHandler = null;
         mRunnable = null;
-
     }
 
     /**
@@ -1177,12 +1167,6 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
             switch (viewId) {
                 case R.id.lock_screen_date:
                     if (prefs.getBoolean(keys.getString(i), false)) {
-                        /*String dateFormat = prefs.getString(
-                                getString(R.string.key_date_format),
-                                getString(R.string.pref_default_value_date_format));
-                        java.util.Date dateTime = Calendar.getInstance().getTime();
-                        String dateString = DateFormat.format(dateFormat, dateTime).toString();*/
-                        //SimpleDateFormat df = new SimpleDateFormat(getString(R.string.date_format));
                         ((TextView) view).setText(getFormattedDate());
                         view.setVisibility(View.VISIBLE);
 
@@ -1205,11 +1189,6 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 case R.id.lock_screen_clock:
                     if (prefs.getBoolean(keys.getString(i), false)) {
                         view.setVisibility(View.VISIBLE);
-                        /*if (Build.VERSION.SDK_INT >= 17 && view instanceof TextClock
-                                && prefs.getBoolean(getString(R.string.key_toggle_24_hr_clock), false)) {
-                            TextClock tc = (TextClock) view;
-                            tc.setFormat24Hour("HH:mm");
-                        }*/
                     } else {
                         view.setVisibility(View.GONE);
                         // Now let's set the date to the dominate view
@@ -1225,12 +1204,6 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 case R.id.sheath_screen_clock:
                     if (prefs.getBoolean(keys.getString(i), false)) {
                         view.setVisibility(View.VISIBLE);
-                        /*if (Build.VERSION.SDK_INT >= 17 && view instanceof TextClock
-                                && prefs.getBoolean(getString(R.string.key_toggle_24_hr_clock), false)) {
-                            Log.d(TAG, "Setting to 24 hr mode");
-                            TextClock tc = (TextClock) view;
-                            tc.setFormat24Hour("H:mm");
-                        }*/
                     } else {
                         view.setVisibility(View.GONE);
                         // Now let's set the date to the dominate view
@@ -1402,6 +1375,9 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 Bitmap bitmap = BitmapFactory.decodeStream(streamIn);
                 mBackgroundView.setImageBitmap(bitmap);
                 crossFadeViewsOnStart(mBackgroundView, mBackgroundProgress);
+
+                // Release the WakeLock because all the busy work is done
+                mWakeLock.release();
                 return;
             } catch (IOException e) {
                 // TODO: make this a toast
@@ -1414,6 +1390,8 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 getResources().getColor(R.color.default_background_color));
         view.setBackgroundColor(color);
         crossFadeViewsOnStart(view, mBackgroundProgress);
+        // And since we are just setting a color, we can release the wakelock
+        mWakeLock.release();
     }
 
 
@@ -1590,6 +1568,8 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         //mBackgroundSetFlag = true;
         //Log.d(TAG, "About to crossfade bitmap background");
         crossFadeViewsOnStart(mBackgroundView, mBackgroundProgress);
+        // And now we can release the wakelock
+        mWakeLock.release();
     }
 
     public void onPasscodeEntered(boolean isCorrect) {
@@ -1610,12 +1590,10 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         if (mPasscodeResetHandler == null) {
             mPasscodeResetHandler = new Handler();
         }
-        //Log.d(TAG, "Delaying passcode widget reset for " + delay + "ms");
         mPasscodeResetRunnable = new Runnable() {
             @Override
             public void run() {
                 mPasscodeView.resetView();
-                //Log.d(TAG, "Passcode widget reset on delay.");
             }
         };
         mPasscodeResetHandler.postDelayed(mPasscodeResetRunnable, delay);
@@ -1898,10 +1876,10 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         mLongPressFlag = true;
     }
 
-    protected void enablePhoneCallActiveFlag() {
+    /*protected void enablePhoneCallActiveFlag() {
         //Log.d(TAG, "PHONE CALL FLAG IS NOW TRUE");
         mPhoneCallActiveFlag = true;
-    }
+    }*/
 
     // TODO: should we just check with the telephony manager here to see if a call is active?  I think so.
     protected boolean getPhoneCallActiveFlag() {
@@ -2015,7 +1993,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
         }
     }
 
-    private Uri getPhotoThumbnailUri (String data) {
+    /*private Uri getPhotoThumbnailUri (String data) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             return Uri.parse(data);
@@ -2025,7 +2003,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, data),
                 ContactsContract.Contacts.Photo.CONTENT_DIRECTORY
         );
-    }
+    }*/
 
     protected View getView(int id) {
         return mContainerView.findViewById(id);
@@ -2085,7 +2063,7 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
     }
 
 
-    protected void setDialerRunnable(int numPressed, int delay) {
+    /*protected void setDialerRunnable(int numPressed, int delay) {
         if (isSpeedDialEnabled() && !getPhoneCallActiveFlag()
                 && numPressed > 0 && numPressed < 10) {
             SharedPreferences sharedPref = getSharedPreferences(
@@ -2104,23 +2082,23 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 vibrator.vibrate(1);
             }
         }
-    }
+    }*/
 
-    protected void disableDialerRunnable() {
+    /*protected void disableDialerRunnable() {
         if (mHandler != null) {
             mHandler.removeCallbacks(mRunnable);
             mHandler = null;
             mRunnable = null;
         }
-    }
+    }*/
 
-    public void resetSheathScreen() {
+    /*public void resetSheathScreen() {
         if (mSheathScreenOn && !mPhoneCallActiveFlag  && mBackgroundSetFlag) {
             mFlinged = false;
             prepareSheathScreenAnimation(true);
             doSheathTextAnimation(-1);
         }
-    }
+    }*/
 
     /**
      * ---------------------------------------------------------------------------------------------
