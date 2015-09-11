@@ -1135,6 +1135,9 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                     break;
             }
         }
+
+        keys.recycle();
+        ids.recycle();
     }
 
     /**
@@ -1327,6 +1330,9 @@ public class LockScreenActivity extends Activity implements View.OnClickListener
                 ((TextView) view).setTypeface(Typeface.create(font, Typeface.NORMAL));
             }
         }
+        keys.recycle();
+        ids.recycle();
+
 
     }
 
