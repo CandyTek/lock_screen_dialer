@@ -12,6 +12,9 @@ import com.vitbac.speeddiallocker.fragments.ColorPickerDialogFragment;
 import com.vitbac.speeddiallocker.fragments.FontPickerDialogFragment;
 import com.vitbac.speeddiallocker.fragments.SettingsFragment;
 
+import fr.nicolaspomepuy.discreetapprate.AppRate;
+import fr.nicolaspomepuy.discreetapprate.RetryPolicy;
+
 public class SettingsActivity extends Activity
         implements ColorPickerDialogFragment.OnColorSelectedListener,
         FontPickerDialogFragment.OnFontSelectedListener {
@@ -27,6 +30,18 @@ public class SettingsActivity extends Activity
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, mFragment)
                 .commit();
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        AppRate.with(this)
+                .delay(1000)
+                .initialLaunchCount(4)
+                .retryPolicy(RetryPolicy.INCREMENTAL)
+                .checkAndShow();
     }
 
     @Override
