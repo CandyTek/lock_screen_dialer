@@ -1,12 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.0"
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId "com.vitbac.speeddiallocker"
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 22
         versionCode 13
         versionName "1.13"
@@ -20,8 +19,8 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'com.android.support:support-v4:22.2.0'
-    compile 'fr.nicolaspomepuy:discreetapprate:2.0.3@aar'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'fr.nicolaspomepuy:discreetapprate:2.0.3@aar'
 }
